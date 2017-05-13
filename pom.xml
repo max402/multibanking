@@ -43,6 +43,9 @@
         <maven.build-timestamp>${maven.build.timestamp}</maven.build-timestamp>
         <scmBranch />
         <start-class />
+        
+        <jclouds.version>2.0.0</jclouds.version>
+        
     </properties>
 
     <modules>
@@ -50,6 +53,7 @@
         <module>multibanking-persistence</module>
         <module>onlinebanking-adapter</module>
         <module>onlinebanking-facade</module>
+        <module>onlinebanking-mock</module>
     </modules>
 
 	<dependencyManagement>
@@ -72,6 +76,13 @@
                 <artifactId>springfox-swagger-ui</artifactId>
                 <version>${swagger.version}</version>
             </dependency>
+            
+			<dependency>
+				<groupId>org.apache.jclouds.api</groupId>
+				<artifactId>filesystem</artifactId>
+				<version>${jclouds.version}</version>
+			</dependency>
+            
         </dependencies>
     </dependencyManagement>
 

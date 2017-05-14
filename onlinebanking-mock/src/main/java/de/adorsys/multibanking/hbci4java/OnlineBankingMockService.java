@@ -1,4 +1,4 @@
-package hbci4java;
+package de.adorsys.multibanking.hbci4java;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,11 +6,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Service;
 
 import domain.BankAccess;
 import domain.BankAccount;
 import domain.Booking;
+import hbci4java.OnlineBankingService;
 
+@Service
 public class OnlineBankingMockService implements OnlineBankingService {
 	
 	// Bank accounts by Login

@@ -1,5 +1,6 @@
 package domain;
 
+import domain.BankAccess;
 import lombok.Data;
 
 /**

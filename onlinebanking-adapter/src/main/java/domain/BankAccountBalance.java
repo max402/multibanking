@@ -4,6 +4,8 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 
+import domain.BankAccountBalance;
+
 /**
  * Created by alexg on 08.02.17.
  */

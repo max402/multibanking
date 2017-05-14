@@ -1,4 +1,4 @@
-package hbci4java;
+package de.adorsys.multibanking.hbci4java;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.kapott.hbci.exceptions.HBCI_Exception;

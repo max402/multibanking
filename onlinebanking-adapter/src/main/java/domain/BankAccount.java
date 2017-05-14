@@ -3,6 +3,9 @@ package domain;
 import lombok.Data;
 import org.kapott.hbci.structures.Konto;
 
+import domain.BankAccount;
+import domain.BankAccountBalance;
+
 /**
  * Created by alexg on 07.02.17.
  */

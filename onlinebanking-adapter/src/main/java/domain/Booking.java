@@ -5,6 +5,9 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import domain.BankAccount;
+import domain.Booking;
+
 /**
  * Created by alexg on 07.02.17.
  */

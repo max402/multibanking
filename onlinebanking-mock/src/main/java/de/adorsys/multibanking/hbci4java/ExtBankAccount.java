@@ -1,4 +1,4 @@
-package hbci4java;
+package de.adorsys.multibanking.hbci4java;
 
 import domain.BankAccount;
 

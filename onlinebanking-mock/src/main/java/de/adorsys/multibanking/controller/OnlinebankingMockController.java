@@ -27,10 +27,4 @@ public class OnlinebankingMockController {
 		mockService.addBookings(request.getBookings(), request.getBankAccess(), request.getBankAccount());
         return new Resource<String>("ok");
     }
-    
-    
-    @GetMapping("/all")
-    public String all(){
-    	return "Salut clsis" ;
-    }
 }

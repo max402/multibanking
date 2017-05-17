@@ -1,11 +1,11 @@
 package hbci4java;
 
 
+import java.util.List;
+
 import domain.BankAccess;
 import domain.BankAccount;
 import domain.Booking;
-
-import java.util.List;
 
 public interface OnlineBankingService {
 

@@ -1,4 +1,4 @@
-package loader;
+package de.adorsys.multibanking.loader;
 
 import java.util.List;
 import java.util.Map;
@@ -6,8 +6,8 @@ import java.util.Map;
 import org.apache.poi.ss.usermodel.Row;
 import org.springframework.stereotype.Service;
 
+import de.adorsys.multibanking.hbci4java.ExtBankAccount;
 import domain.BankAccount;
-import hbci4java.ExtBankAccount;
 
 @Service
 public class BankAccountLoader {

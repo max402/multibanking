@@ -1,8 +1,5 @@
-package hbci4java;
+package de.adorsys.multibanking.hbci4java;
 
-import domain.BankAccess;
-import domain.BankAccount;
-import domain.Booking;
 import org.kapott.hbci.GV.HBCIJob;
 import org.kapott.hbci.GV_Result.GVRKUms;
 import org.kapott.hbci.GV_Result.GVRSaldoReq;
@@ -13,11 +10,18 @@ import org.kapott.hbci.status.HBCIExecStatus;
 import org.kapott.hbci.structures.Konto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import domain.BankAccess;
+import domain.BankAccount;
+import domain.Booking;
+import hbci4java.OnlineBankingService;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+@Service
 public class Hbci4JavaBanking implements OnlineBankingService {
 
     private static final Logger LOG = LoggerFactory.getLogger(Hbci4JavaBanking.class);

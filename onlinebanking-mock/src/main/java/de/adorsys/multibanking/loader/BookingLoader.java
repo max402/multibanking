@@ -1,4 +1,4 @@
-package loader;
+package de.adorsys.multibanking.loader;
 
 import java.util.List;
 import java.util.Map;

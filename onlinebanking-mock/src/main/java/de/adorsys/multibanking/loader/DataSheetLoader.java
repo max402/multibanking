@@ -1,4 +1,4 @@
-package loader;
+package de.adorsys.multibanking.loader;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,11 +16,11 @@ import org.apache.poi.util.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import de.adorsys.multibanking.hbci4java.ExtBankAccount;
+import de.adorsys.multibanking.hbci4java.OnlineBankingMockService;
 import domain.BankAccess;
 import domain.BankAccount;
 import domain.Booking;
-import hbci4java.ExtBankAccount;
-import hbci4java.OnlineBankingMockService;
 
 @Service
 public class DataSheetLoader {

@@ -1,11 +1,10 @@
-package hbci4java;
+package de.adorsys.multibanking.hbci4java;
 
-import domain.Booking;
+import domain.BankAccount;
 
-public class ExtBooking extends Booking {
-	private String bankLogin;
+public class ExtBankAccount extends BankAccount {
 	private String accountId;
-	private String id;
+	private String bankLogin;
 
 	public String getAccountId() {
 		return accountId;
@@ -13,14 +12,6 @@ public class ExtBooking extends Booking {
 
 	public void setAccountId(String accountId) {
 		this.accountId = accountId;
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
 	}
 
 	public String getBankLogin() {

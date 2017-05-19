@@ -1,15 +1,16 @@
-package hbci4java;
+package de.adorsys.multibanking.hbci4java;
 
 
-import domain.BankAccount;
-import domain.BankAccountBalance;
-import domain.Booking;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.kapott.hbci.GV_Result.GVRKUms;
 import org.kapott.hbci.GV_Result.GVRSaldoReq;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import domain.BankAccount;
+import domain.BankAccountBalance;
+import domain.Booking;
 
 import java.util.ArrayList;
 import java.util.List;

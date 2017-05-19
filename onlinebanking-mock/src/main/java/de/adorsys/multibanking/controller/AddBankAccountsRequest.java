@@ -1,4 +1,4 @@
-package controller;
+package de.adorsys.multibanking.controller;
 
 import java.util.List;
 

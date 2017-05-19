@@ -16,3 +16,6 @@ onlinebanking-adapter/.settings/
 .idea
 *.iml
 target
+**/.settings
+**/.project
+**/.classpath

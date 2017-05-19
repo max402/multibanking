@@ -49,7 +49,7 @@ public class DataSheetLoader {
 		InputStream loadFile = loadFile();
 		loadDataSheet(loadFile);
 		addBankAccounts();
-		addBooking();
+		addBookings();
 	}
 
 	public InputStream loadFile() {
@@ -84,7 +84,7 @@ public class DataSheetLoader {
 		});
 	}
 
-	public void addBooking() {
+	public void addBookings() {
 		mapBookingList.forEach((accountId, listBooking) -> {
 			ExtBankAccount extbankAccount = mapExtBankAccount.get(accountId);
 			BankAccess bankAccess = mapBankAccess.get(extbankAccount.getBankLogin());

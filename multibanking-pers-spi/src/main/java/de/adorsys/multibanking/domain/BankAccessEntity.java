@@ -13,7 +13,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
  */
 @Data
 @Document
-@JsonIgnoreProperties(value = {"pin", "pin2", "hbciPassportState"}, allowSetters = true)
 @Encrypted(exclude = {"_id", "userId"})
 public class BankAccessEntity extends BankAccess {
 
@@ -33,5 +32,18 @@ public class BankAccessEntity extends BankAccess {
     public BankAccessEntity id(String id) {
         this.id = id;
         return this;
+    }
+
+    public String getPin() {
+        return "pin hidden";
+    }
+
+    public String getPin2() {
+        return "pin2 hidden";
+    }
+
+    @Override
+    public String getHbciPassportState() {
+        return "hbciPassportState hidden";
     }
 }

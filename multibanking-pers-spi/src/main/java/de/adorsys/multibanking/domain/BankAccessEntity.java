@@ -34,14 +34,17 @@ public class BankAccessEntity extends BankAccess {
         return this;
     }
 
+    // This is to hide pins
     public String getPin() {
         return "pin hidden";
     }
 
+    // This is to hide pins
     public String getPin2() {
         return "pin2 hidden";
     }
 
+    // This is to hide pins
     @Override
     public String getHbciPassportState() {
         return "hbciPassportState hidden";

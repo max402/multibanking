@@ -1,6 +1,6 @@
 package de.adorsys.multibanking.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.adorsys.multibanking.encrypt.Encrypted;
 import domain.BankAccess;
 import lombok.Data;
@@ -20,7 +20,9 @@ public class BankAccessEntity extends BankAccess {
     private String id;
     @Indexed
     private String userId;
+    @JsonIgnore // avoid pins to be serialized into JSON
     private String pin;
+    @JsonIgnore // avoid pins to be serialized into JSON
     private String pin2;
     private boolean temporary;
     private boolean storePin;
@@ -34,19 +36,9 @@ public class BankAccessEntity extends BankAccess {
         return this;
     }
 
-    // This is to hide pins
-    public String getPin() {
-        return "pin hidden";
-    }
-
-    // This is to hide pins
-    public String getPin2() {
-        return "pin2 hidden";
-    }
-
-    // This is to hide pins
     @Override
+    @JsonIgnore // avoid pins to be serialized into JSON
     public String getHbciPassportState() {
-        return "hbciPassportState hidden";
+        return super.getHbciPassportState();
     }
 }

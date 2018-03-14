@@ -9,7 +9,7 @@ import org.springframework.data.domain.Pageable;
 
 import de.adorsys.multibanking.domain.CustomRuleEntity;
 import de.adorsys.multibanking.domain.RuleEntity;
-import de.adorsys.multibanking.pers.docusafe.api.SystemRuleRepositoryImpl;
+import de.adorsys.multibanking.pers.docusafe.common.SystemRuleRepositoryImpl;
 import de.adorsys.multibanking.pers.spi.repository.BookingRuleRepositoryIf;
 
 public class BookingRuleRepositoryImpl implements BookingRuleRepositoryIf {

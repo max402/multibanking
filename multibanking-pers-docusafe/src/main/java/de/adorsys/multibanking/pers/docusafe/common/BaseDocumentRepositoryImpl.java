@@ -1,4 +1,4 @@
-package de.adorsys.multibanking.pers.docusafe.api;
+package de.adorsys.multibanking.pers.docusafe.common;
 
 import java.io.IOException;
 import java.util.Optional;

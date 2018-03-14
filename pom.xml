@@ -58,6 +58,7 @@
 		<module>multibanking-pers-jcloud</module>
 		<module>multibanking-app</module>
 		<module>keycloak-custom-secret-provider</module>
+		<module>multibanking-pers-docusafe</module>
 	</modules>
 
 	<dependencyManagement>

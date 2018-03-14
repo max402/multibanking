@@ -1,13 +1,13 @@
-package de.adorsys.multibanking.pers.docusafe.api;
+package de.adorsys.multibanking.pers.docusafe.common;
 
 import java.util.Optional;
 
 import org.adorsys.docusafe.business.types.complex.DocumentFQN;
 import org.adorsys.docusafe.business.types.complex.UserIDAuth;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-@Service
+@Component
 public class UserDocumentRepositoryImpl extends BaseDocumentRepositoryImpl {
 	@Autowired
 	protected UserIDAuth userIDAuth;
@@ -33,5 +33,13 @@ public class UserDocumentRepositoryImpl extends BaseDocumentRepositoryImpl {
 	
 	public void removeUser(){
 		documentSafeService.destroyUser(userIDAuth);
+	}
+	
+	public void createUser(){
+		documentSafeService.createUser(userIDAuth);
+	}
+	
+	public boolean userExists(){
+		return documentSafeService.userExists(userIDAuth.getUserID());
 	}
 }

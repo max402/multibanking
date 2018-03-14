@@ -13,6 +13,7 @@
 	<packaging>jar</packaging>
 	<properties>
 		<docusafe.version>0.1.0-SNAPSHOT</docusafe.version>
+		<crypt.version>0.13.0</crypt.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -30,18 +31,38 @@
 			<artifactId>docusafe-business</artifactId>
 			<version>${docusafe.version}</version>
 		</dependency>
+        <dependency>
+            <groupId>de.adorsys.cryptoutils</groupId>
+            <artifactId>encobject</artifactId>
+            <version>${crypt.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.adorsys.cryptoutils</groupId>
+            <artifactId>jjwk</artifactId>
+            <version>${crypt.version}</version>
+        </dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.springframework/spring-core -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
-			<version>5.0.4.RELEASE</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-			<version>2.8.10</version>
+		</dependency>
+
+        <!-- test dependencies -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
 		</dependency>
 
 	</dependencies>

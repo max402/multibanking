@@ -5,8 +5,8 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import de.adorsys.multibanking.pers.docusafe.api.SystemDocumentRepositoryImpl;
-import de.adorsys.multibanking.pers.docusafe.api.UserDocumentRepositoryImpl;
+import de.adorsys.multibanking.pers.docusafe.common.SystemDocumentRepositoryImpl;
+import de.adorsys.multibanking.pers.docusafe.common.UserDocumentRepositoryImpl;
 import de.adorsys.multibanking.pers.docusafe.domain.MapKey;
 
 public abstract class BaseRepositoryImpl {

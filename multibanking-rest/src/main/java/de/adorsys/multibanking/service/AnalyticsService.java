@@ -2,10 +2,10 @@ package de.adorsys.multibanking.service;
 
 import org.adorsys.docusafe.business.types.complex.DSDocument;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import de.adorsys.multibanking.analytics.DomainAnalyticsService;
-import de.adorsys.multibanking.domain.BankAccountEntity;
-import de.adorsys.multibanking.service.base.BaseService;
+import de.adorsys.multibanking.service.base.BaseUserIdService;
 import de.adorsys.multibanking.utils.FQNUtils;
 
 
@@ -21,7 +21,8 @@ import de.adorsys.multibanking.utils.FQNUtils;
  * 
  * @author fpo 2018-03-17 09:31
  */
-public class AnalyticsService extends BaseService {
+@Service
+public class AnalyticsService extends BaseUserIdService {
 	
 	@Autowired
 	private DomainAnalyticsService domainAnalyticsService;

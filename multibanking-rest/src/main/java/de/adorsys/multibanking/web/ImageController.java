@@ -20,7 +20,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import de.adorsys.multibanking.service.ImageService;
+import de.adorsys.multibanking.service.CustomImageService;
+import de.adorsys.multibanking.service.SystemImageService;
 import de.adorsys.multibanking.web.common.BaseController;
 
 /**
@@ -37,7 +38,9 @@ import de.adorsys.multibanking.web.common.BaseController;
 @RequestMapping(path = "api/v1/image")
 public class ImageController extends BaseController {
 	@Autowired
-	private ImageService imageService;
+	private CustomImageService customImageService;
+	@Autowired
+	private SystemImageService systemImageService;
 
 	/**
 	 * Loading an image to display to the user. If the user has put an image with the same 
@@ -52,15 +55,18 @@ public class ImageController extends BaseController {
 	 */
 	@GetMapping(value = "/{imageName}", produces = MediaType.IMAGE_PNG_VALUE)
 	public @ResponseBody ResponseEntity<ByteArrayResource>  getImage(@PathVariable String imageName) throws IOException {
-		DSDocument loadedImage = imageService.loadImage(imageName);
-		return loadBytesForWeb(loadedImage, MediaType.IMAGE_PNG);
+		if(customImageService.hasImage(imageName)){
+			return loadBytesForWeb(customImageService.loadUserImage(imageName), MediaType.IMAGE_PNG);
+		} else {
+			return loadBytesForWeb(systemImageService.loadStaticImage(imageName), MediaType.IMAGE_PNG);
+		}
 	}
 
 	@RequestMapping(path = "/{imageName}", method = RequestMethod.PUT, consumes=MediaType.IMAGE_PNG_VALUE)
     public HttpEntity<?> putImage(@PathVariable String imageName, @RequestParam MultipartFile imageFile) {
         if (!imageFile.isEmpty())return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("File is empty");
         try {
-			imageService.storeUserImage(imageName, IOUtils.toByteArray(imageFile.getInputStream()));
+			customImageService.storeUserImage(imageName, IOUtils.toByteArray(imageFile.getInputStream()));
 		} catch (IOException e) {
 			throw new BaseException(e);
 		}
@@ -69,7 +75,8 @@ public class ImageController extends BaseController {
 	
 	@RequestMapping(path = "/{imageName}/release", method = RequestMethod.POST)
     public HttpEntity<?> patchImage(@PathVariable String imageName) {
-		imageService.releaseImage(imageName);
+		DSDocument loadUserImage = customImageService.loadUserImage(imageName);
+		systemImageService.storeStaticImage(imageName, loadUserImage.getDocumentContent().getValue());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

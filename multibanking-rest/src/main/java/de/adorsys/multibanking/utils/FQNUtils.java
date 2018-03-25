@@ -94,4 +94,15 @@ public class FQNUtils {
 	public static DocumentFQN paymentsFQN(String accessId, String accountId) {
     	return bankAccountDirFQN(accessId, accountId).addName("payments.aes");
 	}
+
+	public static DocumentFQN anonymizedBookingFQN(String accessId, String accountId) {
+    	return bankAccountDirFQN(accessId, accountId).addName("anonymizedBookings.aes");
+	}
+
+	public static DocumentDirectoryFQN expireDirFQN() {
+		return new DocumentDirectoryFQN("users").addDirectory("expiry");
+	}
+	public static DocumentFQN expireDayFileFQN(String dayDirName) {
+		return expireDirFQN().addName(dayDirName);
+	}
 }

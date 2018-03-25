@@ -3,10 +3,11 @@ package de.adorsys.multibanking.domain;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.adorsys.multibanking.domain.common.IdentityIf;
 import lombok.Data;
 
 @Data
-public class CategoryEntity {
+public class CategoryEntity implements IdentityIf {
     private String id;
     private String name;
     private String parent;

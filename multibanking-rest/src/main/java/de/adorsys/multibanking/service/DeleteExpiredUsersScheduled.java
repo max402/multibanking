@@ -1,7 +1,9 @@
 package de.adorsys.multibanking.service;
 
-import de.adorsys.multibanking.pers.spi.repository.BankAccessRepositoryIf;
-import de.adorsys.multibanking.pers.spi.repository.UserRepositoryIf;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import org.adorsys.docusafe.business.types.UserID;
+import org.adorsys.docusafe.business.types.complex.UserIDAuth;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +14,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import de.adorsys.multibanking.service.base.StorageUserService;
 
 /**
  * @author alexg on 12.07.17.
@@ -23,11 +25,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class DeleteExpiredUsersScheduled {
 
     @Autowired
-    UserRepositoryIf userRepository;
+    StorageUserService storageUserService;
     @Autowired
-    BankAccessRepositoryIf bankAccessRepository;
-    @Autowired
-    BankAccessService bankAccessService;
+    DeleteExpiredUsersService deleteExpiredUsersService;
 
     private static final Logger LOG = LoggerFactory.getLogger(DeleteExpiredUsersScheduled.class);
 
@@ -35,14 +35,12 @@ public class DeleteExpiredUsersScheduled {
     public void deleteJob() {
         AtomicInteger count = new AtomicInteger(0);
 
-        userRepository.findExpiredUser().stream().forEach(userId -> {
-            bankAccessRepository.findByUserId(userId).forEach(bankAccessEntity -> {
-                bankAccessService.deleteBankAccess(bankAccessEntity.getId());
-            });
-            userRepository.delete(userId);
-            count.incrementAndGet();
+        deleteExpiredUsersService.findExpiredUser().stream().forEach(userId -> {
+        	// TODO: We do not have the user password here.
+        	// We might allow removal of user directory in absence of user password.
+        	UserIDAuth userIdAuth = new UserIDAuth(new UserID(userId.getId()), null);
+			storageUserService.deleteUser(userIdAuth);
         });
-
         LOG.info("delete job done, [{}] users deleted", count);
     }
 
@@ -52,5 +50,4 @@ public class DeleteExpiredUsersScheduled {
         scheduler.setThreadNamePrefix("poolScheduler");
         return scheduler;
     }
-
 }

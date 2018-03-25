@@ -1,16 +1,16 @@
 package de.adorsys.multibanking.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.UUID;
 
+import org.adorsys.cryptoutils.exceptions.BaseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.nimbusds.jose.jwk.JWK;
-
 import de.adorsys.multibanking.domain.UserEntity;
-import de.adorsys.multibanking.exception.ResourceNotFoundException;
-import de.adorsys.multibanking.service.base.BaseService;
+import de.adorsys.multibanking.service.base.BaseUserIdService;
+import de.adorsys.multibanking.service.base.StorageUserService;
 import de.adorsys.multibanking.utils.FQNUtils;
 import domain.BankApi;
 import domain.BankApiUser;
@@ -23,10 +23,64 @@ import spi.OnlineBankingService;
  *
  */
 @Service
-public class UserService extends BaseService {
+public class UserService extends BaseUserIdService {
 
     @Autowired
     private OnlineBankingServiceProducer bankingServiceProducer;
+    @Autowired
+    private StorageUserService storageUserService;
+    @Autowired
+    DeleteExpiredUsersService deleteExpiredUsersService;
+
+	/**
+	 * Read the user or throw an illegal state exception if the user does not exist. This
+	 * call only be called from a process that assumes pre-existence of the user.
+	 * @return
+	 */
+	public UserEntity readUser(){
+		return load(userIDAuth, FQNUtils.userFQN(), UserEntity.class)
+				.orElseThrow(() -> resourceNotFound(UserEntity.class, userIDAuth.getUserID().getValue()));
+	}
+
+    /**
+     * Returns the user entity or create one if the user does not exist.
+     */
+    public UserEntity createUser(Date expire) {
+    	storageUserService.createUser(userIDAuth);
+    	UserEntity userEntity = new UserEntity();
+    	userEntity.setApiUser(new ArrayList<>());
+    	userEntity.setId(userIDAuth.getUserID().getValue());
+    	userEntity.setExpireUser(expire);
+    	store(userEntity);
+    	return userEntity;
+    }
+//
+//	public void saveUser(UserEntity userEntity) {
+//		userEntity.setId(userIDAuth.getUserID().getValue());
+//		store(userEntity);
+//	}
+//
+//	/**
+//	 * Delete the user directory, removing all files associeated with this user.
+//	 */
+//	public void deleteUser() {
+//		deleteUser(userIDAuth);
+//	}
+//	
+//	/**
+//	 * Retrieves an encryption public key for this user. Key will be user to send sensitive informations
+//	 * to this application. Like the banking PIN.
+//	 * 
+//	 * @return
+//	 */
+//	public JWK findPublicEncryptionKey(){
+//		return documentSafeService.findPublicEncryptionKey(userIDAuth.getUserID());
+//	}
+
+//	private Optional<UserEntity> load() {
+//		return load(userIDAuth, FQNUtils.userFQN(), UserEntity.class);
+//	}
+	
 
     /**
      * Returns the bank API user. Registers with the banking API if necessary.
@@ -43,9 +97,10 @@ public class UserService extends BaseService {
                 : bankingServiceProducer.getBankingService(bankCode);
 
         if (onlineBankingService.userRegistrationRequired()) {
-        	if(!userExists()) throw new ResourceNotFoundException(UserEntity.class, userIDAuth.getUserID().getValue());
+        	if(!storageUserService.userExists(userIDAuth.getUserID())) 
+        		throw new BaseException("Storage user with id: "+ userIDAuth.getUserID().getValue() + " non existent ");
         	
-            UserEntity userEntity = load();
+            UserEntity userEntity = readUser();
 
             return userEntity.getApiUser()
                     .stream()
@@ -64,65 +119,10 @@ public class UserService extends BaseService {
             return bankApiUser;
         }
     }
-
-	public boolean userExists() {
-		return documentSafeService.userExists(userIDAuth.getUserID());
-	}
 	
-	/**
-	 * Read the user or throw an illegal state exception if the user does not exist. This
-	 * call only be called from a process that assumes preexistence of the user.
-	 * @return
-	 */
-	public UserEntity readUserOtThrowException(){
-		UserEntity entity = load();
-		if(entity!=null) return entity;
-		throw new IllegalStateException("Entity record is not supposed to be missing.");
-	}
-
-    /**
-     * Returns the user entity or create one if the user does not exist.
-     */
-    public UserEntity readOrCreateUser() {
-        if (!userExists()) {
-			documentSafeService.createUser(userIDAuth);
-
-			UserEntity userEntity = new UserEntity();
-            userEntity.setApiUser(new ArrayList<>());
-            userEntity.setId(userIDAuth.getUserID().getValue());
-            store(userEntity);
-            return userEntity;
-        } else {
-        	return load();
-        }
-    }
-
-	public void saveUser(UserEntity userEntity) {
-		userEntity.setId(userIDAuth.getUserID().getValue());
-		store(userEntity);
-	}
-
-	/**
-	 * Delete the user directory, removing all files associeated with this user.
-	 */
-	public void deleteUser() {
-		documentSafeService.destroyUser(userIDAuth);
-	}
-	
-	/**
-	 * Retrieves an encryption public key for this user. Key will be user to send sensitive informations
-	 * to this application. Like the banking PIN.
-	 * 
-	 * @return
-	 */
-	public JWK findPublicEncryptionKey(){
-		return documentSafeService.findPublicEncryptionKey(userIDAuth.getUserID());
-	}
-
-	private UserEntity load() {
-		return load(userIDAuth, FQNUtils.userFQN(), UserEntity.class);
-	}
 	private void store(UserEntity userEntity){
+		if(userEntity.getExpireUser()!=null)
+			deleteExpiredUsersService.scheduleExpiry(userEntity);
 		store(userIDAuth, FQNUtils.userFQN(), userEntity);		
 	}
 }

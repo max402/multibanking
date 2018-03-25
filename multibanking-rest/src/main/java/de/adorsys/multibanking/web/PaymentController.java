@@ -1,31 +1,30 @@
 package de.adorsys.multibanking.web;
 
-import de.adorsys.multibanking.domain.BankAccessEntity;
-import de.adorsys.multibanking.domain.BankAccountEntity;
-import de.adorsys.multibanking.domain.PaymentEntity;
-import de.adorsys.multibanking.exception.ResourceNotFoundException;
-import de.adorsys.multibanking.pers.spi.repository.BankAccessRepositoryIf;
-import de.adorsys.multibanking.pers.spi.repository.BankAccountRepositoryIf;
-import de.adorsys.multibanking.pers.spi.repository.PaymentRepositoryIf;
-import de.adorsys.multibanking.service.BankAccessService;
-import de.adorsys.multibanking.service.BankAccountService;
-import de.adorsys.multibanking.service.PaymentService;
-import de.adorsys.multibanking.web.common.BaseController;
-import domain.Payment;
-import lombok.Data;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.security.Principal;
-import java.util.Optional;
-
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+import de.adorsys.multibanking.domain.BankAccessEntity;
+import de.adorsys.multibanking.domain.BankAccountEntity;
+import de.adorsys.multibanking.domain.PaymentEntity;
+import de.adorsys.multibanking.exception.ResourceNotFoundException;
+import de.adorsys.multibanking.service.BankAccessService;
+import de.adorsys.multibanking.service.BankAccountService;
+import de.adorsys.multibanking.service.PaymentService;
+import de.adorsys.multibanking.web.common.BaseController;
+import domain.Payment;
+import lombok.Data;
 
 /**
  * @author alexg on 07.02.17.
@@ -33,7 +32,6 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
  */
 @UserResource
 @RestController
-@SuppressWarnings("unused")
 @RequestMapping(path = "api/v1/bankaccesses/{accessId}/accounts/{accountId}/payments")
 public class PaymentController extends BaseController {
 
@@ -46,7 +44,7 @@ public class PaymentController extends BaseController {
 
     @RequestMapping(value = "/{paymentId}", method = RequestMethod.GET)
     public Resource<PaymentEntity> getPayment(@PathVariable String accessId, @PathVariable String accountId, @PathVariable String paymentId) {
-        PaymentEntity paymentEntity = paymentService.findPayments(accessId, accountId, paymentId)
+        PaymentEntity paymentEntity = paymentService.findPayment(accessId, accountId, paymentId)
                 .orElseThrow(() -> new ResourceNotFoundException(PaymentEntity.class, paymentId));
         return mapToResource(accessId, accountId, paymentEntity);
     }
@@ -77,7 +75,7 @@ public class PaymentController extends BaseController {
             throw new ResourceNotFoundException(BankAccountEntity.class, accountId);
         }
 
-        PaymentEntity paymentEntity = paymentService.findPayments(accessId, accountId, paymentId)
+        PaymentEntity paymentEntity = paymentService.findPayment(accessId, accountId, paymentId)
                 .orElseThrow(() -> new ResourceNotFoundException(PaymentEntity.class, paymentId));
 
         paymentService.submitPayment(paymentEntity, bankAccessEntity.getBankCode(), paymentRequest.getTan());

@@ -1,6 +1,5 @@
 package de.adorsys.multibanking.service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,7 +11,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-import org.adorsys.cryptoutils.exceptions.BaseException;
 import org.adorsys.docusafe.business.types.complex.DSDocument;
 import org.adorsys.docusafe.business.types.complex.DocumentFQN;
 import org.slf4j.LoggerFactory;
@@ -31,7 +29,8 @@ import de.adorsys.multibanking.domain.BookingEntity;
 import de.adorsys.multibanking.domain.BookingFile;
 import de.adorsys.multibanking.domain.StandingOrderEntity;
 import de.adorsys.multibanking.exception.ResourceNotFoundException;
-import de.adorsys.multibanking.service.base.BaseService;
+import de.adorsys.multibanking.service.base.BaseUserIdService;
+import de.adorsys.multibanking.service.helper.BookingHelper;
 import de.adorsys.multibanking.utils.FQNUtils;
 import domain.BankAccount;
 import domain.BankApi;
@@ -49,7 +48,7 @@ import utils.Utils;
  *
  */
 @Service
-public class BookingService extends BaseService {
+public class BookingService extends BaseUserIdService {
 
     @Autowired
     private BankAccessService bankAccessService;
@@ -88,7 +87,8 @@ public class BookingService extends BaseService {
     	if(accountSynchResult.getBookingFileExts().contains(period))
     		throw new ResourceNotFoundException(Booking.class, 
     				FQNUtils.bookingFQN(accessId,accountId,period).getValue());
-        return load(userIDAuth, FQNUtils.bookingFQN(accessId,accountId,period), new TypeReference<List<BookingEntity>>(){});
+    	return load(userIDAuth, FQNUtils.bookingFQN(accessId,accountId,period), listType())
+    			.orElse(Collections.emptyList());
     }
     
     /**
@@ -135,7 +135,7 @@ public class BookingService extends BaseService {
     	AccountSynchResult synchResult = accountSynchService.loadAccountSynchResult(bankAccess.getId(), bankAccount.getId());
     	AccountSynchPref accountSynchPref = accountSynchService.findAccountSynchPref(bankAccess.getId(), bankAccount.getId());
     	
-        Map<String, List<BookingEntity>> bookings = mapBookings(bankAccount, accountSynchPref, response.getBookings());
+        Map<String, List<BookingEntity>> bookings = BookingHelper.mapBookings(bankAccount, accountSynchPref, response.getBookings());
         
         // First update preference set.
 //        accountSynchService.storeAccountSynchResult(bankAccess.getId(), bankAccount.getId(), synchResult.update(bookings.keySet()));
@@ -158,7 +158,8 @@ public class BookingService extends BaseService {
                     }));
             String period = entry.getKey();
 			DocumentFQN bookingFQN = FQNUtils.bookingFQN(bankAccess.getId(),bankAccount.getId(),period);
-            List<BookingEntity> existingBookings = load(userIDAuth, bookingFQN, new TypeReference<List<BookingEntity>>(){});
+			List<BookingEntity> existingBookings = load(userIDAuth, bookingFQN, listType())
+					.orElse(Collections.emptyList());
             bookingEntities = mergeBookings(existingBookings,bookingEntities);
 
             // Store meta data
@@ -221,31 +222,6 @@ public class BookingService extends BaseService {
         }
     }
 
-    private Map<String, List<BookingEntity>> mapBookings( 
-    		BankAccountEntity bankAccount, AccountSynchPref accountSynchPref, List<Booking> bookings) {
-        return bookings.stream()
-                .map(booking -> {
-                    BookingEntity target = new BookingEntity();
-                    BeanUtils.copyProperties(booking, target);
-                    target.setAccountId(bankAccount.getId());
-                    target.setUserId(bankAccount.getUserId());
-                    return target;
-                })
-                .collect(Collectors.groupingBy(booking -> period(booking, accountSynchPref)));
-    }
-
-    /**
-     * Associates booking with period by booking date.
-     * 
-     * @param b
-     * @return
-     */
-    private static String period(BookingEntity b, AccountSynchPref pref) {
-    	LocalDate bookingDate = b.getBookingDate();
-    	if(bookingDate==null) throw new BaseException("Missing booking date for booking: " + b.getId());
-    	return pref.getBookingPeriod().marker(bookingDate);
-	}
-
 	private List<BookingEntity> mergeBookings(List<BookingEntity> dbBookings, List<BookingEntity> newBookings) {
         dbBookings.addAll(newBookings);
 
@@ -284,7 +260,11 @@ public class BookingService extends BaseService {
                     }
                 });
             });
-            bankAccountService.saveBankAccount(bankAccess.getId(),dbBankAccounts);
+            bankAccountService.saveBankAccounts(bankAccess.getId(),dbBankAccounts);
         }
     }
+
+	private static TypeReference<List<BookingEntity>> listType(){
+		return new TypeReference<List<BookingEntity>>() {};
+	}
 }

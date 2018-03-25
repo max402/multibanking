@@ -21,7 +21,6 @@ import de.adorsys.multibanking.domain.BankAccountEntity;
 import de.adorsys.multibanking.domain.BookingEntity;
 import de.adorsys.multibanking.domain.BookingFile;
 import de.adorsys.multibanking.domain.BookingPeriod;
-import de.adorsys.multibanking.domain.UserEntity;
 import de.adorsys.multibanking.exception.ResourceNotFoundException;
 import de.adorsys.multibanking.service.AccountSynchService;
 import de.adorsys.multibanking.service.BookingService;
@@ -52,9 +51,8 @@ public class DirectAccessController extends BankAccountBasedController {
     @RequestMapping(value = "/accounts", method = RequestMethod.PUT)
     public ResponseEntity<List<BankAccountEntity>> loadBankAccounts(@RequestBody BankAccessEntity bankAccess, @RequestParam(required = false) BankApi bankApi) {
         //temporary user, will be deleted after x minutes
-        UserEntity userEntity = userService.readOrCreateUser();
-        userEntity.setExpireUser(DateUtils.addMinutes(new Date(), thresholdTemporaryData));
-        userService.saveUser(userEntity);
+    	Date expire = DateUtils.addMinutes(new Date(), thresholdTemporaryData);
+        userService.createUser(expire);
         
         bankAccess.setStorePin(false);
         bankAccess.setTemporary(true);
@@ -72,7 +70,7 @@ public class DirectAccessController extends BankAccountBasedController {
         BankAccessEntity bankAccessEntity = bankAccessService.loadbankAccess(loadBookingsRequest.getAccessId())
         		.orElseThrow(() -> new ResourceNotFoundException(BankAccessEntity.class, loadBookingsRequest.getAccessId()));
 
-        BankAccountEntity bankAccountEntity = bankAccountService.getBankAccount(bankAccessEntity.getId(),loadBookingsRequest.getAccountId())
+        BankAccountEntity bankAccountEntity = bankAccountService.loadBankAccount(bankAccessEntity.getId(),loadBookingsRequest.getAccountId())
         		.orElseThrow(() -> new ResourceNotFoundException(BankAccountEntity.class, loadBookingsRequest.getAccountId()));
 
         bookingService.syncBookings(bankAccessEntity, bankAccountEntity, bankApi, loadBookingsRequest.getPin());

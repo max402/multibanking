@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 import org.adorsys.cryptoutils.exceptions.BaseException;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.format.datetime.standard.DateTimeFormatterFactory;
 
 public enum BookingPeriod {
@@ -51,7 +52,7 @@ public enum BookingPeriod {
 
 	public abstract String marker(LocalDate date);
 	
-	private static final String YEAR_FORMAT = "YYYY";
+	private static final String YEAR_FORMAT = "yyyy";
 	private static final DateTimeFormatter yearFormater = new DateTimeFormatterFactory(YEAR_FORMAT).createDateTimeFormatter();
 	public static final String yearMarker(LocalDate date){
 		return date.format(yearFormater);
@@ -60,9 +61,9 @@ public enum BookingPeriod {
 	private static final String semesterMarker(LocalDate date){
 		String year = date.format(yearFormater);
 		if(date.getMonthValue()<7){
-			return year + "-S1";
+			return year + "S1";
 		} else {
-			return year + "-S2";
+			return year + "S2";
 		}
 	}
 	
@@ -72,37 +73,46 @@ public enum BookingPeriod {
 		case 1:
 		case 2:
 		case 3:
-			return year + "-Q1";
+			return year + "Q1";
 		case 4:
 		case 5:
 		case 6:
-			return year + "-Q2";
+			return year + "Q2";
 		case 7:
 		case 8:
 		case 9:
-			return year + "-Q3";
+			return year + "Q3";
 		case 10:
 		case 11:
 		case 12:
-			return year + "-Q4";
+			return year + "Q4";
 		default:
 			throw new BaseException("Illegal month digit: > 12 or < 1");
 		}
 	}
 	
-	private static final String MONTH_FORMAT = "yyyy-'M'MM";
+	private static final String MONTH_FORMAT = "yyyy'M'MM";
 	private static final DateTimeFormatter monthFormater = new DateTimeFormatterFactory(MONTH_FORMAT).createDateTimeFormatter();
 	private static final String monthMarker(LocalDate date){
 		return date.format(monthFormater);
 	}
 	
-	private static final String WEEK_FORMAT = "yyyy-'W'ww";
+	private static final String WEEK_FORMAT = "YYYY'W'ww";// Intentionally used year and not week year. 
 	private static final DateTimeFormatter weekFormater = new DateTimeFormatterFactory(WEEK_FORMAT).createDateTimeFormatter();
 	private static final String weekMaker(LocalDate date){
-		return date.format(weekFormater);
+		String week = date.format(weekFormater);
+		// Sometime week will be back to 01 if day of year if after cw52. Then we will have
+		// To manually use the cw53  of the year.
+		String year = date.format(yearFormater);
+		if(!StringUtils.startsWith(week, year)){// In case week year and year are different
+			if(StringUtils.endsWith(week, "01")){
+				week = year+"W53";// We consider this the 53d cw of the year.
+			}
+		}
+		return week;
 	}
 
-	private static final String DAY_FORMAT = "yyyy-MM-dd";
+	private static final String DAY_FORMAT = "yyyyMMdd";
 	private static final DateTimeFormatter dayFormater = new DateTimeFormatterFactory(DAY_FORMAT).createDateTimeFormatter();
 	private static final String dayMarker(LocalDate date){
 		return date.format(dayFormater);

@@ -1,13 +1,11 @@
 package de.adorsys.multibanking.service;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.OptionalInt;
-import java.util.stream.IntStream;
 
 import org.adorsys.docusafe.business.types.complex.DocumentFQN;
-import org.adorsys.docusafe.business.types.complex.UserIDAuth;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,38 +20,35 @@ import de.adorsys.multibanking.domain.BankAccountEntity;
 import de.adorsys.multibanking.domain.UserEntity;
 import de.adorsys.multibanking.exception.InvalidPinException;
 import de.adorsys.multibanking.exception.ResourceNotFoundException;
-import de.adorsys.multibanking.service.base.BaseService;
+import de.adorsys.multibanking.service.base.BaseUserIdService;
 import de.adorsys.multibanking.utils.FQNUtils;
-import de.adorsys.multibanking.utils.IdFactory;
+import de.adorsys.multibanking.utils.Ids;
 import domain.BankApiUser;
 import spi.OnlineBankingService;
 
 /**
- * A user can 0 to N bank accesses.
+ * A user can have 0 to N bank accesses.
  * 
  * @author fpo
  *
  */
 @Service
-public class BankAccessService extends BaseService  {
+public class BankAccessService extends BaseUserIdService  {
 
-    @Autowired
+	private static final Logger log = LoggerFactory.getLogger(BankAccessService.class);
+
+	@Autowired
     private OnlineBankingServiceProducer bankingServiceProducer;
 
-    @Autowired
-    private UserIDAuth userIDAuth;
-    
     @Autowired
     private UserService userService;
     @Autowired
     private BankAccountService bankAccountService;
 	
-    private static final Logger log = LoggerFactory.getLogger(BankAccessService.class);
     
     /**
      * Create a bank access
      * - load and store bank accounts
-     * Any PIN information found here will be deleted. PIN storage is implemented in a proper process.
      * 
      * @param bankAccess
      * @return
@@ -62,7 +57,7 @@ public class BankAccessService extends BaseService  {
     	// Set user and access id
     	bankAccess.setUserId(userIDAuth.getUserID().getValue());
     	// Set an accessId if none.
-    	if(StringUtils.isBlank(bankAccess.getId()))bankAccess.setId(IdFactory.uuid());
+    	if(StringUtils.isBlank(bankAccess.getId()))bankAccess.setId(Ids.uuid());
 
     	BankAccessCredentials credentials = BankAccessCredentials.cloneCredentials(bankAccess);
     	// Clean credentials
@@ -91,7 +86,8 @@ public class BankAccessService extends BaseService  {
     }
     
 	public List<BankAccessEntity> getBanAccesses() {
-		return load(userIDAuth, FQNUtils.bankAccessListFQN(), new TypeReference<List<BankAccessEntity>>(){});
+		return load(userIDAuth, FQNUtils.bankAccessListFQN(), listType())
+				.orElse(Collections.emptyList());
 	}
 
     /**
@@ -105,36 +101,36 @@ public class BankAccessService extends BaseService  {
     }
 
     public boolean deleteBankAccess(String accessId) {
-    	
-		DocumentFQN bankAccessListFQN = FQNUtils.bankAccessListFQN();
-		List<BankAccessEntity> entities = loadInternal(bankAccessListFQN);
-    	OptionalInt indexOpt = IntStream.range(0, entities.size())
-   		     .filter(i -> StringUtils.equals(accessId,entities.get(i).getId()))
-   		     .findFirst();
-	   	if(!indexOpt.isPresent()) return false;
-	   		
-	   	entities.remove(indexOpt.getAsInt());
-	   	store(userIDAuth, bankAccessListFQN, entities);
-	   	
-    	removeRemoteRegistrations(accessId);
-	   	deleteDirectory(userIDAuth, FQNUtils.bankAccessDirFQN(accessId));
-
-        return true;
+		int deleted = deleteListById(Collections.singletonList(accessId), BankAccessEntity.class, listType(), FQNUtils.bankAccessListFQN(), userIDAuth);
+		if(deleted>0){
+			// TODO: for transactionality. Still check existence of these files.
+	    	removeRemoteRegistrations(accessId);
+	    	deleteDirectory(userIDAuth, FQNUtils.bankAccessDirFQN(accessId));
+	    	return true;
+		}
+		return false;
     }
 
 	public void setInvalidPin(String accessId) {
 		DocumentFQN credentialsFQN = FQNUtils.credentialFQN(accessId);
-		BankAccessCredentials credentials = load(userIDAuth, credentialsFQN, BankAccessCredentials.class);
+		BankAccessCredentials credentials = load(userIDAuth, credentialsFQN, BankAccessCredentials.class)
+				.orElseThrow(() -> resourceNotFound(BankAccessCredentials.class, accessId));
 		invalidate(credentials);
 	}
 	
 	public BankAccessCredentials loadCredentials(String accessId){
-		DocumentFQN credentialsFQN = FQNUtils.credentialFQN(accessId);
-		return load(userIDAuth, credentialsFQN, BankAccessCredentials.class);
+		return load(userIDAuth, FQNUtils.credentialFQN(accessId), BankAccessCredentials.class)
+				.orElseThrow(() -> resourceNotFound(BankAccessCredentials.class, accessId));
 	}
 	
+	/**
+	 * Check existence by checking if the file containing the list of bank accounts exits.
+	 * 
+	 * @param accessId
+	 * @return
+	 */
 	public boolean exists(String accessId){
-		return documentSafeService.documentExists(userIDAuth, FQNUtils.credentialFQN(accessId));
+		return documentExists(userIDAuth, FQNUtils.bankAccountsFileFQN(accessId));
 	}
 
 	private void invalidate(BankAccessCredentials credentials) {
@@ -150,37 +146,17 @@ public class BankAccessService extends BaseService  {
      */
 	private void storeBankAccess(BankAccessEntity bankAccess) {
 		BankAccessCredentials.cleanCredentials(bankAccess);
-
-		DocumentFQN bankAccessListFQN = FQNUtils.bankAccessListFQN();
-		// Store base.
-		List<BankAccessEntity> entities = loadInternal(bankAccessListFQN);
-    	OptionalInt indexOpt = IntStream.range(0, entities.size())
-    		     .filter(i -> StringUtils.equals(bankAccess.getId(),entities.get(i).getId()))
-    		     .findFirst();
-    	if(indexOpt.isPresent()){
-    		entities.set(indexOpt.getAsInt(), bankAccess);
-    	} else {
-    		entities.add(bankAccess);
-    	}
-    	storeDocument(userIDAuth, bankAccessListFQN, toByte(entities.toArray(new BankAccessEntity[entities.size()])));
-
-        log.info("Bank connection [{}] created.", bankAccess.getId());
+		updateList(Collections.singletonList(bankAccess), BankAccessEntity.class, listType(), FQNUtils.bankAccessListFQN(), userIDAuth);
 	}
 	
 	public Optional<BankAccessEntity> loadbankAccess(String bankAcessId){
-		DocumentFQN bankAccessListFQN = FQNUtils.bankAccessListFQN();
-		List<BankAccessEntity> entities = loadInternal(bankAccessListFQN);
-		return entities.stream().filter(b -> StringUtils.equalsAnyIgnoreCase(bankAcessId, b.getId())).findFirst();
+		return find(bankAcessId, BankAccessEntity.class, listType(), FQNUtils.bankAccessListFQN(), userIDAuth);
 	}
 
-	private List<BankAccessEntity> loadInternal(DocumentFQN bankAccessListFQN) {
-		return load(userIDAuth, bankAccessListFQN, new TypeReference<List<BankAccessEntity>>(){});
-	}
-        
 	private void removeRemoteRegistrations(String accessId) {
     	// Load bank Accounts
 		List<BankAccountEntity> bankAccountEntities = bankAccountService.loadForBankAccess(accessId);
-        UserEntity userEntity = userService.readUserOtThrowException();
+        UserEntity userEntity = userService.readUser();
         
         bankAccountEntities.stream().forEach(bankAccountEntity -> {
 		   	bankAccountEntity.getExternalIdMap().keySet().forEach(bankApi -> {
@@ -196,5 +172,9 @@ public class BankAccessService extends BaseService  {
 	   			}
 	   		});
 	   	});
+	}
+	
+	private static TypeReference<List<BankAccessEntity>> listType(){
+		return new TypeReference<List<BankAccessEntity>>() {};
 	}
 }

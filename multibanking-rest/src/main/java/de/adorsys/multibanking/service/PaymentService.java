@@ -1,11 +1,11 @@
 package de.adorsys.multibanking.service;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
-import org.apache.commons.lang3.StringUtils;
+import org.adorsys.docusafe.business.types.complex.DocumentFQN;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,8 +18,7 @@ import de.adorsys.multibanking.domain.BankEntity;
 import de.adorsys.multibanking.domain.PaymentEntity;
 import de.adorsys.multibanking.exception.ResourceNotFoundException;
 import de.adorsys.multibanking.exception.domain.MissingPinException;
-import de.adorsys.multibanking.pers.spi.repository.PaymentRepositoryIf;
-import de.adorsys.multibanking.service.base.BaseService;
+import de.adorsys.multibanking.service.base.BaseUserIdService;
 import de.adorsys.multibanking.utils.FQNUtils;
 import domain.BankApiUser;
 import domain.Payment;
@@ -32,7 +31,7 @@ import spi.OnlineBankingService;
  * 
  */
 @Service
-public class PaymentService extends BaseService {
+public class PaymentService extends BaseUserIdService {
 
     @Autowired
     private OnlineBankingServiceProducer bankingServiceProducer;
@@ -40,8 +39,6 @@ public class PaymentService extends BaseService {
     private UserService userService;
     @Autowired
     private BankService bankService;
-    @Autowired
-    private PaymentRepositoryIf paymentRepository;
 
     public PaymentEntity createPayment(BankAccessEntity bankAccess, BankAccountEntity bankAccount, String pin, Payment payment) {
         OnlineBankingService bankingService = bankingServiceProducer.getBankingService(bankAccess.getBankCode());
@@ -62,16 +59,18 @@ public class PaymentService extends BaseService {
             throw new de.adorsys.multibanking.exception.PaymentException(e.getMessage());
         }
 
-        PaymentEntity target = new PaymentEntity();
-        BeanUtils.copyProperties(payment, target);
-        target.setUserId(bankAccess.getUserId());
-        target.setCreatedDateTime(new Date());
+        PaymentEntity pe = new PaymentEntity();
+        BeanUtils.copyProperties(payment, pe);
+        pe.setUserId(bankAccess.getUserId());
+        pe.setCreatedDateTime(new Date());
+        pe.setBankAccessId(bankAccess.getId());
+        pe.setBankAccountId(bankAccount.getId());
 
-        paymentRepository.save(target);
-        return target;
+        create(pe);
+        return pe;
     }
 
-    public void submitPayment(PaymentEntity paymentEntity, String bankCode, String tan) {
+	public void submitPayment(PaymentEntity paymentEntity, String bankCode, String tan) {
         OnlineBankingService bankingService = bankingServiceProducer.getBankingService(bankCode);
 
         try {
@@ -80,15 +79,26 @@ public class PaymentService extends BaseService {
             throw new de.adorsys.multibanking.exception.PaymentException(e.getMessage());
         }
 
-        paymentRepository.delete(paymentEntity.getId());
+        delete(paymentEntity);
     }
-    
-    public List<PaymentEntity> loadPayments(String accessId, String accountId){
-    	return load(userIDAuth, FQNUtils.paymentsFQN(accessId, accountId), new TypeReference<List<PaymentEntity>>() {});
+	
+	public Optional<PaymentEntity> findPayment(String accessId, String accountId, String paymentId){
+		return find(paymentId, PaymentEntity.class, listType(), FQNUtils.paymentsFQN(accessId, accessId), userIDAuth);
+	}
+
+    private void create(PaymentEntity payment) {
+    	updateList(Collections.singletonList(payment), PaymentEntity.class, listType(), paymentsFQN(payment), userIDAuth);
+	}
+	
+	private void delete(PaymentEntity payment) {
+		deleteList(Collections.singletonList(payment), PaymentEntity.class, listType(), paymentsFQN(payment), userIDAuth);
+	}
+
+    private static DocumentFQN paymentsFQN(PaymentEntity target){
+    	return FQNUtils.paymentsFQN(target.getBankAccessId(), target.getBankAccountId());
     }
-    
-    public Optional<PaymentEntity> findPayments(String accessId, String accountId, String paymentId){
-    	List<PaymentEntity> payments = load(userIDAuth, FQNUtils.paymentsFQN(accessId, accountId), new TypeReference<List<PaymentEntity>>() {});
-    	return payments.stream().filter(p -> StringUtils.equalsAnyIgnoreCase(paymentId, p.getId())).findFirst();
-    }
+
+	private static TypeReference<List<PaymentEntity>> listType(){
+		return new TypeReference<List<PaymentEntity>>() {};
+	}
 }

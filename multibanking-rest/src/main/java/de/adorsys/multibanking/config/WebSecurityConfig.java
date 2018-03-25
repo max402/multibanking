@@ -4,8 +4,11 @@ import java.security.Principal;
 import java.util.Arrays;
 import java.util.Collections;
 
-import de.adorsys.sts.tokenauth.BearerToken;
-import de.adorsys.sts.tokenauth.BearerTokenValidator;
+import javax.servlet.http.HttpServletRequest;
+
+import org.adorsys.docusafe.business.types.UserID;
+import org.adorsys.docusafe.business.types.complex.UserIDAuth;
+import org.adorsys.encobject.domain.ReadKeyPassword;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,12 +28,11 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import de.adorsys.multibanking.encrypt.UserSecret;
 import de.adorsys.multibanking.service.SecretClaimDecryptionService;
 import de.adorsys.sts.filter.JWTAuthenticationFilter;
 import de.adorsys.sts.token.authentication.TokenAuthenticationService;
-
-import javax.servlet.http.HttpServletRequest;
+import de.adorsys.sts.tokenauth.BearerToken;
+import de.adorsys.sts.tokenauth.BearerTokenValidator;
 
 @Configuration
 @EnableWebSecurity
@@ -88,9 +90,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     @Primary
     @Scope(scopeName = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
-    public UserSecret getRequestScopeUserSecret() {
+    public UserIDAuth getRequestScopeUserSecret() {
+    	String userId = SecurityContextHolder.getContext().getAuthentication().getName();
         String userSecret = secretClaimDecryptionService.decryptSecretClaim();
-        return new UserSecret(userSecret);
+        return new UserIDAuth(new UserID(userId), new ReadKeyPassword(userSecret));
     }
 
     @Bean

@@ -1,38 +1,25 @@
 package de.adorsys.multibanking.web;
 
-import de.adorsys.multibanking.domain.BankAccessEntity;
-import de.adorsys.multibanking.domain.BankAccountEntity;
-import de.adorsys.multibanking.domain.BookingEntity;
-import de.adorsys.multibanking.exception.ResourceNotFoundException;
-import de.adorsys.multibanking.exception.SyncInProgressException;
-import de.adorsys.multibanking.pers.spi.repository.BankAccessRepositoryIf;
-import de.adorsys.multibanking.pers.spi.repository.BankAccountRepositoryIf;
-import de.adorsys.multibanking.service.BankAccessService;
-import de.adorsys.multibanking.service.BankAccountService;
-import de.adorsys.multibanking.service.BookingService;
-import de.adorsys.multibanking.web.common.BankAccountBasedController;
-import de.adorsys.multibanking.web.common.BaseController;
-import domain.BankAccount;
-import domain.BankApi;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.Resource;
-import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.security.Principal;
-import java.util.List;
-import java.util.Optional;
-
-import static java.util.stream.Collectors.toList;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+import de.adorsys.multibanking.domain.BankAccessEntity;
+import de.adorsys.multibanking.domain.BankAccountEntity;
+import de.adorsys.multibanking.exception.ResourceNotFoundException;
+import de.adorsys.multibanking.service.BookingService;
+import de.adorsys.multibanking.web.common.BankAccountBasedController;
+import domain.BankApi;
 
 /**
  * @author alexg on 07.02.17.
@@ -59,7 +46,7 @@ public class BankAccountController extends BankAccountBasedController {
     public ResponseEntity<BankAccountEntity> getBankAccount(
     		@PathVariable String accessId, @PathVariable("accountId") String accountId) {
     	checkBankAccessExists(accessId);
-        BankAccountEntity bankAccountEntity = bankAccountService.getBankAccount(accessId, accountId)
+        BankAccountEntity bankAccountEntity = bankAccountService.loadBankAccount(accessId, accountId)
                 .orElseThrow(() -> new ResourceNotFoundException(BankAccountEntity.class, accountId));
         return returnDocument(bankAccountEntity);
     }
@@ -73,7 +60,7 @@ public class BankAccountController extends BankAccountBasedController {
         BankAccessEntity bankAccess = bankAccessService.loadbankAccess(accessId)
                 .orElseThrow(() -> new ResourceNotFoundException(BankAccessEntity.class, accessId));
 
-        BankAccountEntity bankAccount = bankAccountService.getBankAccount(accessId, accountId)
+        BankAccountEntity bankAccount = bankAccountService.loadBankAccount(accessId, accountId)
                 .orElseThrow(() -> new ResourceNotFoundException(BankAccountEntity.class, accountId));
 
         checkSynch(accessId, accountId);

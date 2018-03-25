@@ -1,5 +1,6 @@
 package de.adorsys.multibanking.domain;
 
+import de.adorsys.multibanking.domain.common.AbstractId;
 import lombok.Data;
 
 /**
@@ -19,11 +20,17 @@ import lombok.Data;
  *
  */
 @Data
-public class AccountSynchPref {
+public class AccountSynchPref extends AbstractId {
 	
 	/*
 	 *  Default preference is per year.
 	 */
 	private BookingPeriod bookingPeriod = BookingPeriod.YEAR;
+	
+	public static final AccountSynchPref instance(BookingPeriod bookingPeriod){
+		AccountSynchPref pref = new AccountSynchPref();
+		pref.setBookingPeriod(bookingPeriod);
+		return pref;
+	}
 	
 }

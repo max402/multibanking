@@ -6,7 +6,7 @@ import java.util.Comparator;
 import lombok.Data;
 
 @Data
-public class BookingFile  implements Comparator<BookingFile>{
+public class BookingFile implements Comparator<BookingFile> {
 	private String fileExt;
 	private LocalDateTime lastAnalytics;
 	private String lastAnalyticsVersion;

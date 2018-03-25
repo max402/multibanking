@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import de.adorsys.multibanking.domain.common.AbstractId;
 import domain.BankAccount.SyncStatus;
 import lombok.Data;
 
@@ -18,7 +19,7 @@ import lombok.Data;
  *
  */
 @Data
-public class AccountSynchResult {
+public class AccountSynchResult extends AbstractId {
 	
 	/*
 	 * List of booking file info

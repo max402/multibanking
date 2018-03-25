@@ -29,7 +29,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.adorsys.multibanking.domain.CategoryEntity;
 import de.adorsys.multibanking.domain.CustomCategoryEntity;
 import de.adorsys.multibanking.exception.InvalidCategoriesException;
-import de.adorsys.multibanking.service.BookingCategoryService;
+import de.adorsys.multibanking.service.CustomBookingCategoryService;
+import de.adorsys.multibanking.service.SystemBookingCategoryService;
 import de.adorsys.multibanking.web.common.BaseController;
 
 /**
@@ -44,10 +45,10 @@ public class BookingCategoryController extends BaseController {
     private static final ObjectMapper YAML_OBJECT_MAPPER = yamlObjectMapper();
 
     @Autowired
-    private BookingCategoryService bookingCategoryService;
+    private CustomBookingCategoryService bookingCategoryService;
+    @Autowired
+    private SystemBookingCategoryService systemBookingCategoryService;
     
-    @PostConstruct
-
     @RequestMapping(method = RequestMethod.POST)
     public HttpEntity<Void> createCategory(@RequestBody CustomCategoryEntity categoryEntity) {
         bookingCategoryService.createOrUpdateCustomCategory(categoryEntity);
@@ -62,7 +63,7 @@ public class BookingCategoryController extends BaseController {
 
     @RequestMapping(value = "/static", method = RequestMethod.GET)
     public @ResponseBody ResponseEntity<ByteArrayResource> getStaticCategories() {
-        DSDocument dsDocument = bookingCategoryService.getStaticBookingCategories();
+        DSDocument dsDocument = systemBookingCategoryService.getStaticBookingCategories();
     	return loadBytesForWeb(dsDocument);
     }
 
@@ -76,7 +77,7 @@ public class BookingCategoryController extends BaseController {
     @RequestMapping(value = "/static/{categoryId}", method = RequestMethod.PUT)
     public HttpEntity<Void> updateCategory(@PathVariable String categoryId, @RequestBody CategoryEntity categoryEntity) {
     	categoryEntity.setId(categoryId);
-    	bookingCategoryService.createOrUpdateStaticCategory(categoryEntity);
+    	systemBookingCategoryService.createOrUpdateStaticCategory(categoryEntity);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
@@ -88,7 +89,7 @@ public class BookingCategoryController extends BaseController {
 
     @RequestMapping(path = "/static", method = RequestMethod.PUT)
     public HttpEntity<Void> createOrUpdateStaticCategories(@RequestBody List<CategoryEntity> categoryEntities) {
-    	bookingCategoryService.createOrUpdateStaticCategories(categoryEntities);
+    	systemBookingCategoryService.createOrUpdateStaticCategories(categoryEntities);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
     
@@ -113,7 +114,7 @@ public class BookingCategoryController extends BaseController {
 
         try {
             List<CategoryEntity> rulesEntities = YAML_OBJECT_MAPPER.readValue(categoriesFile.getInputStream(), new TypeReference<List<CategoryEntity>>() {});
-            bookingCategoryService.replceStaticCategories(rulesEntities);
+            systemBookingCategoryService.replceStaticCategories(rulesEntities);
             return new ResponseEntity<>(HttpStatus.CREATED);
         } catch (IOException e) {
             throw new InvalidCategoriesException(e.getMessage());
@@ -128,7 +129,7 @@ public class BookingCategoryController extends BaseController {
     }
     @RequestMapping(value = "/static/{categoryId}", method = RequestMethod.DELETE)
     public HttpEntity<Void> deleteStaticCategory(@PathVariable String categoryId) {
-        bookingCategoryService.deleteStaticCategory(categoryId);
+    	systemBookingCategoryService.deleteStaticCategory(categoryId);
         log.info("Category [{}] deleted.", categoryId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -141,7 +142,7 @@ public class BookingCategoryController extends BaseController {
     }
     @RequestMapping(value = "/static", method = RequestMethod.DELETE)
     public HttpEntity<Void> deleteStaticCategories(@PathVariable List<String> categoryIds) {
-        bookingCategoryService.deleteStaticCategories(categoryIds);
+    	systemBookingCategoryService.deleteStaticCategories(categoryIds);
         log.info("Category [{}] deleted.", categoryIds);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

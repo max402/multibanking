@@ -1,15 +1,14 @@
 package de.adorsys.multibanking.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
 import de.adorsys.multibanking.domain.BankEntity;
-import de.adorsys.multibanking.pers.spi.repository.BankRepositoryIf;
-import de.adorsys.onlinebanking.mock.MockBanking;
 import domain.BankApi;
 import figo.FigoBanking;
 import finapi.FinapiBanking;
 import hbci4java.Hbci4JavaBanking;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 import spi.OnlineBankingService;
 
 /**
@@ -22,7 +21,7 @@ public class OnlineBankingServiceProducer {
     String defaultBankApi;
 
     @Autowired
-    BankRepositoryIf bankRepository;
+    BankService bankService;
 
     @Autowired
     private TokenBasedMockBanking tokenBasedMockBanking;
@@ -33,7 +32,7 @@ public class OnlineBankingServiceProducer {
     private FinapiBanking finapiBanking = new FinapiBanking();
 
     private BankApi getBankApiForBlz(String blz) {
-        BankEntity bankInfoEntity = bankRepository.findByBankCode(blz).orElse(null);
+        BankEntity bankInfoEntity = bankService.findByBankCode(blz).orElse(null);
 
         if (bankInfoEntity != null && bankInfoEntity.getBankApi() != null) {
             return bankInfoEntity.getBankApi();

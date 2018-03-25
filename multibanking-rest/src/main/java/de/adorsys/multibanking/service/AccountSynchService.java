@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 import de.adorsys.multibanking.domain.AccountSynchPref;
 import de.adorsys.multibanking.domain.AccountSynchResult;
-import de.adorsys.multibanking.service.base.BaseService;
+import de.adorsys.multibanking.service.base.BaseUserIdService;
 import de.adorsys.multibanking.utils.FQNUtils;
 import domain.BankAccount.SyncStatus;
 
@@ -17,10 +17,10 @@ import domain.BankAccount.SyncStatus;
  *
  */
 @Service
-public class AccountSynchService extends BaseService {
+public class AccountSynchService extends BaseUserIdService {
 	
 	public AccountSynchPref loadAccountLevelSynchPref(String accessId, String accountId){
-		return loadOptional(userIDAuth, FQNUtils.accountLevelSynchPrefFQN(accessId, accountId), AccountSynchPref.class)
+		return load(userIDAuth, FQNUtils.accountLevelSynchPrefFQN(accessId, accountId), AccountSynchPref.class)
 				.orElse(new AccountSynchPref());
 	}	
 	public void storeAccountLevelSynchPref(String accessId, String accountId, AccountSynchPref pref){
@@ -28,7 +28,7 @@ public class AccountSynchService extends BaseService {
 	}
 
 	public AccountSynchPref loadAccessLevelSynchPref(String accessId){
-		return loadOptional(userIDAuth, FQNUtils.accessLevelSynchPrefFQN(accessId), AccountSynchPref.class)
+		return load(userIDAuth, FQNUtils.accessLevelSynchPrefFQN(accessId), AccountSynchPref.class)
 				.orElse(new AccountSynchPref());
 	}	
 	public void storeAccessLevelSynchPref(String accessId, AccountSynchPref pref){
@@ -36,7 +36,7 @@ public class AccountSynchService extends BaseService {
 	}
 
 	public AccountSynchPref loadUserLevelSynchPref(){
-		return loadOptional(userIDAuth, FQNUtils.userLevelSynchPrefFQN(), AccountSynchPref.class)
+		return load(userIDAuth, FQNUtils.userLevelSynchPrefFQN(), AccountSynchPref.class)
 				.orElse(new AccountSynchPref());
 	}	
 	public void storeUserLevelSynchPref(AccountSynchPref pref){
@@ -44,7 +44,7 @@ public class AccountSynchService extends BaseService {
 	}
 	
 	public AccountSynchResult loadAccountSynchResult(String accessId, String accountId) {
-		return loadOptional(userIDAuth, FQNUtils.accountSynchResultFQN(accessId, accountId), AccountSynchResult.class)
+		return load(userIDAuth, FQNUtils.accountSynchResultFQN(accessId, accountId), AccountSynchResult.class)
 			.orElse(new AccountSynchResult());
 	}
 	public void storeAccountSynchResult(String accessId, String accountId, AccountSynchResult currentResult) {

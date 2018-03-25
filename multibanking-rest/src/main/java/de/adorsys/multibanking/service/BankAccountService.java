@@ -1,13 +1,12 @@
 package de.adorsys.multibanking.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
-import org.adorsys.docusafe.business.types.complex.DocumentFQN;
-import org.adorsys.docusafe.business.types.complex.UserIDAuth;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -23,7 +22,7 @@ import de.adorsys.multibanking.domain.BankEntity;
 import de.adorsys.multibanking.exception.BankAccessAlreadyExistException;
 import de.adorsys.multibanking.exception.InvalidBankAccessException;
 import de.adorsys.multibanking.exception.ResourceNotFoundException;
-import de.adorsys.multibanking.service.base.BaseService;
+import de.adorsys.multibanking.service.base.BaseUserIdService;
 import de.adorsys.multibanking.utils.FQNUtils;
 import domain.BankAccount;
 import domain.BankAccount.SyncStatus;
@@ -33,25 +32,23 @@ import exception.InvalidPinException;
 import spi.OnlineBankingService;
 
 @Service
-public class BankAccountService extends BaseService {
+public class BankAccountService extends BaseUserIdService {
     private static final Logger log = LoggerFactory.getLogger(BankAccessService.class);
 
     @Autowired
     private OnlineBankingServiceProducer bankingServiceProducer;
-    @Autowired
-    private UserIDAuth userIDAuth;
     @Autowired
     private BankService bankService;
     @Autowired
     private UserService userService;
 	
 	public List<BankAccountEntity> loadForBankAccess(String bankAccessId) {
-		return load(userIDAuth, FQNUtils.bankAccountsFileFQN(bankAccessId), new TypeReference<List<BankAccountEntity>>(){});
+		return load(userIDAuth, FQNUtils.bankAccountsFileFQN(bankAccessId), listType())
+				.orElse(Collections.emptyList());
 	}
 
 	public Optional<BankAccountEntity> loadBankAccount(String accessId, String accountId) {
-		List<BankAccountEntity> accounts = load(userIDAuth, FQNUtils.bankAccountsFileFQN(accessId), new TypeReference<List<BankAccountEntity>>(){});
-		return accounts.stream().filter(a -> StringUtils.equalsAnyIgnoreCase(accountId, a.getId())).findFirst();
+		return find(accountId, BankAccountEntity.class, listType(), FQNUtils.bankAccountsFileFQN(accessId), userIDAuth);
 	}
 	
     public void synchBankAccounts(BankAccessEntity bankAccess, BankAccessCredentials credentials){
@@ -102,50 +99,29 @@ public class BankAccountService extends BaseService {
         return bankAccountEntities;
     }
     
-	public void updateSyncStatus(String bankAccessId, String accountId, BankAccount.SyncStatus syncStatus) {
-		DocumentFQN bankAccountsFQN = FQNUtils.bankAccountsFileFQN(bankAccessId);
-		List<BankAccountEntity> list = load(userIDAuth, bankAccountsFQN, new TypeReference<List<BankAccountEntity>>(){});
-		BankAccountEntity accountEntity = list.stream().filter(b -> StringUtils.equalsAnyIgnoreCase(accountId, b.getId()))
-			.findFirst().orElseThrow(() -> resourceNotFound(BankAccount.class, accountId));
-		accountEntity.setSyncStatus(syncStatus);
-		store(userIDAuth, bankAccountsFQN, list);
+	public void updateSyncStatus(String bankAccessId, String accountId, final BankAccount.SyncStatus syncStatus) {
+		apply(new SetStatusFnct(syncStatus),
+				accountId, 
+				BankAccountEntity.class, listType(),
+				FQNUtils.bankAccountsFileFQN(bankAccessId), userIDAuth);
 	}
 	
 	public void saveBankAccount(BankAccountEntity in){
-		DocumentFQN bankAccountsFQN = FQNUtils.bankAccountsFileFQN(in.getBankAccessId());
-		List<BankAccountEntity> list = load(userIDAuth, bankAccountsFQN, new TypeReference<List<BankAccountEntity>>(){});
-		BankAccountEntity accountEntity = list.stream().filter(b -> StringUtils.equalsAnyIgnoreCase(in.getId(), b.getId()))
-			.findFirst().orElseThrow(() -> resourceNotFound(BankAccount.class, in.getId()));
-		BeanUtils.copyProperties(in, accountEntity);
-		store(userIDAuth, bankAccountsFQN, list);
+		updateList(Collections.singletonList(in), BankAccountEntity.class, listType(), 
+				FQNUtils.bankAccountsFileFQN(in.getBankAccessId()), userIDAuth);
 	}
 
-	public void saveBankAccount(String bankAccessId, List<BankAccountEntity> list){
-		DocumentFQN bankAccountsFQN = FQNUtils.bankAccountsFileFQN(bankAccessId);
-		store(userIDAuth, bankAccountsFQN, list);
+	public void saveBankAccounts(String accessId, List<BankAccountEntity> accounts){
+		updateList(accounts, BankAccountEntity.class, listType(), FQNUtils.bankAccountsFileFQN(accessId), userIDAuth);
 	}
-
+	
 	public boolean exists(String accessId, String accountId) {
-		DocumentFQN bankAccountsFQN = FQNUtils.bankAccountsFileFQN(accessId);
-		List<BankAccountEntity> list = load(userIDAuth, bankAccountsFQN, new TypeReference<List<BankAccountEntity>>(){});
-		return list.stream().filter(b -> StringUtils.equalsAnyIgnoreCase(accountId, b.getId()))
-			.findFirst().isPresent();
+		return find(accountId, BankAccountEntity.class, listType(), FQNUtils.bankAccountsFileFQN(accessId), userIDAuth).isPresent();
 	}
 	
-	public Optional<BankAccountEntity> getBankAccount(String bankAccessId, String accountId){
-		DocumentFQN bankAccountsFQN = FQNUtils.bankAccountsFileFQN(bankAccessId);
-		List<BankAccountEntity> list = load(userIDAuth, bankAccountsFQN, new TypeReference<List<BankAccountEntity>>(){});
-		return list.stream().filter(b -> StringUtils.equalsAnyIgnoreCase(accountId, b.getId()))
-			.findFirst();
-	}
-	
-
 	public SyncStatus getSyncStatus(String accessId, String accountId) {
-		DocumentFQN bankAccountsFQN = FQNUtils.bankAccountsFileFQN(accessId);
-		List<BankAccountEntity> list = load(userIDAuth, bankAccountsFQN, new TypeReference<List<BankAccountEntity>>(){});
-		BankAccountEntity accountEntity = list.stream().filter(b -> StringUtils.equalsAnyIgnoreCase(accountId, b.getId()))
-			.findFirst().orElseThrow(() -> resourceNotFound(BankAccount.class, accountId));
-		return accountEntity.getSyncStatus();
+		return find(accountId, BankAccountEntity.class, listType(), FQNUtils.bankAccountsFileFQN(accessId), userIDAuth)
+			.orElseThrow(() -> resourceNotFound(BankAccount.class, accountId)).getSyncStatus();
 	}
     
     private void filterAccounts(BankAccessEntity bankAccess, OnlineBankingService onlineBankingService, List<BankAccount> bankAccounts) {
@@ -173,4 +149,20 @@ public class BankAccountService extends BaseService {
         bankAccess.setBankName(bankAccounts.get(0).getBankName());
     }
 
+
+	private static class SetStatusFnct implements Function<BankAccountEntity, Void> {
+		private BankAccount.SyncStatus syncStatus;
+		private SetStatusFnct(SyncStatus syncStatus) {
+			this.syncStatus = syncStatus;
+		}
+		@Override
+		public Void apply(BankAccountEntity t) {
+			t.setSyncStatus(syncStatus); 
+			return null;
+		}
+	}
+
+	private static TypeReference<List<BankAccountEntity>> listType(){
+		return new TypeReference<List<BankAccountEntity>>() {};
+	}
 }

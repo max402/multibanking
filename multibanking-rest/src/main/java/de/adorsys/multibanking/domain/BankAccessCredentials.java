@@ -4,10 +4,11 @@ import java.util.Date;
 
 import org.springframework.beans.BeanUtils;
 
+import de.adorsys.multibanking.domain.common.AbstractId;
 import lombok.Data;
 
 @Data
-public class BankAccessCredentials {
+public class BankAccessCredentials extends AbstractId {
 
     private String accessId;
     private String userId;

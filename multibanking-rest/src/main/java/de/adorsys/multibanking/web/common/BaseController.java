@@ -1,7 +1,6 @@
 package de.adorsys.multibanking.web.common;
 
 import org.adorsys.docusafe.business.types.complex.DSDocument;
-import org.adorsys.docusafe.business.types.complex.UserIDAuth;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
@@ -11,12 +10,17 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
+import de.adorsys.multibanking.auth.UserContext;
 import de.adorsys.multibanking.exception.ResourceNotFoundException;
 
 public abstract class BaseController {
 
 	@Autowired
-	protected UserIDAuth userIDAuth;
+	private UserContext user;
+	
+	protected String userId(){
+		return user.getAuth().getUserID().getValue();
+	}
 	
 	protected ResponseEntity<ByteArrayResource> loadBytesForWeb(DSDocument dsDocument) {
 		byte[] data = dsDocument.getDocumentContent().getValue();

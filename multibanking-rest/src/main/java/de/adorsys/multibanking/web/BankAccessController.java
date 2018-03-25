@@ -56,7 +56,7 @@ public class BankAccessController extends BankAccessBasedController {
     	// Trigger Perform Services operations.
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(linkTo(methodOn(BankAccessController.class).getBankAccesses()).toUri());
-		LOGGER.info("Start getBankAccesses for " + userIDAuth);
+		LOGGER.info("Start getBankAccesses for " + userId());
         return new ResponseEntity<>(headers, HttpStatus.CREATED);
     }
 

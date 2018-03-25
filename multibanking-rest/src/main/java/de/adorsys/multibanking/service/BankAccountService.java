@@ -43,12 +43,12 @@ public class BankAccountService extends BaseUserIdService {
     private UserService userService;
 	
 	public List<BankAccountEntity> loadForBankAccess(String bankAccessId) {
-		return load(userIDAuth, FQNUtils.bankAccountsFileFQN(bankAccessId), listType())
+		return load(FQNUtils.bankAccountsFileFQN(bankAccessId), listType())
 				.orElse(Collections.emptyList());
 	}
 
 	public Optional<BankAccountEntity> loadBankAccount(String accessId, String accountId) {
-		return find(accountId, BankAccountEntity.class, listType(), FQNUtils.bankAccountsFileFQN(accessId), userIDAuth);
+		return find(accountId, BankAccountEntity.class, listType(), FQNUtils.bankAccountsFileFQN(accessId));
 	}
 	
     public void synchBankAccounts(BankAccessEntity bankAccess, BankAccessCredentials credentials){
@@ -59,7 +59,7 @@ public class BankAccountService extends BaseUserIdService {
         }
 
         bankAccounts.forEach(account -> {account.bankAccessId(bankAccess.getId());});
-        store(userIDAuth, FQNUtils.bankAccountsFileFQN(bankAccess.getId()), bankAccounts);
+        store(FQNUtils.bankAccountsFileFQN(bankAccess.getId()), listType(), bankAccounts);
         log.info("[{}] accounts for connection [{}] created.", bankAccounts.size(), bankAccess.getId());
     }
 	
@@ -103,24 +103,24 @@ public class BankAccountService extends BaseUserIdService {
 		apply(new SetStatusFnct(syncStatus),
 				accountId, 
 				BankAccountEntity.class, listType(),
-				FQNUtils.bankAccountsFileFQN(bankAccessId), userIDAuth);
+				FQNUtils.bankAccountsFileFQN(bankAccessId));
 	}
 	
 	public void saveBankAccount(BankAccountEntity in){
 		updateList(Collections.singletonList(in), BankAccountEntity.class, listType(), 
-				FQNUtils.bankAccountsFileFQN(in.getBankAccessId()), userIDAuth);
+				FQNUtils.bankAccountsFileFQN(in.getBankAccessId()));
 	}
 
 	public void saveBankAccounts(String accessId, List<BankAccountEntity> accounts){
-		updateList(accounts, BankAccountEntity.class, listType(), FQNUtils.bankAccountsFileFQN(accessId), userIDAuth);
+		updateList(accounts, BankAccountEntity.class, listType(), FQNUtils.bankAccountsFileFQN(accessId));
 	}
 	
 	public boolean exists(String accessId, String accountId) {
-		return find(accountId, BankAccountEntity.class, listType(), FQNUtils.bankAccountsFileFQN(accessId), userIDAuth).isPresent();
+		return find(accountId, BankAccountEntity.class, listType(), FQNUtils.bankAccountsFileFQN(accessId)).isPresent();
 	}
 	
 	public SyncStatus getSyncStatus(String accessId, String accountId) {
-		return find(accountId, BankAccountEntity.class, listType(), FQNUtils.bankAccountsFileFQN(accessId), userIDAuth)
+		return find(accountId, BankAccountEntity.class, listType(), FQNUtils.bankAccountsFileFQN(accessId))
 			.orElseThrow(() -> resourceNotFound(BankAccount.class, accountId)).getSyncStatus();
 	}
     

@@ -7,11 +7,9 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.util.Assert.isTrue;
 
-import java.io.IOException;
 import java.util.Arrays;
-import java.util.Date;
 
-import org.apache.commons.lang3.time.DateUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -27,7 +25,6 @@ import de.adorsys.multibanking.domain.BankAccessEntity;
 import de.adorsys.multibanking.domain.BankAccountEntity;
 import de.adorsys.multibanking.exception.InvalidBankAccessException;
 import de.adorsys.multibanking.exception.InvalidPinException;
-import de.adorsys.multibanking.exception.ResourceNotFoundException;
 import de.adorsys.multibanking.service.config.BaseServiceTest;
 import de.adorsys.multibanking.service.old.TestConstants;
 import de.adorsys.multibanking.service.old.TestUtil;
@@ -35,25 +32,18 @@ import de.adorsys.onlinebanking.mock.MockBanking;
 import figo.FigoBanking;
 
 @RunWith(SpringRunner.class)
-public class BankAccessServiceTest extends BaseServiceTest {
+public class BankAccessServiceBlankTest extends BaseServiceTest {
 
     @MockBean
-    private FigoBanking figoBanking;
+    protected FigoBanking figoBanking;
     @MockBean
-    private MockBanking mockBanking;
+    protected MockBanking mockBanking;
     @MockBean
-    private OnlineBankingServiceProducer bankingServiceProducer;
-
-    @Autowired
-    private BookingService bookingService;
-    @Autowired
-    private UserService userService;
+    protected OnlineBankingServiceProducer bankingServiceProducer;
     @Autowired
     private BankAccountService bankAccountService;
     @Autowired
     private BankAccessService bankAccessService;
-    @Autowired
-    private DeleteExpiredUsersScheduled userScheduler;
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -64,13 +54,21 @@ public class BankAccessServiceTest extends BaseServiceTest {
     }
 
     @Before
-    public void beforeTest() throws IOException {
-
-    	importBanks();
-        
+    public void beforeTest() throws Exception {
     	MockitoAnnotations.initMocks(this);
         when(bankingServiceProducer.getBankingService(anyString())).thenReturn(mockBanking);
+    	randomAuthAndUser();
+    	importBanks();
     }
+    
+    @After
+    public void after() throws Exception{
+    	if(userContext!=null)
+    		rcMap.put(userContext.getAuth().getUserID().getValue()+ ":"+testName.getMethodName(), userContext.getRequestCounter());
+    	if(systemContext!=null)
+    		rcMap.put(systemContext.getUser().getAuth().getUserID().getValue()+ ":"+testName.getMethodName(), systemContext.getUser().getRequestCounter());
+    }
+    
 
     /**
      * Creates a bank access with a non existing bank code.
@@ -80,8 +78,6 @@ public class BankAccessServiceTest extends BaseServiceTest {
     public void create_bank_access_not_supported() {
         when(mockBanking.bankSupported(anyString())).thenReturn(false);
         thrown.expect(InvalidBankAccessException.class);
-
-    	randomAuthAndUser();
         
         BankAccessEntity bankAccessEntity = TestUtil.getBankAccessEntity(userId(), 
         		randomAccessId(), "unsupported", "0000");
@@ -96,7 +92,6 @@ public class BankAccessServiceTest extends BaseServiceTest {
         when(mockBanking.bankSupported(anyString())).thenReturn(true);
         thrown.expect(InvalidBankAccessException.class);
 
-    	randomAuthAndUser();
         BankAccessEntity bankAccessEntity = TestUtil.getBankAccessEntity(userId(), randomAccessId(), "29999999", "0000");
         // "testUserId", 
         bankAccessService.createBankAccess(bankAccessEntity);
@@ -104,8 +99,7 @@ public class BankAccessServiceTest extends BaseServiceTest {
 
     @Test
     public void create_bank_access_invalid_pin() {
-    	// Init user
-    	randomAuthAndUser();
+
     	// Mock bank access
         BankAccessEntity bankAccessEntity = TestUtil.getBankAccessEntity(userId(), randomAccessId(), "29999999", "0000");
 
@@ -120,8 +114,7 @@ public class BankAccessServiceTest extends BaseServiceTest {
 
     @Test
     public void create_bank_access_ok() {
-    	// Mocks
-    	randomAuthAndUser();
+
         BankAccessEntity bankAccessEntity = TestUtil.getBankAccessEntity(userId(), randomAccessId(), "29999999", "0000");
         BankAccountEntity bankAccountEntity = TestUtil.getBankAccountEntity(bankAccessEntity, randomAccountId());
         
@@ -136,20 +129,7 @@ public class BankAccessServiceTest extends BaseServiceTest {
     }
 
     @Test
-    public void when_delete_bankAccesd_user_notExist_should_throw_exception() {
-    	// Inject a user, without creating that user in the storage.
-    	auth("fakeUser", "fakePassword");
-    	
-        thrown.expect(ResourceNotFoundException.class);
-        // "badLogin", 
-        boolean deleteBankAccess = bankAccessService.deleteBankAccess("badAccess");
-        assertThat(deleteBankAccess).isEqualTo(false);
-    }
-
-    @Test
     public void when_delete_bankAcces_user_exist_should_return_false() {
-    	randomAuthAndUser();
-
         // userId, 
         boolean deleteBankAccess = bankAccessService.deleteBankAccess("access");
         assertThat(deleteBankAccess).isEqualTo(false);
@@ -157,7 +137,6 @@ public class BankAccessServiceTest extends BaseServiceTest {
 
     @Test
     public void when_delete_bankAcces_user_exist_should_return_true() {
-    	randomAuthAndUser();
         BankAccessEntity bankAccessEntity = TestUtil.getBankAccessEntity(userId(), randomAccessId(), "29999999", "0000");
         BankAccountEntity bankAccountEntity = TestUtil.getBankAccountEntity(bankAccessEntity, randomAccountId());
         
@@ -174,7 +153,6 @@ public class BankAccessServiceTest extends BaseServiceTest {
 
     @Test
     public void get_bank_code() {
-    	randomAuthAndUser();
         BankAccessEntity bankAccessEntity = TestUtil.getBankAccessEntity(userId(), randomAccessId(), "49999999", "0000");
         BankAccountEntity bankAccountEntity = TestUtil.getBankAccountEntity(bankAccessEntity, randomAccountId());
         
@@ -188,24 +166,4 @@ public class BankAccessServiceTest extends BaseServiceTest {
         		.orElse(null).getBankCode();
         assertThat(bankCode).isEqualTo("49999999");
     }
-
-    @Test
-    public void cleaup_users_job() {
-    	randomAuthAndUser(new Date());
-
-        userScheduler.deleteJob();
-        thrown.expect(ResourceNotFoundException.class);
-        userService.readUser();
-    }
-
-//    @Test
-//    public void searchBank() {
-//        notEmpty(bankService.search("76090"), "bank not found");
-//        isTrue(bankService.search("76090500").size() == 1, "wrong search result");
-//        isTrue(bankService.search("12030000").size() == 1, "wrong search result");
-//        isTrue(bankService.search("XYZ").size() == 0, "wrong search result");
-//        notEmpty(bankService.search("Sparda"), "bank not found");
-//        notEmpty(bankService.search("Sparda Bank"), "bank not found");
-//    }
-//
 }

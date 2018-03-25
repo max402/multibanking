@@ -23,7 +23,7 @@ import de.adorsys.multibanking.service.helper.RuleUtils;
 public class CustomBookingRuleService extends BaseUserIdService {
 
     public DSDocument getCustomBookingRules() {
-    	return loadDocument(userIDAuth, RuleUtils.bookingRulesFQN);
+    	return loadDocument(RuleUtils.bookingRulesFQN);
     }
 
 	public void createOrUpdateCustomRule(CustomRuleEntity ruleEntity) {
@@ -31,18 +31,18 @@ public class CustomBookingRuleService extends BaseUserIdService {
 	}
 	
 	public void createOrUpdateCustomRules(List<CustomRuleEntity> ruleEntities) {
-		updateList(RuleUtils.normalize(ruleEntities), CustomRuleEntity.class, listType(), RuleUtils.bookingRulesFQN, userIDAuth);
+		updateList(RuleUtils.normalize(ruleEntities), CustomRuleEntity.class, listType(), RuleUtils.bookingRulesFQN);
 	}
 	
 	public void replceCustomRules(List<CustomRuleEntity> ruleEntities) {
-		replaceList(RuleUtils.normalize(ruleEntities), CustomRuleEntity.class, RuleUtils.bookingRulesFQN, userIDAuth);
+		replaceList(RuleUtils.normalize(ruleEntities), CustomRuleEntity.class, listType(), RuleUtils.bookingRulesFQN);
 	}
 
 	public boolean deleteCustomRule(String ruleId) {
 		return deleteCustomRules(Collections.singletonList(ruleId));
 	}
 	public boolean deleteCustomRules(List<String> ruleIds) {
-		return deleteListById(ruleIds, CustomRuleEntity.class, listType(), RuleUtils.bookingRulesFQN, userIDAuth)>0;
+		return deleteListById(ruleIds, CustomRuleEntity.class, listType(), RuleUtils.bookingRulesFQN)>0;
 	}
 
 

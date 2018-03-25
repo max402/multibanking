@@ -4,7 +4,8 @@ import org.adorsys.docusafe.business.types.complex.UserIDAuth;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import de.adorsys.multibanking.auth.SystemIDAuth;
+import de.adorsys.multibanking.auth.SystemContext;
+import de.adorsys.multibanking.auth.UserContext;
 
 /**
  * Service that access the system repository use this service.
@@ -15,9 +16,15 @@ import de.adorsys.multibanking.auth.SystemIDAuth;
 @Service
 public abstract class BaseSystemIdService extends BaseService {
 	@Autowired
-	private SystemIDAuth systemIDAuth;
-	
-	protected UserIDAuth userIDAuth(){
-		return systemIDAuth.getUserIDAuth();
+	private SystemContext systemContext;
+
+	@Override
+	public UserContext user() {
+		return systemContext.getUser();
+	}
+
+	@Override
+	public UserIDAuth auth() {
+		return systemContext.getUser().getAuth();
 	}
 }

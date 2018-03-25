@@ -23,11 +23,11 @@ public class BankService extends BaseSystemIdService {
 	private final ObjectMapper ymlObjectMapper = new ObjectMapper(ymlFactory);
 
 	public Optional<BankEntity> findByBankCode(String bankCode) {
-		return find(bankCode, BankEntity.class, listType(), FQNUtils.banksFQN(), userIDAuth());
+		return find(bankCode, BankEntity.class, listType(), FQNUtils.banksFQN());
 	}
 	
 	public List<BankEntity> load(){
-		return load(userIDAuth(), FQNUtils.banksFQN(), listType())
+		return load(FQNUtils.banksFQN(), listType())
 				.orElse(Collections.emptyList());
 	}
 
@@ -40,7 +40,7 @@ public class BankService extends BaseSystemIdService {
     	List<BankEntity> banks = ymlObjectMapper.readValue(inputStream, new TypeReference<List<BankEntity>>() {});
     	// Copy bank code to id.
     	banks.stream().forEach(b -> { b.setId(b.getBankCode());});
-    	store(userIDAuth(), FQNUtils.banksFQN(), banks);
+    	store(FQNUtils.banksFQN(), listType(), banks);
     }
 
 	private static TypeReference<List<BankEntity>> listType(){

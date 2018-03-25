@@ -16,7 +16,7 @@ import de.adorsys.multibanking.utils.FQNUtils;
 public class SystemImageService extends BaseSystemIdService {
 
 	public boolean hasImage(String imageName){
-		return documentExists(userIDAuth(), FQNUtils.imageFQN(imageName));
+		return documentExists(FQNUtils.imageFQN(imageName));
 	}
 
 	/**
@@ -26,7 +26,7 @@ public class SystemImageService extends BaseSystemIdService {
 	 * @return
 	 */
 	public DSDocument loadStaticImage(String imageName){
-		return loadDocument(userIDAuth(), FQNUtils.imageFQN(imageName));
+		return loadDocument(FQNUtils.imageFQN(imageName));
 	}
 	
 	/**
@@ -36,6 +36,6 @@ public class SystemImageService extends BaseSystemIdService {
 	 * @param data
 	 */
 	public void storeStaticImage(String imageName, byte[] data){
-		storeDocument(userIDAuth(), FQNUtils.imageFQN(imageName), data);
+		storeDocument(FQNUtils.imageFQN(imageName), data);
 	}
 }

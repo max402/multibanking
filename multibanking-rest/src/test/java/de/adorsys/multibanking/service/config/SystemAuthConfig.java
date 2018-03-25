@@ -9,7 +9,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
-import de.adorsys.multibanking.auth.SystemIDAuth;
+import de.adorsys.multibanking.auth.SystemContext;
+import de.adorsys.multibanking.auth.UserContext;
 import de.adorsys.multibanking.service.old.TestConstants;
 
 /**
@@ -26,16 +27,16 @@ public class SystemAuthConfig {
 	
 	@PostConstruct
 	public void postConstruct(){
-		SystemIDAuth systemIDAuth = TestConstants.getSystemUserIDAuth();
-		UserIDAuth userIDAuth = systemIDAuth.getUserIDAuth();
-		if(!documentSafeService.userExists(userIDAuth.getUserID())){
-			documentSafeService.createUser(userIDAuth);
+		SystemContext sys = TestConstants.getSystemUserIDAuth();
+		UserContext user = sys.getUser();
+		if(!documentSafeService.userExists(user.getAuth().getUserID())){
+			documentSafeService.createUser(user.getAuth());
 		}
 	}
     
     @Bean
     @Primary
-    public SystemIDAuth systemIDAuth(){
+    public SystemContext systemIDAuth(){
     	return TestConstants.getSystemUserIDAuth();
     }
 }

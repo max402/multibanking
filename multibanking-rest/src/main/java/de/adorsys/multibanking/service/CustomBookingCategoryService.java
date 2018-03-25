@@ -22,20 +22,20 @@ import de.adorsys.multibanking.service.helper.CategoryUtils;
 public class CustomBookingCategoryService extends BaseUserIdService {
 
     public DSDocument getCustomBookingCategories() {
-    	return loadDocument(userIDAuth, CategoryUtils.bookingCategoriesFQN);
+    	return loadDocument(CategoryUtils.bookingCategoriesFQN);
     }
 
 	public void createOrUpdateCustomCategory(CustomCategoryEntity categoryEntity) {
 		updateList(Collections.singletonList(categoryEntity), CustomCategoryEntity.class, listType(), 
-				CategoryUtils.bookingCategoriesFQN, userIDAuth);
+				CategoryUtils.bookingCategoriesFQN);
 	}
 	
 	public void createOrUpdateCustomCategories(List<CustomCategoryEntity> categoryEntities) {
-		updateList(categoryEntities, CustomCategoryEntity.class, listType(), CategoryUtils.bookingCategoriesFQN, userIDAuth);
+		updateList(categoryEntities, CustomCategoryEntity.class, listType(), CategoryUtils.bookingCategoriesFQN);
 	}
 	
 	public void replceCustomCategories(List<CustomCategoryEntity> categoryEntities) {
-		replaceList(categoryEntities, CustomCategoryEntity.class, CategoryUtils.bookingCategoriesFQN, userIDAuth);
+		replaceList(categoryEntities, CustomCategoryEntity.class, listType(), CategoryUtils.bookingCategoriesFQN);
 	}
 	
 	public boolean deleteCustomCategory(String categoryId) {
@@ -43,7 +43,7 @@ public class CustomBookingCategoryService extends BaseUserIdService {
 	}
 	public boolean deleteCustomCategories(List<String> categoryIds) {
 		return deleteListById(categoryIds, CustomCategoryEntity.class, listType(), 
-				CategoryUtils.bookingCategoriesFQN, userIDAuth)>0;
+				CategoryUtils.bookingCategoriesFQN)>0;
 	}
 
 	private static TypeReference<List<CustomCategoryEntity>> listType(){

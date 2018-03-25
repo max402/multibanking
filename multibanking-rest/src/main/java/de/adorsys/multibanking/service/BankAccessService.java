@@ -55,7 +55,7 @@ public class BankAccessService extends BaseUserIdService  {
      */
     public BankAccessEntity createBankAccess(BankAccessEntity bankAccess) {
     	// Set user and access id
-    	bankAccess.setUserId(userIDAuth.getUserID().getValue());
+    	bankAccess.setUserId(auth().getUserID().getValue());
     	// Set an accessId if none.
     	if(StringUtils.isBlank(bankAccess.getId()))bankAccess.setId(Ids.uuid());
 
@@ -65,7 +65,7 @@ public class BankAccessService extends BaseUserIdService  {
 
 		// disect credentials
         if (bankAccess.isStorePin()) {
-        	store(userIDAuth, FQNUtils.credentialFQN(credentials.getAccessId()), credentials);
+        	store(FQNUtils.credentialFQN(credentials.getAccessId()), credentialsType(), credentials);
         }
 
         // store bank access
@@ -86,7 +86,7 @@ public class BankAccessService extends BaseUserIdService  {
     }
     
 	public List<BankAccessEntity> getBanAccesses() {
-		return load(userIDAuth, FQNUtils.bankAccessListFQN(), listType())
+		return load(FQNUtils.bankAccessListFQN(), accessEntitiesType())
 				.orElse(Collections.emptyList());
 	}
 
@@ -101,11 +101,11 @@ public class BankAccessService extends BaseUserIdService  {
     }
 
     public boolean deleteBankAccess(String accessId) {
-		int deleted = deleteListById(Collections.singletonList(accessId), BankAccessEntity.class, listType(), FQNUtils.bankAccessListFQN(), userIDAuth);
+		int deleted = deleteListById(Collections.singletonList(accessId), BankAccessEntity.class, accessEntitiesType(), FQNUtils.bankAccessListFQN());
 		if(deleted>0){
 			// TODO: for transactionality. Still check existence of these files.
 	    	removeRemoteRegistrations(accessId);
-	    	deleteDirectory(userIDAuth, FQNUtils.bankAccessDirFQN(accessId));
+	    	deleteDirectory(FQNUtils.bankAccessDirFQN(accessId));
 	    	return true;
 		}
 		return false;
@@ -113,13 +113,13 @@ public class BankAccessService extends BaseUserIdService  {
 
 	public void setInvalidPin(String accessId) {
 		DocumentFQN credentialsFQN = FQNUtils.credentialFQN(accessId);
-		BankAccessCredentials credentials = load(userIDAuth, credentialsFQN, BankAccessCredentials.class)
+		BankAccessCredentials credentials = load(credentialsFQN, credentialsType())
 				.orElseThrow(() -> resourceNotFound(BankAccessCredentials.class, accessId));
 		invalidate(credentials);
 	}
 	
 	public BankAccessCredentials loadCredentials(String accessId){
-		return load(userIDAuth, FQNUtils.credentialFQN(accessId), BankAccessCredentials.class)
+		return load(FQNUtils.credentialFQN(accessId), credentialsType())
 				.orElseThrow(() -> resourceNotFound(BankAccessCredentials.class, accessId));
 	}
 	
@@ -130,14 +130,14 @@ public class BankAccessService extends BaseUserIdService  {
 	 * @return
 	 */
 	public boolean exists(String accessId){
-		return documentExists(userIDAuth, FQNUtils.bankAccountsFileFQN(accessId));
+		return documentExists(FQNUtils.bankAccountsFileFQN(accessId));
 	}
 
 	private void invalidate(BankAccessCredentials credentials) {
 		DocumentFQN credentialsFQN = FQNUtils.credentialFQN(credentials.getAccessId());
 		credentials.setPinValid(false);
 		credentials.setLastValidationDate(new Date());
-    	store(userIDAuth, credentialsFQN, credentials);
+    	store(credentialsFQN, credentialsType(), credentials);
 	}
 	
     /*
@@ -146,11 +146,13 @@ public class BankAccessService extends BaseUserIdService  {
      */
 	private void storeBankAccess(BankAccessEntity bankAccess) {
 		BankAccessCredentials.cleanCredentials(bankAccess);
-		updateList(Collections.singletonList(bankAccess), BankAccessEntity.class, listType(), FQNUtils.bankAccessListFQN(), userIDAuth);
+		updateList(Collections.singletonList(bankAccess), 
+				BankAccessEntity.class, accessEntitiesType(), FQNUtils.bankAccessListFQN());
 	}
 	
 	public Optional<BankAccessEntity> loadbankAccess(String bankAcessId){
-		return find(bankAcessId, BankAccessEntity.class, listType(), FQNUtils.bankAccessListFQN(), userIDAuth);
+		return find(bankAcessId, BankAccessEntity.class, 
+				accessEntitiesType(), FQNUtils.bankAccessListFQN());
 	}
 
 	private void removeRemoteRegistrations(String accessId) {
@@ -174,7 +176,12 @@ public class BankAccessService extends BaseUserIdService  {
 	   	});
 	}
 	
-	private static TypeReference<List<BankAccessEntity>> listType(){
+	private static TypeReference<List<BankAccessEntity>> accessEntitiesType(){
 		return new TypeReference<List<BankAccessEntity>>() {};
 	}
+	
+	private static TypeReference<BankAccessCredentials> credentialsType(){
+		return new TypeReference<BankAccessCredentials>() {};
+	}
+	
 }

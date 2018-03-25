@@ -22,7 +22,7 @@ import de.adorsys.multibanking.domain.BookingEntity;
 import de.adorsys.multibanking.domain.BookingFile;
 import de.adorsys.multibanking.domain.BookingPeriod;
 import de.adorsys.multibanking.exception.ResourceNotFoundException;
-import de.adorsys.multibanking.service.AccountSynchService;
+import de.adorsys.multibanking.service.AccountSynchPrefService;
 import de.adorsys.multibanking.service.BookingService;
 import de.adorsys.multibanking.service.UserService;
 import de.adorsys.multibanking.web.common.BankAccountBasedController;
@@ -43,7 +43,7 @@ public class DirectAccessController extends BankAccountBasedController {
     @Autowired
     private UserService userService;
     @Autowired
-    private AccountSynchService accountSynchService;
+    private AccountSynchPrefService accountSynchService;
 
     @Value("${threshold_temporaryData:15}")
     private Integer thresholdTemporaryData;

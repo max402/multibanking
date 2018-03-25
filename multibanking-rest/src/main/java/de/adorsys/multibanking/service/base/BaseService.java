@@ -2,11 +2,15 @@ package de.adorsys.multibanking.service.base;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import javax.annotation.PostConstruct;
 
 import org.adorsys.cryptoutils.exceptions.BaseException;
 import org.adorsys.docusafe.business.DocumentSafeService;
@@ -25,6 +29,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.adorsys.multibanking.auth.CacheEntry;
+import de.adorsys.multibanking.auth.UserContext;
+import de.adorsys.multibanking.auth.UserContextCache;
 import de.adorsys.multibanking.domain.common.IdentityIf;
 import de.adorsys.multibanking.exception.ResourceNotFoundException;
 import de.adorsys.multibanking.utils.Ids;
@@ -37,38 +44,53 @@ public abstract class BaseService {
 
 	@Autowired
 	protected ObjectMapper objectMapper;
+	
+	protected abstract UserContext user();
+	protected abstract UserIDAuth auth();
+	private UserContextCache userContextCache;
 
-	protected <T> Optional<T> load(UserIDAuth userIDAuth, DocumentFQN documentFQN, Class<T> klass) {
-		DSDocument dsDocument = loadInternal(userIDAuth, documentFQN);
-		if(dsDocument==null) return Optional.empty();
-		try {
-			return Optional.of(objectMapper.readValue(dsDocument.getDocumentContent().getValue(), klass));
-		} catch (IOException e) {
-			throw new BaseException(e);
-		}
+	@PostConstruct
+	public void postConstruct(){
+		userContextCache = new UserContextCache(user());
 	}
-
-	protected <T> Optional<T> load(UserIDAuth userIDAuth, DocumentFQN documentFQN, TypeReference<T> valueType) {
-		DSDocument dsDocument = loadInternal(userIDAuth, documentFQN);
-		// TODO Peter Document does not exist. Return null; We might think of a not found exception here.
-		if(dsDocument==null) return Optional.empty();
-
-		try {
-			return Optional.of(objectMapper.readValue(dsDocument.getDocumentContent().getValue(), valueType));
-		} catch (IOException e) {
-			throw new BaseException(e);
-		}
+	protected UserContextCache userContextCache() {
+		return userContextCache;
 	}
-
-	protected <T> void store(UserIDAuth userIDAuth, DocumentFQN documentFQN, T entity) {
-        DocumentContent documentContent;
-		try {
-			documentContent = new DocumentContent(objectMapper.writeValueAsBytes(entity));
-		} catch (JsonProcessingException e) {
-			throw new BaseException(e);
+	
+	/**
+	 * Load file from location documentFQN and parse using valueType.
+	 * Check and return from cache is available.
+	 * Caches result it not yet done.
+	 * 
+	 * @param documentFQN
+	 * @param valueType
+	 * @return
+	 */
+	protected <T> Optional<T> load(DocumentFQN documentFQN, TypeReference<T> valueType) {
+		user().getRequestCounter().load(documentFQN);
+		Optional<CacheEntry<T>> cacheHit = userContextCache().cacheHit(documentFQN, valueType);
+		if(cacheHit.isPresent()) {
+			user().getRequestCounter().cacheHit(documentFQN);
+			return cacheHit.get().getEntry();
 		}
-        DSDocument dsDocument = new DSDocument(documentFQN, documentContent, null);
-		documentSafeService.storeDocument(userIDAuth, dsDocument);
+		
+		Optional<T> ot = Optional.ofNullable(loadFunction(documentFQN, valueType));
+		userContextCache().cacheHit(documentFQN, valueType, ot, false);
+		return ot;
+	}
+	
+	/**
+	 * Store the file in cache.
+	 * If cache not supported, flush document.
+	 * 
+	 * @param documentFQN
+	 * @param valueType
+	 * @param entity
+	 */
+	protected <T> void store(DocumentFQN documentFQN, TypeReference<T> valueType, T entity) {
+		user().getRequestCounter().store(documentFQN);
+		boolean cacheHit = userContextCache().cacheHit(documentFQN, valueType, Optional.ofNullable(entity), true);
+		if(!cacheHit) flush(documentFQN, entity);
 	}
 	
 	/**
@@ -78,8 +100,8 @@ public abstract class BaseService {
 	 * @return false if object was found and updated, false if object was created.
 	 * 
 	 */
-	protected <T extends IdentityIf> boolean addToList(UserIDAuth user, T t, TypeReference<List<T>> listType, DocumentFQN documentListFQN) {
-		List<T> list = load(user, documentListFQN, listType).orElse(Collections.emptyList());
+	protected <T extends IdentityIf> boolean addToList(T t, TypeReference<List<T>> listType, DocumentFQN documentListFQN) {
+		List<T> list = load(documentListFQN, listType).orElse(Collections.emptyList());
 		Optional<T> persistent = list.stream().filter(p -> Ids.eq(p.getId(), t.getId())).findFirst();
 		boolean created = true;
 		if(persistent.isPresent()){
@@ -91,7 +113,7 @@ public abstract class BaseService {
 			// Object is not yet in the list.
 			list.add(t);
 		}
-		store(user, documentListFQN, list);
+		store(documentListFQN, listType, list);
 		LOGGER.info("Object [{}] added to list.", t.getId());
 		
 		return created;
@@ -107,8 +129,8 @@ public abstract class BaseService {
 	 * @return
 	 */
 	protected <T extends IdentityIf> Optional<T> find(String id, Class<T> klass, TypeReference<List<T>> listType,
-			DocumentFQN documentListFQN, UserIDAuth userIDAuth) {
-		Optional<List<T>> listResult = load(userIDAuth, documentListFQN, listType);
+			DocumentFQN documentListFQN) {
+		Optional<List<T>> listResult = load(documentListFQN, listType);
 		
 		if(!listResult.isPresent()) return Optional.empty();
 		List<T> list = listResult.get();
@@ -125,31 +147,31 @@ public abstract class BaseService {
 	 * @return
 	 */
 	protected <T extends IdentityIf, R> R apply(Function<T, R> fnct, String id, Class<T> klass, TypeReference<List<T>> listType, 
-			DocumentFQN documentListFQN, UserIDAuth user) {
-		List<T> list = load(user, documentListFQN, listType).orElse(Collections.emptyList());
+			DocumentFQN documentListFQN) {
+		List<T> list = load(documentListFQN, listType).orElse(Collections.emptyList());
 		// Load
 		T t = list.stream().filter(p -> Ids.eq(id, p.getId())).findFirst()
 			.orElseThrow(() -> resourceNotFound(klass, id));
 		
 		R r = fnct.apply(t);// Apply the function.
 		
-		store(user, documentListFQN, list);// Store		
+		store(documentListFQN, listType, list);// Store		
 		return r;
 	}
 
-	protected <T extends IdentityIf> void replaceList(List<T> inputList, Class<T> klass, DocumentFQN documentListFQN, UserIDAuth user) {
+	protected <T extends IdentityIf> void replaceList(List<T> inputList, Class<T> klass, TypeReference<List<T>> listType, DocumentFQN documentListFQN) {
 		List<T> persList = Collections.emptyList();
 		// Add new
 		inputList.stream().forEach(n -> {
 			Ids.id(n);
 			persList.add(n);
 		});
-		store(user, documentListFQN, persList);// Store		
+		store(documentListFQN, listType, persList);// Store		
 	}
 	
 	protected <T extends IdentityIf> void updateList(List<T> inputList, Class<T> klass, TypeReference<List<T>> listType, 
-			DocumentFQN documentListFQN, UserIDAuth user) {
-		List<T> persList = load(user, documentListFQN, listType).orElse(Collections.emptyList());
+			DocumentFQN documentListFQN) {
+		List<T> persList = load(documentListFQN, listType).orElse(Collections.emptyList());
 		// Existing elements.
 		List<? extends IdentityIf> foundElements = inputList.stream().filter(i -> persList.contains(i)).collect(Collectors.toList());
 		ArrayList<T> newList = new ArrayList<>(inputList);
@@ -169,14 +191,14 @@ public abstract class BaseService {
 			finalList.add(n);
 		});
 		
-		store(user, documentListFQN, finalList);// Store		
+		store(documentListFQN, listType, finalList);// Store		
 	}
 
 	protected <T extends IdentityIf> void deleteList(List<T> inputList, Class<T> klass, TypeReference<List<T>> listType, 
-			DocumentFQN documentListFQN, UserIDAuth user) {
-		List<T> persList = load(user, documentListFQN, listType).orElse(Collections.emptyList());
+			DocumentFQN documentListFQN) {
+		List<T> persList = load(documentListFQN, listType).orElse(Collections.emptyList());
 		persList.removeAll(inputList);
-		store(user, documentListFQN, persList);// Store		
+		store(documentListFQN, listType, persList);// Store		
 	}
 
 	/**
@@ -189,48 +211,95 @@ public abstract class BaseService {
 	 * @return
 	 */
 	protected <T extends IdentityIf> int deleteListById(List<String> inputIdList, Class<T> klass, TypeReference<List<T>> listType, 
-			DocumentFQN documentListFQN, UserIDAuth user) {
-		List<T> persList = load(user, documentListFQN, listType).orElse(Collections.emptyList());
+			DocumentFQN documentListFQN) {
+		List<T> persList = load(documentListFQN, listType).orElse(Collections.emptyList());
 		List<T> inputList = persList.stream().filter(e -> inputIdList.contains(e.getId())).collect(Collectors.toList());
 		if(!inputList.isEmpty()) {
 			persList.removeAll(inputList);
-			store(user, documentListFQN, persList);// Store
+			store(documentListFQN, listType, persList);// Store
 		}
 		return inputList.size();
 	}
 	
-	protected DSDocument loadDocument(UserIDAuth userIDAuth, DocumentFQN documentFQN) {
-		return documentSafeService.readDocument(userIDAuth, documentFQN);
+	protected DSDocument loadDocument(DocumentFQN documentFQN) {
+		return documentSafeService.readDocument(auth(), documentFQN);
 	}
 
-	protected void storeDocument(UserIDAuth userIDAuth, DocumentFQN documentFQN, byte[] data) {
+	protected void storeDocument(DocumentFQN documentFQN, byte[] data) {
 		DocumentContent documentContent = new DocumentContent(data);
 		DSDocument dsDocument = new DSDocument(documentFQN, documentContent, null);
-		documentSafeService.storeDocument(userIDAuth, dsDocument);
+		documentSafeService.storeDocument(auth(), dsDocument);
 	}
 	
-	protected void deleteDirectory(UserIDAuth userIDAuth, DocumentDirectoryFQN dirFQN){
-		documentSafeService.deleteFolder(userIDAuth, dirFQN);
+	protected void deleteDirectory(DocumentDirectoryFQN dirFQN){
+		documentSafeService.deleteFolder(auth(), dirFQN);
 	}	
 
 	protected ResourceNotFoundException resourceNotFound(Class<?> klass, String id) {
 		return new ResourceNotFoundException(klass, id);
 	}
 	
-	protected boolean documentExists(UserIDAuth userIDAuth, DocumentFQN documentFQN){
-		return documentSafeService.documentExists(userIDAuth, documentFQN);
+	protected boolean documentExists(DocumentFQN documentFQN){
+		return documentSafeService.documentExists(auth(), documentFQN);
 	}
 
-	
-	private DSDocument loadInternal(UserIDAuth userIDAuth, DocumentFQN documentFQN) {
+	private <T> T loadFunction(DocumentFQN documentFQN, TypeReference<T> valueType){
+		DSDocument dsDocument = loadInternal(documentFQN);
+		if(dsDocument==null) return null;
 		try {
-			return documentSafeService.readDocument(userIDAuth, documentFQN);
+			return objectMapper.readValue(dsDocument.getDocumentContent().getValue(), valueType);
+		} catch (IOException e) {
+			throw new BaseException(e);
+		}
+	}
+	
+	private DSDocument loadInternal(DocumentFQN documentFQN) {
+		try {
+			return documentSafeService.readDocument(auth(), documentFQN);
 		} catch(final BaseException e){
 			// TODO Peter, how do i know a document does not exists.
-			
 			// If document exist, then we have another problem reading the document.
-			if(documentSafeService.documentExists(userIDAuth, documentFQN)) throw e;
+			if(documentSafeService.documentExists(auth(), documentFQN)) throw e;
 			return null;
 		}
 	}
+
+	protected <T> void flush(DocumentFQN documentFQN, T entity) {
+		user().getRequestCounter().flush(documentFQN);
+        DocumentContent documentContent;
+		try {
+			documentContent = new DocumentContent(objectMapper.writeValueAsBytes(entity));
+		} catch (JsonProcessingException e) {
+			throw new BaseException(e);
+		}
+        DSDocument dsDocument = new DSDocument(documentFQN, documentContent, null);
+		documentSafeService.storeDocument(auth(), dsDocument);
+	}
+	
+	protected <T> void delete(DocumentFQN documentFQN) {
+		user().getRequestCounter().delete(documentFQN);
+		documentSafeService.deleteDocument(auth(), documentFQN);
+	}
+	
+	protected void enableCaching(){
+		user().setCacheEnabled(true);		
+	}
+	
+	protected void flush(){
+		if(!user().isCacheEnabled()) return;
+		Collection<Map<DocumentFQN,CacheEntry<?>>> values = user().getCache().values();
+		for (Map<DocumentFQN, CacheEntry<?>> map : values) {
+			Collection<CacheEntry<?>> collection = map.values();
+			for (CacheEntry<?> cacheEntry : collection) {
+				if(cacheEntry.isDirty()){
+					if(cacheEntry.getEntry().isPresent()){
+						flush(cacheEntry.getDocFqn(), cacheEntry.getEntry().get());
+					} else {
+						delete(cacheEntry.getDocFqn());
+					}
+				}
+			}
+		}
+	}
+	
 }

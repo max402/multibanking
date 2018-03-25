@@ -4,22 +4,34 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Type;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.adorsys.docusafe.business.types.UserID;
+import org.adorsys.docusafe.business.types.complex.DocumentFQN;
 import org.adorsys.docusafe.business.types.complex.UserIDAuth;
 import org.adorsys.encobject.domain.ReadKeyPassword;
 import org.apache.commons.io.IOUtils;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Rule;
+import org.junit.rules.TestName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 
+import de.adorsys.multibanking.auth.CacheEntry;
+import de.adorsys.multibanking.auth.RequestCounter;
+import de.adorsys.multibanking.auth.SystemContext;
+import de.adorsys.multibanking.auth.UserContext;
 import de.adorsys.multibanking.service.BankService;
 import de.adorsys.multibanking.service.UserService;
 import de.adorsys.multibanking.service.old.TestConstants;
 import de.adorsys.multibanking.utils.Ids;
+import de.adorsys.multibanking.utils.PrintMap;
 
 @ActiveProfiles({"InMemory"})
 @SpringBootTest(properties={Tp.p1,Tp.p2,Tp.p3,Tp.p4,Tp.p5,Tp.p6,Tp.p7,Tp.p8,Tp.p9,Tp.p10,Tp.p11,Tp.p12,
@@ -34,16 +46,34 @@ public class BaseServiceTest {
     private BankService bankService;
 	
     @MockBean
-    protected UserIDAuth userIdAuth;
+    protected UserContext userContext;
+    
+    @Autowired
+    protected SystemContext systemContext;
+    
+    @Rule
+    public TestName testName = new TestName();
+    
+    protected static final Map<String, RequestCounter> rcMap = new HashMap<>();
 
     @BeforeClass
     public static void beforeClass() {
     	TestConstants.setup();
     }
     
+    @AfterClass
+    public static void afterClass(){
+    	System.out.println(PrintMap.print(rcMap));
+    }
+    
     protected void auth(String userId, String password){
-    	when(userIdAuth.getUserID()).thenReturn(new UserID(userId));
-    	when(userIdAuth.getReadKeyPassword()).thenReturn(new ReadKeyPassword(password));
+    	UserIDAuth userIDAuth = new UserIDAuth(new UserID(userId), new ReadKeyPassword(password));
+    	RequestCounter requestCounter = new RequestCounter();
+    	Map<Type, Map<DocumentFQN, CacheEntry<?>>> cache = new HashMap<>();
+    	when(userContext.getAuth()).thenReturn(userIDAuth);
+    	when(userContext.getRequestCounter()).thenReturn(requestCounter);
+    	when(userContext.getCache()).thenReturn(cache);
+    	
     }
 
     protected void randomAuthAndUser(){
@@ -69,7 +99,10 @@ public class BaseServiceTest {
      * @return
      */
     protected final String userId(){
-    	return userIdAuth.getUserID().getValue();
+    	return userContext.getAuth().getUserID().getValue();
+    }
+    protected final UserIDAuth auth(){
+    	return userContext.getAuth();
     }
     
     /**

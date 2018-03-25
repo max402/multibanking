@@ -43,9 +43,9 @@ public class DeleteExpiredUsersService extends BaseSystemIdService {
 	public List<UserEntity> findExpiredUser() {
 		Date now = new Date();
 		DocumentFQN expireFileFQN = FQNUtils.expireDayFileFQN(DayFormat.printDay(new Date()));
-		if(!documentExists(userIDAuth(), expireFileFQN)) return Collections.emptyList();
+		if(!documentExists(expireFileFQN)) return Collections.emptyList();
 		
-		List<UserEntity> entities = load(userIDAuth(), expireFileFQN, listType())
+		List<UserEntity> entities = load(expireFileFQN, listType())
 				.orElse(Collections.emptyList());
 		return entities.stream().filter(e -> e.getExpireUser().before(now)).collect(Collectors.toList());
 	}
@@ -61,7 +61,7 @@ public class DeleteExpiredUsersService extends BaseSystemIdService {
 		// Compute file name
 		DocumentFQN expireFileFQN = expireDayFileFQN(userEntity.getExpireUser());
 
-		List<UserEntity> entities = load(userIDAuth(), expireFileFQN, listType())
+		List<UserEntity> entities = load(expireFileFQN, listType())
 				.orElse(Collections.emptyList());
 		UserEntity persistent = entities.stream().filter(e -> Ids.eq(e.getId(), userEntity.getId())).findFirst()
 			.orElse(userEntity);
@@ -71,7 +71,7 @@ public class DeleteExpiredUsersService extends BaseSystemIdService {
 		} else {
 			BeanUtils.copyProperties(userEntity, persistent);
 		}
-		store(userIDAuth(), expireFileFQN, entities);
+		store(expireFileFQN, listType(), entities);
 	}
 	
 	private static DocumentFQN expireDayFileFQN(Date date){

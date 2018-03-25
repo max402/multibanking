@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+
 import de.adorsys.multibanking.domain.AccountSynchPref;
 import de.adorsys.multibanking.domain.AccountSynchResult;
 import de.adorsys.multibanking.service.base.BaseUserIdService;
@@ -17,38 +19,38 @@ import domain.BankAccount.SyncStatus;
  *
  */
 @Service
-public class AccountSynchService extends BaseUserIdService {
+public class AccountSynchPrefService extends BaseUserIdService {
 	
 	public AccountSynchPref loadAccountLevelSynchPref(String accessId, String accountId){
-		return load(userIDAuth, FQNUtils.accountLevelSynchPrefFQN(accessId, accountId), AccountSynchPref.class)
+		return load(FQNUtils.accountLevelSynchPrefFQN(accessId, accountId), synchPrefType())
 				.orElse(new AccountSynchPref());
 	}	
 	public void storeAccountLevelSynchPref(String accessId, String accountId, AccountSynchPref pref){
-		store(userIDAuth, FQNUtils.accountLevelSynchPrefFQN(accessId, accountId), pref);
+		store(FQNUtils.accountLevelSynchPrefFQN(accessId, accountId), synchPrefType(), pref);
 	}
 
 	public AccountSynchPref loadAccessLevelSynchPref(String accessId){
-		return load(userIDAuth, FQNUtils.accessLevelSynchPrefFQN(accessId), AccountSynchPref.class)
+		return load(FQNUtils.accessLevelSynchPrefFQN(accessId), synchPrefType())
 				.orElse(new AccountSynchPref());
 	}	
 	public void storeAccessLevelSynchPref(String accessId, AccountSynchPref pref){
-		store(userIDAuth, FQNUtils.accessLevelSynchPrefFQN(accessId), pref);
+		store(FQNUtils.accessLevelSynchPrefFQN(accessId), synchPrefType(), pref);
 	}
 
 	public AccountSynchPref loadUserLevelSynchPref(){
-		return load(userIDAuth, FQNUtils.userLevelSynchPrefFQN(), AccountSynchPref.class)
+		return load(FQNUtils.userLevelSynchPrefFQN(), synchPrefType())
 				.orElse(new AccountSynchPref());
 	}	
 	public void storeUserLevelSynchPref(AccountSynchPref pref){
-		store(userIDAuth, FQNUtils.userLevelSynchPrefFQN(), pref);
+		store(FQNUtils.userLevelSynchPrefFQN(), synchPrefType(), pref);
 	}
 	
 	public AccountSynchResult loadAccountSynchResult(String accessId, String accountId) {
-		return load(userIDAuth, FQNUtils.accountSynchResultFQN(accessId, accountId), AccountSynchResult.class)
+		return load(FQNUtils.accountSynchResultFQN(accessId, accountId), synchResultType())
 			.orElse(new AccountSynchResult());
 	}
 	public void storeAccountSynchResult(String accessId, String accountId, AccountSynchResult currentResult) {
-		store(userIDAuth, FQNUtils.accountSynchResultFQN(accessId, accountId), currentResult);
+		store(FQNUtils.accountSynchResultFQN(accessId, accountId), synchResultType(), currentResult);
 	}
 	public void updateSyncStatus(String accessId, String accountId, SyncStatus syncStatus) {
 		AccountSynchResult synchResult = loadAccountSynchResult(accessId, accountId);
@@ -64,16 +66,23 @@ public class AccountSynchService extends BaseUserIdService {
 	 * @return 
 	 */
 	public AccountSynchPref findAccountSynchPref(String accessId, String accountId) {
-		if(documentExists(userIDAuth, FQNUtils.accountLevelSynchPrefFQN(accessId, accountId)))
+		if(documentExists(FQNUtils.accountLevelSynchPrefFQN(accessId, accountId)))
 			return loadAccountLevelSynchPref(accessId, accountId);
 		
-		if(documentExists(userIDAuth, FQNUtils.accessLevelSynchPrefFQN(accessId)))
+		if(documentExists(FQNUtils.accessLevelSynchPrefFQN(accessId)))
 			return loadAccountLevelSynchPref(accessId, accountId);
 
-		if(documentExists(userIDAuth, FQNUtils.userLevelSynchPrefFQN()))
+		if(documentExists(FQNUtils.userLevelSynchPrefFQN()))
 			return loadAccountLevelSynchPref(accessId, accountId);
 		
 		return new AccountSynchPref();
 	}
 
+	private static TypeReference<AccountSynchPref> synchPrefType(){
+		return new TypeReference<AccountSynchPref>() {};
+	}
+	
+	private static TypeReference<AccountSynchResult> synchResultType(){
+		return new TypeReference<AccountSynchResult>() {};
+	}
 }

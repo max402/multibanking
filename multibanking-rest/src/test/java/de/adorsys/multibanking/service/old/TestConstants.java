@@ -8,7 +8,8 @@ import org.adorsys.docusafe.business.types.complex.UserIDAuth;
 import org.adorsys.encobject.domain.ReadKeyPassword;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
-import de.adorsys.multibanking.auth.SystemIDAuth;
+import de.adorsys.multibanking.auth.SystemContext;
+import de.adorsys.multibanking.auth.UserContext;
 
 public class TestConstants {
 	public static final void setup(){
@@ -28,8 +29,14 @@ public class TestConstants {
 	    }		
 	}
 	
-	private static final SystemIDAuth systemId = new SystemIDAuth(new UserIDAuth(new UserID("system"), new ReadKeyPassword("systemPassword123")));
-	public static SystemIDAuth getSystemUserIDAuth(){
+	private static SystemContext systemId = null;
+	public static SystemContext getSystemUserIDAuth(){
+		if(systemId!=null) return systemId;
+		
+		UserContext userContext = new UserContext();
+		UserIDAuth userIDAuth = new UserIDAuth(new UserID("system"), new ReadKeyPassword("systemPassword123"));
+		userContext.setAuth(userIDAuth);
+		systemId = new SystemContext(userContext);
 		return systemId;
 	}	
 }

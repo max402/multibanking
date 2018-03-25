@@ -15,7 +15,7 @@ import de.adorsys.multibanking.utils.FQNUtils;
 public class ContractService extends BaseUserIdService {
 
 	public List<ContractEntity> getContracts(String accessId, String accountId) {
-		return load(userIDAuth, FQNUtils.contractsFQN(accessId, accountId), listType())
+		return load(FQNUtils.contractsFQN(accessId, accountId), listType())
 			.orElse(Collections.emptyList());
 	}
 

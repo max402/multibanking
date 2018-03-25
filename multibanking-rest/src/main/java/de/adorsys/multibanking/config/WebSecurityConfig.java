@@ -1,6 +1,5 @@
 package de.adorsys.multibanking.config;
 
-import java.security.Principal;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -28,6 +27,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import de.adorsys.multibanking.auth.UserContext;
 import de.adorsys.multibanking.service.SecretClaimDecryptionService;
 import de.adorsys.sts.filter.JWTAuthenticationFilter;
 import de.adorsys.sts.token.authentication.TokenAuthenticationService;
@@ -73,27 +73,29 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private BearerTokenValidator bearerTokenValidator;
 
-    @Bean
-    @Scope(scopeName = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
-    public BearerToken getBearerToken(HttpServletRequest request) {
-        String token = request.getHeader(BearerTokenValidator.HEADER_KEY);
-        BearerToken bearerToken = bearerTokenValidator.extract(token);
-        return bearerToken ;
-    }
-
-    @Bean
-    @Scope(scopeName = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
-    public Principal getPrincipal() {
-        return SecurityContextHolder.getContext().getAuthentication();
-    }
-
+    /**
+     * The user context object is used to hold everything associated with the current user request.
+     * 
+     * It is a sort of first level cache.
+     * 
+     * @param request
+     * @return
+     */
     @Bean
     @Primary
     @Scope(scopeName = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
-    public UserIDAuth getRequestScopeUserSecret() {
+    public UserContext getUserContext(HttpServletRequest request){
+    	UserContext userContext = new UserContext();
+
     	String userId = SecurityContextHolder.getContext().getAuthentication().getName();
         String userSecret = secretClaimDecryptionService.decryptSecretClaim();
-        return new UserIDAuth(new UserID(userId), new ReadKeyPassword(userSecret));
+        UserIDAuth userIDAuth = new UserIDAuth(new UserID(userId), new ReadKeyPassword(userSecret));
+        userContext.setAuth(userIDAuth);
+
+        String token = request.getHeader(BearerTokenValidator.HEADER_KEY);
+        BearerToken bearerToken = bearerTokenValidator.extract(token);
+        userContext.setBearerToken(bearerToken);
+        return userContext;
     }
 
     @Bean

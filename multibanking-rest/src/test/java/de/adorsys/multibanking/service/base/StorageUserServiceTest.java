@@ -24,55 +24,55 @@ public class StorageUserServiceTest extends BaseServiceTest {
     @Test
 	public void testCreateUserAndCheckUserExists() {
     	auth(Ids.uuid(), Ids.uuid());
-    	storageUserService.createUser(userIdAuth);
-    	Assert.assertTrue(storageUserService.userExists(userIdAuth.getUserID()));
+    	storageUserService.createUser(auth());
+    	Assert.assertTrue(storageUserService.userExists(auth().getUserID()));
 	}
     
 	@Test
 	public void testUserExists_false() {
     	auth(Ids.uuid(), Ids.uuid());
-    	Assert.assertFalse(storageUserService.userExists(userIdAuth.getUserID()));
+    	Assert.assertFalse(storageUserService.userExists(auth().getUserID()));
 	}
 
 	@Test(expected=UserIDAlreadyExistsException.class)
 	public void testCreateUserAgain() {
     	auth(Ids.uuid(), Ids.uuid());
-    	storageUserService.createUser(userIdAuth);
-    	Assume.assumeTrue(storageUserService.userExists(userIdAuth.getUserID()));
-    	storageUserService.createUser(userIdAuth);
+    	storageUserService.createUser(auth());
+    	Assume.assumeTrue(storageUserService.userExists(auth().getUserID()));
+    	storageUserService.createUser(auth());
 	}
 
 	@Test
 	public void testDeleteUser() {
     	auth(Ids.uuid(), Ids.uuid());
-    	storageUserService.createUser(userIdAuth);
-    	Assume.assumeTrue(storageUserService.userExists(userIdAuth.getUserID()));
-    	storageUserService.deleteUser(userIdAuth);
-    	Assert.assertFalse(storageUserService.userExists(userIdAuth.getUserID()));
+    	storageUserService.createUser(auth());
+    	Assume.assumeTrue(storageUserService.userExists(auth().getUserID()));
+    	storageUserService.deleteUser(auth());
+    	Assert.assertFalse(storageUserService.userExists(auth().getUserID()));
 	}
 
 	@Test(expected=UserIDDoesNotExistException.class)
 	public void testDeleteUserAgain() {
     	auth(Ids.uuid(), Ids.uuid());
-    	storageUserService.createUser(userIdAuth);
-    	Assume.assumeTrue(storageUserService.userExists(userIdAuth.getUserID()));
-    	storageUserService.deleteUser(userIdAuth);
-    	Assume.assumeFalse(storageUserService.userExists(userIdAuth.getUserID()));
-    	storageUserService.deleteUser(userIdAuth);
+    	storageUserService.createUser(auth());
+    	Assume.assumeTrue(storageUserService.userExists(auth().getUserID()));
+    	storageUserService.deleteUser(auth());
+    	Assume.assumeFalse(storageUserService.userExists(auth().getUserID()));
+    	storageUserService.deleteUser(auth());
 	}
 	
 	@Test
 	public void testFindPublicEncryptionKey() {
     	auth(Ids.uuid(), Ids.uuid());
-    	storageUserService.createUser(userIdAuth);
-    	JWK jwk = storageUserService.findPublicEncryptionKey(userIdAuth.getUserID());
+    	storageUserService.createUser(auth());
+    	JWK jwk = storageUserService.findPublicEncryptionKey(auth().getUserID());
     	Assert.assertNotNull(jwk);
 	}
     
 	@Test(expected=ResourceNotFoundException.class)
 	public void testFindPublicEncryptionKeyWrongUser() {
     	auth(Ids.uuid(), Ids.uuid());
-    	storageUserService.findPublicEncryptionKey(userIdAuth.getUserID());
+    	storageUserService.findPublicEncryptionKey(auth().getUserID());
 	}
 
 }

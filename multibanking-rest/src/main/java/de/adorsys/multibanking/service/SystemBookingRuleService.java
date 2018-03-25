@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
-import de.adorsys.multibanking.domain.CategoryEntity;
 import de.adorsys.multibanking.domain.RuleEntity;
 import de.adorsys.multibanking.service.base.BaseSystemIdService;
 import de.adorsys.multibanking.service.helper.RuleUtils;
@@ -29,7 +28,7 @@ public class SystemBookingRuleService extends BaseSystemIdService {
      * @return
      */
 	public DSDocument getStaticBookingRules() {
-    	return loadDocument(userIDAuth(), RuleUtils.bookingRulesFQN);
+    	return loadDocument(RuleUtils.bookingRulesFQN);
 	}
 
 	/**
@@ -42,18 +41,18 @@ public class SystemBookingRuleService extends BaseSystemIdService {
 	}
 	
 	public void createOrUpdateStaticRules(List<RuleEntity> ruleEntities) {
-		updateList(normalize(ruleEntities), RuleEntity.class, listType(), RuleUtils.bookingRulesFQN, userIDAuth());
+		updateList(normalize(ruleEntities), RuleEntity.class, listType(), RuleUtils.bookingRulesFQN);
 	}
 	
 	public void replceStaticRules(List<RuleEntity> ruleEntities) {
-		replaceList(normalize(ruleEntities), RuleEntity.class, RuleUtils.bookingRulesFQN, userIDAuth());
+		replaceList(normalize(ruleEntities), RuleEntity.class, listType(), RuleUtils.bookingRulesFQN);
 	}
 	public boolean deleteStaticRule(String ruleId) {
 		return deleteStaticRules(Collections.singletonList(ruleId));
 	}
 
 	public boolean deleteStaticRules(List<String> ruleIds) {
-		return deleteListById(ruleIds, RuleEntity.class, listType(), RuleUtils.bookingRulesFQN, userIDAuth())>0;
+		return deleteListById(ruleIds, RuleEntity.class, listType(), RuleUtils.bookingRulesFQN)>0;
 	}
 
 	private static <T extends RuleEntity> List<T> normalize(List<T> list){

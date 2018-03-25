@@ -46,7 +46,7 @@ public class AnalyticsService extends BaseUserIdService {
      * @return
      */
     public DSDocument loadDomainAnalytics(String accessId, String accountId){
-    	return loadDocument(userIDAuth, FQNUtils.analyticsFQN(accessId, accountId));
+    	return loadDocument(FQNUtils.analyticsFQN(accessId, accountId));
     }
     
     /**
@@ -59,7 +59,7 @@ public class AnalyticsService extends BaseUserIdService {
      * @return
      */
     public DSDocument loadContracts(String accessId, String accountId){
-    	return loadDocument(userIDAuth, FQNUtils.contractsFQN(accessId, accountId));
+    	return loadDocument(FQNUtils.contractsFQN(accessId, accountId));
     }
     
 }

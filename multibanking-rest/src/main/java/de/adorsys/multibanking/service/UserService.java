@@ -8,6 +8,8 @@ import org.adorsys.cryptoutils.exceptions.BaseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+
 import de.adorsys.multibanking.domain.UserEntity;
 import de.adorsys.multibanking.service.base.BaseUserIdService;
 import de.adorsys.multibanking.service.base.StorageUserService;
@@ -38,49 +40,22 @@ public class UserService extends BaseUserIdService {
 	 * @return
 	 */
 	public UserEntity readUser(){
-		return load(userIDAuth, FQNUtils.userFQN(), UserEntity.class)
-				.orElseThrow(() -> resourceNotFound(UserEntity.class, userIDAuth.getUserID().getValue()));
+		return load(FQNUtils.userFQN(), valueType())
+				.orElseThrow(() -> resourceNotFound(UserEntity.class, auth().getUserID().getValue()));
 	}
 
     /**
      * Returns the user entity or create one if the user does not exist.
      */
     public UserEntity createUser(Date expire) {
-    	storageUserService.createUser(userIDAuth);
+    	storageUserService.createUser(auth());
     	UserEntity userEntity = new UserEntity();
     	userEntity.setApiUser(new ArrayList<>());
-    	userEntity.setId(userIDAuth.getUserID().getValue());
+    	userEntity.setId(auth().getUserID().getValue());
     	userEntity.setExpireUser(expire);
     	store(userEntity);
     	return userEntity;
     }
-//
-//	public void saveUser(UserEntity userEntity) {
-//		userEntity.setId(userIDAuth.getUserID().getValue());
-//		store(userEntity);
-//	}
-//
-//	/**
-//	 * Delete the user directory, removing all files associeated with this user.
-//	 */
-//	public void deleteUser() {
-//		deleteUser(userIDAuth);
-//	}
-//	
-//	/**
-//	 * Retrieves an encryption public key for this user. Key will be user to send sensitive informations
-//	 * to this application. Like the banking PIN.
-//	 * 
-//	 * @return
-//	 */
-//	public JWK findPublicEncryptionKey(){
-//		return documentSafeService.findPublicEncryptionKey(userIDAuth.getUserID());
-//	}
-
-//	private Optional<UserEntity> load() {
-//		return load(userIDAuth, FQNUtils.userFQN(), UserEntity.class);
-//	}
-	
 
     /**
      * Returns the bank API user. Registers with the banking API if necessary.
@@ -97,8 +72,8 @@ public class UserService extends BaseUserIdService {
                 : bankingServiceProducer.getBankingService(bankCode);
 
         if (onlineBankingService.userRegistrationRequired()) {
-        	if(!storageUserService.userExists(userIDAuth.getUserID())) 
-        		throw new BaseException("Storage user with id: "+ userIDAuth.getUserID().getValue() + " non existent ");
+        	if(!storageUserService.userExists(auth().getUserID())) 
+        		throw new BaseException("Storage user with id: "+ auth().getUserID().getValue() + " non existent ");
         	
             UserEntity userEntity = readUser();
 
@@ -123,6 +98,11 @@ public class UserService extends BaseUserIdService {
 	private void store(UserEntity userEntity){
 		if(userEntity.getExpireUser()!=null)
 			deleteExpiredUsersService.scheduleExpiry(userEntity);
-		store(userIDAuth, FQNUtils.userFQN(), userEntity);		
+		store(FQNUtils.userFQN(), valueType(), userEntity);		
 	}
+	
+	private static TypeReference<UserEntity> valueType(){
+		return new TypeReference<UserEntity>() {};
+	}
+	
 }

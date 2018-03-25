@@ -83,15 +83,15 @@ public class PaymentService extends BaseUserIdService {
     }
 	
 	public Optional<PaymentEntity> findPayment(String accessId, String accountId, String paymentId){
-		return find(paymentId, PaymentEntity.class, listType(), FQNUtils.paymentsFQN(accessId, accessId), userIDAuth);
+		return find(paymentId, PaymentEntity.class, listType(), FQNUtils.paymentsFQN(accessId, accessId));
 	}
 
     private void create(PaymentEntity payment) {
-    	updateList(Collections.singletonList(payment), PaymentEntity.class, listType(), paymentsFQN(payment), userIDAuth);
+    	updateList(Collections.singletonList(payment), PaymentEntity.class, listType(), paymentsFQN(payment));
 	}
 	
 	private void delete(PaymentEntity payment) {
-		deleteList(Collections.singletonList(payment), PaymentEntity.class, listType(), paymentsFQN(payment), userIDAuth);
+		deleteList(Collections.singletonList(payment), PaymentEntity.class, listType(), paymentsFQN(payment));
 	}
 
     private static DocumentFQN paymentsFQN(PaymentEntity target){

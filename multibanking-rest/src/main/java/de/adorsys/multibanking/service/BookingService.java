@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 import org.adorsys.docusafe.business.types.complex.DSDocument;
 import org.adorsys.docusafe.business.types.complex.DocumentFQN;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +26,6 @@ import de.adorsys.multibanking.domain.BankAccountEntity;
 import de.adorsys.multibanking.domain.BankEntity;
 import de.adorsys.multibanking.domain.BookingEntity;
 import de.adorsys.multibanking.domain.BookingFile;
-import de.adorsys.multibanking.domain.StandingOrderEntity;
 import de.adorsys.multibanking.exception.ResourceNotFoundException;
 import de.adorsys.multibanking.service.base.BaseUserIdService;
 import de.adorsys.multibanking.service.helper.BookingHelper;
@@ -37,7 +35,6 @@ import domain.BankApi;
 import domain.BankApiUser;
 import domain.Booking;
 import domain.LoadBookingsResponse;
-import domain.StandingOrder;
 import exception.InvalidPinException;
 import spi.OnlineBankingService;
 import utils.Utils;
@@ -61,9 +58,11 @@ public class BookingService extends BaseUserIdService {
     @Autowired
     private UserService userService;
     @Autowired
-    private AccountSynchService accountSynchService;
+    private AccountSynchPrefService accountSynchService;
     @Autowired
     private OnlineBankingServiceProducer bankingServiceProducer;
+    @Autowired
+    private StandingOrderService standingOrderService;
     
     /**
      * Read and returns the booking file for a given period. Single bookings are not deserialized in
@@ -79,7 +78,7 @@ public class BookingService extends BaseUserIdService {
     	if(accountSynchResult.getBookingFileExts().contains(period))
     		throw new ResourceNotFoundException(Booking.class, 
     				FQNUtils.bookingFQN(accessId,accountId,period).getValue());
-        return loadDocument(userIDAuth, FQNUtils.bookingFQN(accessId,accountId,period));
+        return loadDocument(FQNUtils.bookingFQN(accessId,accountId,period));
     }
 
     public List<BookingEntity> listBookings(String accessId, String accountId, String period) {
@@ -87,7 +86,7 @@ public class BookingService extends BaseUserIdService {
     	if(accountSynchResult.getBookingFileExts().contains(period))
     		throw new ResourceNotFoundException(Booking.class, 
     				FQNUtils.bookingFQN(accessId,accountId,period).getValue());
-    	return load(userIDAuth, FQNUtils.bookingFQN(accessId,accountId,period), listType())
+    	return load(FQNUtils.bookingFQN(accessId,accountId,period), listType())
     			.orElse(Collections.emptyList());
     }
     
@@ -158,7 +157,7 @@ public class BookingService extends BaseUserIdService {
                     }));
             String period = entry.getKey();
 			DocumentFQN bookingFQN = FQNUtils.bookingFQN(bankAccess.getId(),bankAccount.getId(),period);
-			List<BookingEntity> existingBookings = load(userIDAuth, bookingFQN, listType())
+			List<BookingEntity> existingBookings = load(bookingFQN, listType())
 					.orElse(Collections.emptyList());
             bookingEntities = mergeBookings(existingBookings,bookingEntities);
 
@@ -175,10 +174,10 @@ public class BookingService extends BaseUserIdService {
             // Sort and store bookings
             Collections.sort(bookingEntities, (o1, o2) -> o2.getBookingDate().compareTo(o1.getBookingDate()));
             if (bankAccess.isStoreBookings()) {
-            	store(userIDAuth, bookingFQN, bookingEntities);
+            	store(bookingFQN, listType(), bookingEntities);
             }
 		}
-        saveStandingOrders(bankAccount, response.getStandingOrders());
+        standingOrderService.saveStandingOrders(bankAccount, response.getStandingOrders());
         bankAccountService.updateSyncStatus(bankAccount.getBankAccessId(), bankAccount.getId(), BankAccount.SyncStatus.READY);
         accountSynchService.updateSyncStatus(bankAccount.getBankAccessId(), bankAccount.getId(), BankAccount.SyncStatus.READY);
         
@@ -188,20 +187,6 @@ public class BookingService extends BaseUserIdService {
         	// anonymize and store booking
         	analyticsService.startAccountAnalytics(bankAccount.getBankAccessId(), bankAccount.getId());
         }
-    }
-
-    private void saveStandingOrders(BankAccountEntity bankAccount, List<StandingOrder> standingOrders) {
-        List<StandingOrderEntity> standingOrderEntities = standingOrders.stream()
-                .map(booking -> {
-                    StandingOrderEntity target = new StandingOrderEntity();
-                    BeanUtils.copyProperties(booking, target);
-                    target.setAccountId(bankAccount.getId());
-                    target.setUserId(bankAccount.getUserId());
-                    return target;
-                })
-                .collect(Collectors.toList());
-        DocumentFQN standingOrdersFQN = FQNUtils.standingOrdersFQN(bankAccount.getBankAccessId(), bankAccount.getId());
-        store(userIDAuth, standingOrdersFQN, standingOrderEntities);
     }
 
     private LoadBookingsResponse loadBookingsOnline(BankApi bankApi, BankAccessEntity bankAccess, BankAccountEntity bankAccount, String pin) {

@@ -27,7 +27,7 @@ public class SystemBookingCategoryService extends BaseSystemIdService {
      * @return
      */
 	public DSDocument getStaticBookingCategories() {
-    	return loadDocument(userIDAuth(), CategoryUtils.bookingCategoriesFQN);
+    	return loadDocument(CategoryUtils.bookingCategoriesFQN);
 	}
 
 	/**
@@ -37,21 +37,21 @@ public class SystemBookingCategoryService extends BaseSystemIdService {
 	 */
 	public void createOrUpdateStaticCategory(CategoryEntity categoryEntity) {
 		updateList(Collections.singletonList(categoryEntity), CategoryEntity.class, listType(), 
-				CategoryUtils.bookingCategoriesFQN, userIDAuth());
+				CategoryUtils.bookingCategoriesFQN);
 	}
 	
 	public void createOrUpdateStaticCategories(List<CategoryEntity> categoryEntities) {
-		updateList(categoryEntities, CategoryEntity.class, listType(), CategoryUtils.bookingCategoriesFQN, userIDAuth());
+		updateList(categoryEntities, CategoryEntity.class, listType(), CategoryUtils.bookingCategoriesFQN);
 	}
 	
 	public void replceStaticCategories(List<CategoryEntity> categoryEntities) {
-		replaceList(categoryEntities, CategoryEntity.class, CategoryUtils.bookingCategoriesFQN, userIDAuth());
+		replaceList(categoryEntities, CategoryEntity.class, listType(), CategoryUtils.bookingCategoriesFQN);
 	}
 	public boolean deleteStaticCategory(String categoryId) {
 		return deleteStaticCategories(Collections.singletonList(categoryId));
 	}
 	public boolean deleteStaticCategories(List<String> categoryIds) {
-		return deleteListById(categoryIds, CategoryEntity.class, listType(), CategoryUtils.bookingCategoriesFQN, userIDAuth())>0;
+		return deleteListById(categoryIds, CategoryEntity.class, listType(), CategoryUtils.bookingCategoriesFQN)>0;
 	}
 	
 	private static TypeReference<List<CategoryEntity>> listType(){

@@ -29,9 +29,9 @@ public class AccountAnalyticsController extends BaseController {
     
     @RequestMapping(method = RequestMethod.GET)
     public @ResponseBody ResponseEntity<ByteArrayResource> getAccountAnalytics(@PathVariable String accessId, @PathVariable String accountId) {
-        LOGGER.info("Start getAccountAnalytics for " + userIDAuth + " " + accessId + " " + accountId);
+        LOGGER.info("Start getAccountAnalytics for " + userId() + " " + accessId + " " + accountId);
     	DSDocument dsDocument = analyticsService.loadDomainAnalytics(accessId,accountId);
-        LOGGER.info("finished getAccountAnalytics for "  + userIDAuth + " " + dsDocument.getDocumentFQN());
+        LOGGER.info("finished getAccountAnalytics for "  + userId() + " " + dsDocument.getDocumentFQN());
     	return loadBytesForWeb(dsDocument);
     }
 }

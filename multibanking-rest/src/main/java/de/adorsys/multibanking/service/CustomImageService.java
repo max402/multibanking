@@ -22,7 +22,7 @@ public class CustomImageService extends BaseUserIdService {
 	 * @return
 	 */
 	public boolean hasImage(String imageName){
-		return documentExists(userIDAuth, FQNUtils.imageFQN(imageName));
+		return documentExists(FQNUtils.imageFQN(imageName));
 	}
 
 	/**
@@ -32,7 +32,7 @@ public class CustomImageService extends BaseUserIdService {
 	 * @return
 	 */
 	public DSDocument loadUserImage(String imageName){
-		return loadDocument(userIDAuth, FQNUtils.imageFQN(imageName));
+		return loadDocument(FQNUtils.imageFQN(imageName));
 	}
 	
 	/**
@@ -42,6 +42,6 @@ public class CustomImageService extends BaseUserIdService {
 	 * @param data
 	 */
 	public void storeUserImage(String imageName, byte[] data){
-		storeDocument(userIDAuth, FQNUtils.imageFQN(imageName), data);
+		storeDocument(FQNUtils.imageFQN(imageName), data);
 	}
 }

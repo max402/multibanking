@@ -68,7 +68,7 @@
 		</dependency>
 		<dependency>
 			<groupId>de.adorsys.cryptoutils</groupId>
-			<artifactId>filesystemstoreconnection</artifactId>
+			<artifactId>storeconnectionfactory</artifactId>
 			<version>${crypt.version}</version>
 		</dependency>
 

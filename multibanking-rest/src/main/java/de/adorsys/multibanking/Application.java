@@ -1,5 +1,6 @@
 package de.adorsys.multibanking;
 
+import org.adorsys.cryptoutils.storeconnectionfactory.ExtendedStoreConnectionFactory;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -19,7 +20,9 @@ import java.security.Security;
 @ComponentScan
 public class Application {
 
-    public static void main(String... args) throws UnknownHostException {
+    public static void main(String[] origargs) throws UnknownHostException {
+        String[] args = ExtendedStoreConnectionFactory.readArguments(origargs);
+
 		// turnOffEncPolicy();
 		Security.addProvider(new BouncyCastleProvider());
 

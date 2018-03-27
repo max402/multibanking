@@ -87,18 +87,18 @@ public class BookingHelperDateFormatTest {
 	}
 
 	@Test
-	public void testPeriod2011W02_20110104() {
-		tstBooking(BookingPeriod.WEEK, 2011, Month.JANUARY, 4, "2011W02");
+	public void testPeriod2011W01_20110104() {
+		tstBooking(BookingPeriod.WEEK, 2011, Month.JANUARY, 4, "2011W01");
 	}
 
 	@Test
-	public void testPeriod2010W53_20101228() {
-		tstBooking(BookingPeriod.WEEK, 2010, Month.DECEMBER, 28, "2010W53");
+	public void testPeriod2010W52_20101228() {
+		tstBooking(BookingPeriod.WEEK, 2010, Month.DECEMBER, 28, "2010W52");
 	}
 	
 	@Test
-	public void testPeriod2012W52_20121229() {
-		tstBooking(BookingPeriod.WEEK, 2012, Month.DECEMBER, 29, "2012W52");
+	public void testPeriod2012W53_20121229() {
+		tstBooking(BookingPeriod.WEEK, 2012, Month.DECEMBER, 29, "2012W53");
 	}
 
 	@Test

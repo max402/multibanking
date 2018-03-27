@@ -100,16 +100,20 @@ public enum BookingPeriod {
 	private static final String WEEK_FORMAT = "YYYY'W'ww";// Intentionally used year and not week year. 
 	private static final DateTimeFormatter weekFormater = new DateTimeFormatterFactory(WEEK_FORMAT).createDateTimeFormatter();
 	private static final String weekMaker(LocalDate date){
-		String week = date.format(weekFormater);
+		int dayOfYear = date.getDayOfYear();
+		int week = dayOfYear/7;
+		int cw = 1 + date.getDayOfYear()/7;
+		
+//		String week = date.format(weekFormater);
 		// Sometime week will be back to 01 if day of year if after cw52. Then we will have
 		// To manually use the cw53  of the year.
 		String year = date.format(yearFormater);
-		if(!StringUtils.startsWith(week, year)){// In case week year and year are different
-			if(StringUtils.endsWith(week, "01")){
-				week = year+"W53";// We consider this the 53d cw of the year.
-			}
-		}
-		return week;
+//		if(!StringUtils.startsWith(week, year)){// In case week year and year are different
+//			if(StringUtils.endsWith(week, "01")){
+//				week = year+"W53";// We consider this the 53d cw of the year.
+//			}
+//		}
+		return year+"W"+StringUtils.leftPad(cw+"", 2, '0');
 	}
 
 	private static final String DAY_FORMAT = "yyyyMMdd";

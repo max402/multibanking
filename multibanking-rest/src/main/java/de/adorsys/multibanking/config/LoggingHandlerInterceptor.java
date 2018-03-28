@@ -5,7 +5,6 @@
  */
 package de.adorsys.multibanking.config;
 
-import ch.qos.logback.classic.ClassicConstants;
 import org.slf4j.MDC;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -55,35 +54,38 @@ public class LoggingHandlerInterceptor extends HandlerInterceptorAdapter {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userId;
         if (authentication == null || authentication.getName().equalsIgnoreCase("anonymousUser")) {
-            userId = "ANON-"+ UUID.randomUUID();
+            userId = "ANON-" + UUID.randomUUID();
         } else {
             userId = authentication.getName();
         }
 
-        MDC.put(ClassicConstants.USER_MDC_KEY, userId);
-        MDC.put(ClassicConstants.REQUEST_REMOTE_HOST_MDC_KEY, httpServletRequest.getRemoteHost());
-        MDC.put(ClassicConstants.REQUEST_REQUEST_URI, httpServletRequest.getRequestURI());
-        MDC.put(ClassicConstants.REQUEST_METHOD, httpServletRequest.getMethod());
-        MDC.put(ClassicConstants.REQUEST_QUERY_STRING, httpServletRequest.getQueryString());
-        MDC.put(ClassicConstants.REQUEST_USER_AGENT_MDC_KEY, httpServletRequest.getHeader("User-Agent"));
-        MDC.put(ClassicConstants.REQUEST_X_FORWARDED_FOR, httpServletRequest.getHeader("X-Forwarded-For"));
+        // TODO PETER
 
+        MDC.put(MdcConstants.USER_MDC_KEY, userId);
+        MDC.put(MdcConstants.REQUEST_REMOTE_HOST_MDC_KEY, httpServletRequest.getRemoteHost());
+        MDC.put(MdcConstants.REQUEST_REQUEST_URI, httpServletRequest.getRequestURI());
+        MDC.put(MdcConstants.REQUEST_METHOD, httpServletRequest.getMethod());
+        MDC.put(MdcConstants.REQUEST_QUERY_STRING, httpServletRequest.getQueryString());
+        MDC.put(MdcConstants.REQUEST_USER_AGENT_MDC_KEY, httpServletRequest.getHeader("User-Agent"));
+        MDC.put(MdcConstants.REQUEST_X_FORWARDED_FOR, httpServletRequest.getHeader("X-Forwarded-For"));
         StringBuffer requestURL = httpServletRequest.getRequestURL();
         if (requestURL != null) {
-            MDC.put(ClassicConstants.REQUEST_REQUEST_URL, requestURL.toString());
+            MDC.put(MdcConstants.REQUEST_REQUEST_URL, requestURL.toString());
         }
+
     }
 
     void clearMDC() {
-        MDC.remove(ClassicConstants.USER_MDC_KEY);
-        MDC.remove(ClassicConstants.REQUEST_REMOTE_HOST_MDC_KEY);
-        MDC.remove(ClassicConstants.REQUEST_REQUEST_URI);
-        MDC.remove(ClassicConstants.REQUEST_QUERY_STRING);
+        // TODO PETER
+        MDC.remove(MdcConstants.USER_MDC_KEY);
+        MDC.remove(MdcConstants.REQUEST_REMOTE_HOST_MDC_KEY);
+        MDC.remove(MdcConstants.REQUEST_REQUEST_URI);
+        MDC.remove(MdcConstants.REQUEST_QUERY_STRING);
         // removing possibly inexistent item is OK
-        MDC.remove(ClassicConstants.REQUEST_REQUEST_URL);
-        MDC.remove(ClassicConstants.REQUEST_METHOD);
-        MDC.remove(ClassicConstants.REQUEST_USER_AGENT_MDC_KEY);
-        MDC.remove(ClassicConstants.REQUEST_X_FORWARDED_FOR);
+        MDC.remove(MdcConstants.REQUEST_REQUEST_URL);
+        MDC.remove(MdcConstants.REQUEST_METHOD);
+        MDC.remove(MdcConstants.REQUEST_USER_AGENT_MDC_KEY);
+        MDC.remove(MdcConstants.REQUEST_X_FORWARDED_FOR);
     }
 
 

@@ -19,7 +19,7 @@ import de.adorsys.multibanking.exception.ResourceNotFoundException;
 public class ExceptionHandlingDocumentSafeService implements DocumentSafeService {
 
 	private DocumentSafeService delegate;
-	
+
     public ExceptionHandlingDocumentSafeService(DocumentSafeService delegate) {
 		this.delegate = delegate;
 	}
@@ -175,14 +175,17 @@ public class ExceptionHandlingDocumentSafeService implements DocumentSafeService
 
 
     private static boolean isContainerNotExist(BaseException b){
+        if (b instanceof org.adorsys.encobject.exceptions.ResourceNotFoundException) {
+            return true;
+        }
 		String message = b.getMessage();
 		return StringUtils.startsWith(message, "Container") && StringUtils.endsWith(message, "does not exist");
     }
-    
+
     private static RuntimeException checkContainer(BaseException b, UserIDAuth userIDAuth){
     	return checkContainer(b, userIDAuth.getUserID());
     }
-    
+
     private static RuntimeException checkContainer(BaseException b, UserID userID){
 		if(isContainerNotExist(b)) return new ResourceNotFoundException(UserEntity.class, userID.getValue());
 		return b;

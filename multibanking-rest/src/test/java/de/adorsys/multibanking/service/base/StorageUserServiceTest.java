@@ -1,5 +1,7 @@
 package de.adorsys.multibanking.service.base;
 
+import io.minio.errors.ErrorResponseException;
+import org.adorsys.cryptoutils.exceptions.BaseException;
 import org.adorsys.docusafe.business.exceptions.UserIDAlreadyExistsException;
 import org.adorsys.docusafe.business.exceptions.UserIDDoesNotExistException;
 import org.junit.Assert;
@@ -17,17 +19,17 @@ import de.adorsys.multibanking.utils.Ids;
 
 @RunWith(SpringRunner.class)
 public class StorageUserServiceTest extends BaseServiceTest {
-    
+
 	@Autowired
 	private StorageUserService storageUserService;
-	
+
     @Test
 	public void testCreateUserAndCheckUserExists() {
     	auth(Ids.uuid(), Ids.uuid());
     	storageUserService.createUser(auth());
     	Assert.assertTrue(storageUserService.userExists(auth().getUserID()));
 	}
-    
+
 	@Test
 	public void testUserExists_false() {
     	auth(Ids.uuid(), Ids.uuid());
@@ -60,7 +62,7 @@ public class StorageUserServiceTest extends BaseServiceTest {
     	Assume.assumeFalse(storageUserService.userExists(auth().getUserID()));
     	storageUserService.deleteUser(auth());
 	}
-	
+
 	@Test
 	public void testFindPublicEncryptionKey() {
     	auth(Ids.uuid(), Ids.uuid());
@@ -68,11 +70,11 @@ public class StorageUserServiceTest extends BaseServiceTest {
     	JWK jwk = storageUserService.findPublicEncryptionKey(auth().getUserID());
     	Assert.assertNotNull(jwk);
 	}
-    
-	@Test(expected=ResourceNotFoundException.class)
+
+	@Test (expected = ResourceNotFoundException.class)
 	public void testFindPublicEncryptionKeyWrongUser() {
-    	auth(Ids.uuid(), Ids.uuid());
-    	storageUserService.findPublicEncryptionKey(auth().getUserID());
+            auth(Ids.uuid(), Ids.uuid());
+            storageUserService.findPublicEncryptionKey(auth().getUserID());
 	}
 
 }

@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import de.adorsys.multibanking.domain.BankAccessEntity;
+import de.adorsys.multibanking.exception.BankAccessAlreadyExistException;
 import de.adorsys.multibanking.web.common.BankAccessBasedController;
 
 /**
@@ -38,7 +39,7 @@ public class BankAccessController extends BankAccessBasedController {
     
     @RequestMapping(method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_UTF8_VALUE })
     public @ResponseBody ResponseEntity<List<BankAccessEntity>>  getBankAccesses() {
-    	return returnDocument(bankAccessService.getBanAccesses(), MediaType.APPLICATION_JSON_UTF8);
+    	return returnDocument(bankAccessService.getBankAccesses(), MediaType.APPLICATION_JSON_UTF8);
     }
     
     @RequestMapping(value = "/{accessId}", method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_UTF8_VALUE })
@@ -49,12 +50,16 @@ public class BankAccessController extends BankAccessBasedController {
     
     @RequestMapping(method = RequestMethod.POST)
     public HttpEntity<Void> createBankaccess(@RequestBody BankAccessEntity bankAccess) {
-    	bankAccessService.createBankAccess(bankAccess);
-    	// Trigger Perform Services operations.
-        HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(linkTo(methodOn(BankAccessController.class).getBankAccesses()).toUri());
-		LOGGER.info("Start getBankAccesses for " + userId());
-        return new ResponseEntity<>(headers, HttpStatus.CREATED);
+    	try {
+    		BankAccessEntity entity = bankAccessService.createBankAccess(bankAccess);
+    		// Trigger Perform Services operations.
+    		HttpHeaders headers = new HttpHeaders();
+    		headers.setLocation(linkTo(methodOn(BankAccessController.class).getBankAccess(entity.getId())).toUri());
+    		LOGGER.info("Bank access created for " + userId());
+    		return new ResponseEntity<>(headers, HttpStatus.CREATED);
+    	} catch(BankAccessAlreadyExistException e){
+    		return new ResponseEntity<>(HttpStatus.CONFLICT);
+    	}
     }
 
     @RequestMapping(value = "/{accessId}", method = RequestMethod.DELETE)

@@ -143,7 +143,7 @@ public class BankAccountService extends BaseUserIdService {
 
         //all accounts created in the past
         if (bankAccounts.size() == 0) {
-            throw new BankAccessAlreadyExistException();
+            throw new BankAccessAlreadyExistException(bankAccess.getId());
         }
 
         bankAccess.setBankName(bankAccounts.get(0).getBankName());

@@ -18,6 +18,7 @@ import de.adorsys.multibanking.domain.BankAccessCredentials;
 import de.adorsys.multibanking.domain.BankAccessEntity;
 import de.adorsys.multibanking.domain.BankAccountEntity;
 import de.adorsys.multibanking.domain.UserEntity;
+import de.adorsys.multibanking.exception.BankAccessAlreadyExistException;
 import de.adorsys.multibanking.exception.InvalidPinException;
 import de.adorsys.multibanking.exception.ResourceNotFoundException;
 import de.adorsys.multibanking.service.base.BaseUserIdService;
@@ -57,7 +58,14 @@ public class BankAccessService extends BaseUserIdService  {
     	// Set user and access id
     	bankAccess.setUserId(auth().getUserID().getValue());
     	// Set an accessId if none.
-    	if(StringUtils.isBlank(bankAccess.getId()))bankAccess.setId(Ids.uuid());
+    	if(StringUtils.isBlank(bankAccess.getId())){
+    		bankAccess.setId(Ids.uuid());
+    	} else {
+    		// Check bank Access with Id does not exists.
+    		if(exists(bankAccess.getId())){
+    			throw new BankAccessAlreadyExistException(bankAccess.getId());
+    		}
+    	}
 
     	BankAccessCredentials credentials = BankAccessCredentials.cloneCredentials(bankAccess);
     	// Clean credentials
@@ -85,7 +93,7 @@ public class BankAccessService extends BaseUserIdService  {
     	return bankAccess;
     }
     
-	public List<BankAccessEntity> getBanAccesses() {
+	public List<BankAccessEntity> getBankAccesses() {
 		return load(FQNUtils.bankAccessListFQN(), accessEntitiesType())
 				.orElse(Collections.emptyList());
 	}

@@ -34,7 +34,6 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>log4j-over-slf4j</artifactId>
-            <version>1.7.25</version>
         </dependency>
 
         <!-- STS -->
@@ -176,6 +175,14 @@
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
+        
+        <dependency>
+            <groupId>de.adorsys.multibanking</groupId>
+            <artifactId>onlinebanking-xls-loader</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        
     </dependencies>
 
     <build>

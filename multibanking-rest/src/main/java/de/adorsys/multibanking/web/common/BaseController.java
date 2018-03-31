@@ -48,6 +48,13 @@ public abstract class BaseController {
 				.contentType(MediaType.APPLICATION_JSON) //
 				.body(dsObjet);
 	}
+	protected <T> ResponseEntity<T> returnDocument(T dsObjet, MediaType mediaType){
+		return ResponseEntity.ok()
+				// Content-Type
+				.contentType(mediaType) //
+				.body(dsObjet);
+	}
+
 	protected ResourceNotFoundException resourceNotFound(Class<?> klass, String id) {
 		return new ResourceNotFoundException(klass, id);
 	}

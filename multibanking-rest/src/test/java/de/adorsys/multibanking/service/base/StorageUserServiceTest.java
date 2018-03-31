@@ -1,7 +1,5 @@
 package de.adorsys.multibanking.service.base;
 
-import io.minio.errors.ErrorResponseException;
-import org.adorsys.cryptoutils.exceptions.BaseException;
 import org.adorsys.docusafe.business.exceptions.UserIDAlreadyExistsException;
 import org.adorsys.docusafe.business.exceptions.UserIDDoesNotExistException;
 import org.junit.Assert;

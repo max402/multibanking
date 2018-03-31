@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import de.adorsys.multibanking.domain.BankEntity;
+import de.adorsys.onlinebanking.mock.MockBanking;
 import domain.BankApi;
 import figo.FigoBanking;
 import finapi.FinapiBanking;
@@ -24,7 +25,7 @@ public class OnlineBankingServiceProducer {
     BankService bankService;
 
     @Autowired
-    private TokenBasedMockBanking tokenBasedMockBanking;
+    private MockBanking mockBanking;
 
     private Hbci4JavaBanking hbci4JavaBanking = new Hbci4JavaBanking();
     private FigoBanking figoBanking = new FigoBanking(BankApi.FIGO);
@@ -57,7 +58,7 @@ public class OnlineBankingServiceProducer {
             case FINAPI:
                 return finapiBanking;
             case MOCK:
-                return tokenBasedMockBanking;
+                return mockBanking;
         }
         throw new IllegalStateException("unsupported bank api");
     }

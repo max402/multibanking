@@ -7,11 +7,9 @@ import lombok.Data;
  */
 @Data
 public class PaymentException extends RuntimeException {
+	private static final long serialVersionUID = -3082040997097241607L;
 
-    public PaymentException(String msg) {
-        this.message = msg;
+	public PaymentException(String msg) {
+        super(msg);
     }
-
-    private String message;
-
 }

@@ -40,7 +40,8 @@ public abstract class BaseControllerUnitTest {
 	/*
 	 * used to load json test data.
 	 */
-    protected ObjectMapper mapper = new ObjectMapper();
+	@Autowired
+    protected ObjectMapper mapper;
 	
     @MockBean
     protected UserContext userContext;
@@ -53,6 +54,10 @@ public abstract class BaseControllerUnitTest {
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
     	TestConstants.setup();		
+//        DateObjectMapperBuilder domb = new DateObjectMapperBuilder();
+//        mapper = domb.getMapperLocalDateTime();
+//        mapper = new ObjectMapper();
+    	
 	}
 
     protected void auth(String userId, String password){

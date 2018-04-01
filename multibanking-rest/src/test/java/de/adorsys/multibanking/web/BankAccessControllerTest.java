@@ -44,12 +44,8 @@ public class BankAccessControllerTest extends BaseControllerUnitTest {
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
         this.mockMvc = MockMvcBuilders.standaloneSetup(bankAccessController).build();
-        try {
-            InputStream stream = this.getClass().getClassLoader().getResourceAsStream("BankAccessControllerTest/bank_access.json");
-            bankAccesses = Arrays.asList(mapper.readValue(stream, BankAccessEntity[].class));
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
+        InputStream stream = this.getClass().getClassLoader().getResourceAsStream("BankAccessControllerTest/bank_access.json");
+        bankAccesses = Arrays.asList(mapper.readValue(stream, BankAccessEntity[].class));
 	}
 
 	@Test

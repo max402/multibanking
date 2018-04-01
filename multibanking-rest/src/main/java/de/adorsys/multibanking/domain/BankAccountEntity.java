@@ -1,5 +1,9 @@
 package de.adorsys.multibanking.domain;
 
+import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import de.adorsys.multibanking.domain.common.IdentityIf;
 import domain.BankAccount;
 import lombok.Data;
@@ -26,4 +30,12 @@ public class BankAccountEntity extends BankAccount implements IdentityIf {
         this.bankAccessId = bankAccessId;
         return this;
     }
+
+	@Override
+	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+	public LocalDateTime getLastSync() {
+		return super.getLastSync();
+	}
+    
+    
 }

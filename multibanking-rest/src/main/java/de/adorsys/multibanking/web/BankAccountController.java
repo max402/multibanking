@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,18 +29,19 @@ import domain.BankApi;
 @UserResource
 @RestController
 @SuppressWarnings("unused")
-@RequestMapping(path = "api/v1/bankaccesses/{accessId}/accounts")
+@RequestMapping(path = BankAccountController.BASE_PATH)
 public class BankAccountController extends BankAccountBasedController {
+	public static final String BASE_PATH = "/api/v1/bankaccesses/{accessId}/accounts"; 
 
-    private static final Logger log = LoggerFactory.getLogger(BankAccountController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BankAccountController.class);
 
     @Autowired
     private BookingService bookingService;
 
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_UTF8_VALUE })
     public ResponseEntity<List<BankAccountEntity>> getBankAccounts(@PathVariable String accessId) {
     	checkBankAccessExists(accessId);
-    	return returnDocument(bankAccountService.loadForBankAccess(accessId));
+    	return returnDocument(bankAccountService.loadForBankAccess(accessId), MediaType.APPLICATION_JSON_UTF8);
     }
 
     @RequestMapping(value = "/{accountId}", method = RequestMethod.GET)

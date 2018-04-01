@@ -87,8 +87,7 @@ public class BankAccessControllerTest extends BaseControllerUnitTest {
 	@Test
 	public void testGetBankAccess404NotFound() throws Exception {
 		String access_id = "5a998c0c7077e800014ca672";
-		Optional<BankAccessEntity> bankAccess = Optional.empty();
-        BDDMockito.when(bankAccessService.loadbankAccess(access_id)).thenReturn(bankAccess);
+        BDDMockito.when(bankAccessService.loadbankAccess(access_id)).thenReturn(Optional.empty());
 
         mockMvc.perform(MockMvcRequestBuilders.get(idPath().build().toString(), access_id).contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON_VALUE)).andExpect(MockMvcResultMatchers.status().isNotFound());

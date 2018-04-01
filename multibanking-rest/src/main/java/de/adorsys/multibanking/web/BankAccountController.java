@@ -50,7 +50,7 @@ public class BankAccountController extends BankAccountBasedController {
     	checkBankAccessExists(accessId);
         BankAccountEntity bankAccountEntity = bankAccountService.loadBankAccount(accessId, accountId)
                 .orElseThrow(() -> new ResourceNotFoundException(BankAccountEntity.class, accountId));
-        return returnDocument(bankAccountEntity);
+        return returnDocument(bankAccountEntity, MediaType.APPLICATION_JSON_UTF8);
     }
 
     @RequestMapping(path = "/{accountId}/sync", method = RequestMethod.PUT)

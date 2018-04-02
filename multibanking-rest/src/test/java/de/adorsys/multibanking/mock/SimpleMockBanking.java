@@ -36,7 +36,15 @@ public class SimpleMockBanking extends MockBanking {
 	
 	public SimpleMockBanking() {
 		try {
-			load();
+			load(null, null, null);
+		} catch (IOException e) {
+			throw new IllegalStateException(e);
+		}
+	}
+
+	public SimpleMockBanking(InputStream bookingCategoryStream, InputStream banksStream, InputStream bookingsStream) {
+		try {
+			load(bookingCategoryStream, banksStream, bookingsStream);
 		} catch (IOException e) {
 			throw new IllegalStateException(e);
 		}
@@ -79,12 +87,16 @@ public class SimpleMockBanking extends MockBanking {
 	private List<? extends Bank> banks;
 	private ObjectMapper mapper = new ObjectMapper();
 	private DataMap data = new DataMap();
-	private void load() throws IOException {
-		InputStream stream = SimpleMockBanking.class.getClassLoader().getResourceAsStream("booking_category.json");
-		bookingCategoryData = mapper.readValue( stream, BookingCategoryData.class );
-
-		InputStream inputStream = SimpleMockBanking.class.getClassLoader().getResourceAsStream("mock_bank.json");
-		banks = mapper.readValue(inputStream, new TypeReference<List<XLSBank>>(){});
+	private void load(InputStream bookingCategoryStream, InputStream banksStream, InputStream bookingsStream) throws IOException {
+		if(bookingCategoryStream==null)
+			bookingCategoryStream = SimpleMockBanking.class.getClassLoader().getResourceAsStream("booking_category.json");
+		
+		bookingCategoryData = mapper.readValue( bookingCategoryStream, BookingCategoryData.class );
+		
+		if(banksStream==null)
+			banksStream = SimpleMockBanking.class.getClassLoader().getResourceAsStream("mock_bank.json");
+		
+		banks = mapper.readValue(banksStream, new TypeReference<List<XLSBank>>(){});
 
 		BankAccesLoader bankAccesLoader = new BankAccesLoader(data);
 		MockBankCatalogue bankCatalogue = new MockBankCatalogue();
@@ -93,8 +105,11 @@ public class SimpleMockBanking extends MockBanking {
 		BookingLoader bookingLoader = new BookingLoader(data);
 		StandingOrderLoader standingOrderLoader = new StandingOrderLoader(data);
 		DataSheetLoader dataSheetLoader = new DataSheetLoader(bankAccesLoader, bankAccountLoader, bookingLoader, standingOrderLoader);
-		InputStream dataStream = SimpleMockBanking.class.getClassLoader().getResourceAsStream("test_data.xls");
-		dataSheetLoader.loadDataSheet(dataStream);
+		
+		if(bookingsStream==null)
+			bookingsStream = SimpleMockBanking.class.getClassLoader().getResourceAsStream("test_data.xls");
+		
+		dataSheetLoader.loadDataSheet(bookingsStream);
 	}
 	
 }

@@ -95,7 +95,7 @@ public class BankAccountControllerTest extends BaseControllerUnitTest {
 	}
 	
 	@Test
-	public void testSyncBookings400BadBankAccess() throws Exception {
+	public void testSyncBookings404BadBankAccess() throws Exception {
 		BDDMockito.when(bankAccessService.loadbankAccess(bankAccessId)).thenReturn(Optional.empty());
         mockMvc.perform(MockMvcRequestBuilders.put(idPath().path("/sync").build().toString(), bankAccessId, accountId)
         		.contentType(MediaType.APPLICATION_JSON)
@@ -104,7 +104,7 @@ public class BankAccountControllerTest extends BaseControllerUnitTest {
 	}
 	
 	@Test
-	public void testSyncBookings400BadBankAccount() throws Exception {
+	public void testSyncBookings404BadBankAccount() throws Exception {
 		BDDMockito.when(bankAccessService.loadbankAccess(bankAccessId)).thenReturn(Optional.of(bankAccesses.get(0)));
 		BDDMockito.when(bankAccountService.loadBankAccount(bankAccessId, accountId)).thenReturn(Optional.empty());
         mockMvc.perform(MockMvcRequestBuilders.put(idPath().path("/sync").build().toString(), bankAccessId, accountId)
@@ -114,7 +114,7 @@ public class BankAccountControllerTest extends BaseControllerUnitTest {
 	}
 	
 	@Test
-	public void testSyncBookingsOngoingSynch() throws Exception {
+	public void testSyncBookings102OngoingSynch() throws Exception {
 		BDDMockito.when(bankAccessService.loadbankAccess(bankAccessId)).thenReturn(Optional.of(bankAccesses.get(0)));
 		BDDMockito.when(bankAccountService.loadBankAccount(bankAccessId, accountId)).thenReturn(Optional.of(bankAccounts.get(0)));
 		BDDMockito.when(bankAccountService.getSyncStatus(bankAccessId, accountId)).thenReturn(BankAccount.SyncStatus.SYNC);

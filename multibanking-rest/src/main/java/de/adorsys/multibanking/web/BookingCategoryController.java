@@ -3,8 +3,6 @@ package de.adorsys.multibanking.web;
 import java.io.IOException;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-
 import org.adorsys.docusafe.business.types.complex.DSDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,8 +36,9 @@ import de.adorsys.multibanking.web.common.BaseController;
  */
 @UserResource
 @RestController
-@RequestMapping(path = "api/v1/analytics/categories")
+@RequestMapping(path = BookingCategoryController.BASE_PATH)
 public class BookingCategoryController extends BaseController {
+	public static final String BASE_PATH = "/api/v1/analytics/categories"; 
 
     private static final Logger log = LoggerFactory.getLogger(BookingCategoryController.class);
     private static final ObjectMapper YAML_OBJECT_MAPPER = yamlObjectMapper();

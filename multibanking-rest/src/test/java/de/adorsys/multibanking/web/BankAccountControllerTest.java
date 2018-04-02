@@ -129,7 +129,6 @@ public class BankAccountControllerTest extends BaseControllerUnitTest {
 		BDDMockito.when(bankAccessService.loadbankAccess(bankAccessId)).thenReturn(Optional.of(bankAccesses.get(0)));
 		BDDMockito.when(bankAccountService.loadBankAccount(bankAccessId, accountId)).thenReturn(Optional.of(bankAccounts.get(0)));
 		BDDMockito.when(bankAccountService.getSyncStatus(bankAccessId, accountId)).thenReturn(BankAccount.SyncStatus.READY);
-//		BDDMockito.when(bookingService.syncBookings(bankAccesses.get(0), bankAccounts.get(0), null, null).thenReturn();
         mockMvc.perform(MockMvcRequestBuilders.put(idPath().path("/sync").build().toString(), bankAccessId, accountId)
         		.contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON_VALUE))

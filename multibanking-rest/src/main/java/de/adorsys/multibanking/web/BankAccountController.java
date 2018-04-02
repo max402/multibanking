@@ -44,7 +44,7 @@ public class BankAccountController extends BankAccountBasedController {
     	return returnDocument(bankAccountService.loadForBankAccess(accessId), MediaType.APPLICATION_JSON_UTF8);
     }
 
-    @RequestMapping(value = "/{accountId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/{accountId}", method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_UTF8_VALUE })
     public ResponseEntity<BankAccountEntity> getBankAccount(
     		@PathVariable String accessId, @PathVariable("accountId") String accountId) {
     	checkBankAccessExists(accessId);

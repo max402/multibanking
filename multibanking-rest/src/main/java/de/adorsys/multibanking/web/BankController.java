@@ -1,8 +1,8 @@
 package de.adorsys.multibanking.web;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,8 +22,9 @@ import de.adorsys.multibanking.web.common.BaseController;
  */
 @UserResource
 @RestController
-@RequestMapping(path = "api/v1/bank")
+@RequestMapping(path = BankController.BASE_PATH)
 public class BankController extends BaseController {
+	public static final String BASE_PATH = "/api/v1/bank"; 
 
 	@Autowired
 	BankService bankService;
@@ -32,11 +33,11 @@ public class BankController extends BaseController {
 	public ResponseEntity<BankEntity> getBank(@PathVariable String bankCode) {
 		BankEntity bankEntity = bankService.findByBankCode(bankCode)
 				.orElseThrow(() -> new ResourceNotFoundException(BankEntity.class, bankCode));
-		return returnDocument(bankEntity);
+		return returnDocument(bankEntity, MediaType.APPLICATION_JSON_UTF8);
 	}
 
-	@GetMapping
-	public  ResponseEntity<List<BankEntity>> searchBank(@RequestParam String query) {
-		return returnDocument(bankService.load());
+    @RequestMapping(method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_UTF8_VALUE }, params="query")
+	public  ResponseEntity<ByteArrayResource> searchBank(@RequestParam(name="query") String query) {
+		return loadBytesForWeb(bankService.search(query), MediaType.APPLICATION_JSON_UTF8);
 	}
 }

@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import org.adorsys.docusafe.business.types.complex.DSDocument;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -31,8 +32,8 @@ public class BankService extends BaseSystemIdService {
 				.orElse(Collections.emptyList());
 	}
 
-	public List<BankEntity> search(String string) {
-		return null;
+	public DSDocument search(String string) {
+		return loadDocument(FQNUtils.banksFQN());
 	}
 	
     public void importBanks(InputStream inputStream) throws IOException {

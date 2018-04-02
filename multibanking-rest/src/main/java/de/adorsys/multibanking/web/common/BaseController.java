@@ -26,7 +26,7 @@ public abstract class BaseController {
 		byte[] data = dsDocument.getDocumentContent().getValue();
 		return ResponseEntity.ok()
 				// Content-Type
-				.contentType(MediaType.APPLICATION_JSON) //
+				.contentType(MediaType.APPLICATION_JSON_UTF8) //
 				// Content-Lengh
 				.contentLength(data.length) //
 				.body(new ByteArrayResource(data));

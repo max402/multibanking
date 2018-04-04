@@ -18,10 +18,12 @@ import org.springframework.web.bind.annotation.RestController;
 import de.adorsys.multibanking.domain.BankAccessEntity;
 import de.adorsys.multibanking.domain.BankAccountEntity;
 import de.adorsys.multibanking.domain.PaymentEntity;
+import de.adorsys.multibanking.domain.UserData;
 import de.adorsys.multibanking.exception.ResourceNotFoundException;
 import de.adorsys.multibanking.service.BankAccessService;
 import de.adorsys.multibanking.service.BankAccountService;
 import de.adorsys.multibanking.service.PaymentService;
+import de.adorsys.multibanking.service.UserDataService;
 import de.adorsys.multibanking.web.common.BaseController;
 import domain.Payment;
 import lombok.Data;
@@ -41,6 +43,8 @@ public class PaymentController extends BaseController {
     private BankAccountService bankAccountService;
     @Autowired
     private PaymentService paymentService;
+    @Autowired
+    private UserDataService uds;
 
     @RequestMapping(value = "/{paymentId}", method = RequestMethod.GET)
     public Resource<PaymentEntity> getPayment(@PathVariable String accessId, @PathVariable String accountId, @PathVariable String paymentId) {
@@ -52,11 +56,14 @@ public class PaymentController extends BaseController {
     @RequestMapping(method = RequestMethod.POST)
     public HttpEntity<Void> createPayment(@PathVariable String accessId, @PathVariable String accountId, @RequestBody CreatePaymentRequest paymentRequest) {
 
-    	BankAccessEntity bankAccessEntity= bankAccessService.loadbankAccess(accessId)
-    			.orElseThrow(() -> new ResourceNotFoundException(BankAccessEntity.class, accessId));
+    	UserData userData = uds.load();
+    	BankAccessEntity bankAccessEntity = userData.bankAccessData(accessId).getBankAccess();
+//    	BankAccessEntity bankAccessEntity= bankAccessService.loadbankAccess(accessId)
+//    			.orElseThrow(() -> new ResourceNotFoundException(BankAccessEntity.class, accessId));
     	
-    	BankAccountEntity bankAccountEntity = bankAccountService.loadBankAccount(accessId, accountId)
-				.orElseThrow(() -> new ResourceNotFoundException(BankAccountEntity.class, accountId));
+    	BankAccountEntity bankAccountEntity = userData.bankAccountData(accessId, accountId).getBankAccount();
+//    	BankAccountEntity bankAccountEntity = bankAccountService.loadBankAccount(accessId, accountId)
+//				.orElseThrow(() -> new ResourceNotFoundException(BankAccountEntity.class, accountId));
 
         PaymentEntity payment = paymentService.createPayment(bankAccessEntity, bankAccountEntity, paymentRequest.getPin(), paymentRequest.getPayment());
 
@@ -68,8 +75,8 @@ public class PaymentController extends BaseController {
     @RequestMapping(value = "/{paymentId}/submit", method = RequestMethod.POST)
     public HttpEntity<Void> submitPayment(@PathVariable String accessId, @PathVariable String accountId, @PathVariable String paymentId, @RequestBody SubmitPaymentRequest paymentRequest) {
         
-    	BankAccessEntity bankAccessEntity= bankAccessService.loadbankAccess(accessId)
-    			.orElseThrow(() -> new ResourceNotFoundException(BankAccessEntity.class, accessId));
+//    	BankAccessEntity bankAccessEntity= bankAccessService.loadbankAccess(accessId)
+//    			.orElseThrow(() -> new ResourceNotFoundException(BankAccessEntity.class, accessId));
 
         if (!bankAccountService.exists(accessId, accountId)) {
             throw new ResourceNotFoundException(BankAccountEntity.class, accountId);
@@ -77,8 +84,8 @@ public class PaymentController extends BaseController {
 
         PaymentEntity paymentEntity = paymentService.findPayment(accessId, accountId, paymentId)
                 .orElseThrow(() -> new ResourceNotFoundException(PaymentEntity.class, paymentId));
-
-        paymentService.submitPayment(paymentEntity, bankAccessEntity.getBankCode(), paymentRequest.getTan());
+        String bankCode = uds.load().bankAccessData(accessId).getBankAccess().getBankCode();
+        paymentService.submitPayment(paymentEntity, bankCode, paymentRequest.getTan());
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

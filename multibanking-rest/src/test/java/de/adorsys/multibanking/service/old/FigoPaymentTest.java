@@ -27,6 +27,7 @@ import de.adorsys.multibanking.service.BankAccountService;
 import de.adorsys.multibanking.service.BookingService;
 import de.adorsys.multibanking.service.OnlineBankingServiceProducer;
 import de.adorsys.multibanking.service.PaymentService;
+import de.adorsys.multibanking.service.UserDataService;
 import de.adorsys.multibanking.service.UserService;
 import domain.BankApi;
 import domain.Payment;
@@ -52,6 +53,8 @@ public class FigoPaymentTest {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private UserDataService uds;
 
     @MockBean
     private OnlineBankingServiceProducer bankingServiceProducer;
@@ -86,12 +89,13 @@ public class FigoPaymentTest {
         bankAccessEntity.setCategorizeBookings(false);
         bankAccessEntity.setStoreAnalytics(false);
 
-        List<BankAccountEntity> bankAccountEntities = bankAccountService.loadForBankAccess(bankAccessEntity.getId());
+        List<BankAccountEntity> bankAccountEntities = uds.load().bankAccessData(bankAccessEntity.getId()).getBankAccountEntityAsList();
+//        List<BankAccountEntity> bankAccountEntities = bankAccountService.loadForBankAccess(bankAccessEntity.getId());
         BankAccountEntity bankAccountEntitity = bankAccountEntities.stream()
                 .filter(bankAccountEntity -> bankAccountEntity.getAccountNumber().equals("12324463"))
                 .findFirst().get();
 
-        bookingService.syncBookings(bankAccessEntity, bankAccountEntitity, BankApi.FIGO, System.getProperty("pin"));
+        bookingService.syncBookings(bankAccessEntity.getId(), bankAccountEntitity.getId(), BankApi.FIGO, System.getProperty("pin"));
 
         PaymentEntity paymentEntity = new PaymentEntity();
         paymentEntity.setReceiverIban("receiver_iban_needed_here");

@@ -38,268 +38,305 @@ import de.adorsys.multibanking.utils.Ids;
 
 @Service
 public abstract class BaseService {
-    private final static Logger LOGGER = LoggerFactory.getLogger(BaseService.class);
+	private final static Logger LOGGER = LoggerFactory.getLogger(BaseService.class);
 
-    @Autowired
-    private DocumentSafeService documentSafeService;
+	@Autowired
+	private DocumentSafeService documentSafeService;
 
-    @Autowired
-    protected ObjectMapper objectMapper;
+	@Autowired
+	protected ObjectMapper objectMapper;
 
-    protected abstract UserContext user();
+	protected abstract UserContext user();
 
-    protected abstract UserIDAuth auth();
+	protected abstract UserIDAuth auth();
 
-    private UserContextCache userContextCache;
+	private UserContextCache userContextCache;
 
-    @PostConstruct
-    public void postConstruct() {
-        userContextCache = new UserContextCache(user());
-    }
+	@PostConstruct
+	public void postConstruct() {
+		userContextCache = new UserContextCache(user());
+	}
 
-    protected UserContextCache userContextCache() {
-        return userContextCache;
-    }
+	protected UserContextCache userContextCache() {
+		return userContextCache;
+	}
 
-    /**
-     * Load file from location documentFQN and parse using valueType.
-     * Check and return from cache is available.
-     * Caches result it not yet done.
-     *
-     * @param documentFQN
-     * @param valueType
-     * @return
-     */
-    protected <T> Optional<T> load(DocumentFQN documentFQN, TypeReference<T> valueType) {
-        user().getRequestCounter().load(documentFQN);
-        Optional<CacheEntry<T>> cacheHit = userContextCache().cacheHit(documentFQN, valueType);
-        if (cacheHit.isPresent()) {
-            user().getRequestCounter().cacheHit(documentFQN);
-            return cacheHit.get().getEntry();
-        }
+	/**
+	 * Load file from location documentFQN and parse using valueType. Check and
+	 * return from cache is available. Caches result it not yet done.
+	 *
+	 * @param documentFQN
+	 * @param valueType
+	 * @return
+	 */
+	protected <T> Optional<T> load(DocumentFQN documentFQN, TypeReference<T> valueType) {
+		user().getRequestCounter().load(documentFQN);
+		Optional<CacheEntry<T>> cacheHit = userContextCache().cacheHit(documentFQN, valueType);
+		if (cacheHit.isPresent()) {
+			user().getRequestCounter().cacheHit(documentFQN);
+			return cacheHit.get().getEntry();
+		}
 
-        Optional<T> ot = Optional.ofNullable(loadFunction(documentFQN, valueType));
-        userContextCache().cacheHit(documentFQN, valueType, ot, false);
-        return ot;
-    }
+		Optional<T> ot = Optional.ofNullable(loadFunction(documentFQN, valueType));
+		userContextCache().cacheHit(documentFQN, valueType, ot, false);
+		return ot;
+	}
 
-    /**
-     * Store the file in cache.
-     * If cache not supported, flush document.
-     *
-     * @param documentFQN
-     * @param valueType
-     * @param entity
-     */
-    protected <T> void store(DocumentFQN documentFQN, TypeReference<T> valueType, T entity) {
-        user().getRequestCounter().store(documentFQN);
-        boolean cacheHit = userContextCache().cacheHit(documentFQN, valueType, Optional.ofNullable(entity), true);
-        if (!cacheHit) flush(documentFQN, entity);
-    }
+	protected <T> boolean documentExists(DocumentFQN documentFQN, TypeReference<T> valueType) {
+		// Check existence in user context cache.
+		user().getRequestCounter().load(documentFQN);
 
-    /**
-     * Store an instance of this object in the list.
-     *
-     * @param t
-     * @return false if object was found and updated, false if object was created.
-     */
-    protected <T extends IdentityIf> boolean addToList(T t, TypeReference<List<T>> listType, DocumentFQN documentListFQN) {
-        List<T> list = load(documentListFQN, listType).orElse(Collections.emptyList());
-        Optional<T> persistent = list.stream().filter(p -> Ids.eq(p.getId(), t.getId())).findFirst();
-        boolean created = true;
-        if (persistent.isPresent()) {
-            // Object exists. Override properties
-            BeanUtils.copyProperties(t, persistent);
-            // Object is already in the list.
-            created = false;
-        } else {
-            // Object is not yet in the list.
-            list.add(t);
-        }
-        store(documentListFQN, listType, list);
-        LOGGER.info("Object [{}] added to list.", t.getId());
+		if (userContextCache().isCached(documentFQN, valueType))
+			return true;
 
-        return created;
-    }
+		return documentSafeService.documentExists(auth(), documentFQN);
+	}
 
-    /**
-     * Find and return the object with id from klass fron document from user.
-     *
-     * @param id
-     * @param klass
-     * @param documentListFQN
-     * @param userIDAuth
-     * @return
-     */
-    protected <T extends IdentityIf> Optional<T> find(String id, Class<T> klass, TypeReference<List<T>> listType,
-                                                      DocumentFQN documentListFQN) {
-        Optional<List<T>> listResult = load(documentListFQN, listType);
+	/**
+	 * Store the file in cache. If cache not supported, flush document.
+	 *
+	 * @param documentFQN
+	 * @param valueType
+	 * @param entity
+	 */
+	protected <T> void store(DocumentFQN documentFQN, TypeReference<T> valueType, T entity) {
+		user().getRequestCounter().store(documentFQN);
+		boolean cacheHit = userContextCache().cacheHit(documentFQN, valueType, Optional.ofNullable(entity), true);
+		if (!cacheHit)
+			flush(documentFQN, entity);
+	}
 
-        if (!listResult.isPresent()) return Optional.empty();
-        List<T> list = listResult.get();
-        return list.stream().filter(t -> Ids.eq(id, t.getId())).findFirst();
-    }
+	/**
+	 * Store an instance of this object in the list.
+	 *
+	 * @param t
+	 * @return false if object was found and updated, false if object was
+	 *         created.
+	 */
+	protected <T extends IdentityIf> boolean addToList(T t, TypeReference<List<T>> listType,
+			DocumentFQN documentListFQN) {
+		List<T> list = load(documentListFQN, listType).orElse(Collections.emptyList());
+		Optional<T> persistent = list.stream().filter(p -> Ids.eq(p.getId(), t.getId())).findFirst();
+		boolean created = true;
+		if (persistent.isPresent()) {
+			// Object exists. Override properties
+			BeanUtils.copyProperties(t, persistent);
+			// Object is already in the list.
+			created = false;
+		} else {
+			// Object is not yet in the list.
+			list.add(t);
+		}
+		store(documentListFQN, listType, list);
+		LOGGER.info("Object [{}] added to list.", t.getId());
 
-    /**
-     * Apply the function fnct on object with id-> id from class -> klass at location -> documentListFQN of user -> user
-     *
-     * @param fnct
-     * @param id
-     * @param klass
-     * @param documentListFQN
-     * @param user
-     * @return
-     */
-    protected <T extends IdentityIf, R> R apply(Function<T, R> fnct, String id, Class<T> klass, TypeReference<List<T>> listType,
-                                                DocumentFQN documentListFQN) {
-        List<T> list = load(documentListFQN, listType).orElse(Collections.emptyList());
-        // Load
-        T t = list.stream().filter(p -> Ids.eq(id, p.getId())).findFirst()
-        .orElseThrow(() -> resourceNotFound(klass, id));
+		return created;
+	}
 
-        R r = fnct.apply(t);// Apply the function.
+	/**
+	 * Find and return the object with id from klass fron document from user.
+	 *
+	 * @param id
+	 * @param klass
+	 * @param documentListFQN
+	 * @param userIDAuth
+	 * @return
+	 */
+	protected <T extends IdentityIf> Optional<T> find(String id, Class<T> klass, TypeReference<List<T>> listType,
+			DocumentFQN documentListFQN) {
+		Optional<List<T>> listResult = load(documentListFQN, listType);
 
-        store(documentListFQN, listType, list);// Store
-        return r;
-    }
+		if (!listResult.isPresent())
+			return Optional.empty();
+		List<T> list = listResult.get();
+		return list.stream().filter(t -> Ids.eq(id, t.getId())).findFirst();
+	}
 
-    protected <T extends IdentityIf> void replaceList(List<T> inputList, Class<T> klass, TypeReference<List<T>> listType, DocumentFQN documentListFQN) {
-        List<T> persList = Collections.emptyList();
-        // Add new
-        inputList.stream().forEach(n -> {
-            Ids.id(n);
-            persList.add(n);
-        });
-        store(documentListFQN, listType, persList);// Store
-    }
+	/**
+	 * Apply the function fnct on object with id-> id from class -> klass at
+	 * location -> documentListFQN of user -> user
+	 *
+	 * @param fnct
+	 * @param id
+	 * @param klass
+	 * @param documentListFQN
+	 * @param user
+	 * @return
+	 */
+	protected <T extends IdentityIf, R> R apply(Function<T, R> fnct, String id, Class<T> klass,
+			TypeReference<List<T>> listType, DocumentFQN documentListFQN) {
+		List<T> list = load(documentListFQN, listType).orElse(Collections.emptyList());
+		// Load
+		T t = list.stream().filter(p -> Ids.eq(id, p.getId())).findFirst()
+				.orElseThrow(() -> resourceNotFound(klass, id));
 
-    protected <T extends IdentityIf> void updateList(List<T> inputList, Class<T> klass, TypeReference<List<T>> listType,
-                                                     DocumentFQN documentListFQN) {
-        List<T> persList = load(documentListFQN, listType).orElse(Collections.emptyList());
-        // Existing elements.
-        List<? extends IdentityIf> foundElements = inputList.stream().filter(i -> persList.contains(i)).collect(Collectors.toList());
-        ArrayList<T> newList = new ArrayList<>(inputList);
-        newList.removeAll(foundElements);
+		R r = fnct.apply(t);// Apply the function.
 
-        // Override existing.
-        foundElements.stream().forEach(e -> {
-            int indexOf = persList.indexOf(e);
-            IdentityIf pers = persList.get(indexOf);
-            BeanUtils.copyProperties(e, pers);
-        });
+		store(documentListFQN, listType, list);// Store
+		return r;
+	}
 
-        // Add new
-        List<T> finalList = new ArrayList<>(persList);
-        newList.stream().forEach(n -> {
-            Ids.id(n);
-            finalList.add(n);
-        });
+	protected <T extends IdentityIf> void replaceList(List<T> inputList, Class<T> klass,
+			TypeReference<List<T>> listType, DocumentFQN documentListFQN) {
+		List<T> persList = Collections.emptyList();
+		// Add new
+		inputList.stream().forEach(n -> {
+			Ids.id(n);
+			persList.add(n);
+		});
+		store(documentListFQN, listType, persList);// Store
+	}
 
-        store(documentListFQN, listType, finalList);// Store
-    }
+	protected <T extends IdentityIf> void updateList(List<T> inputList, Class<T> klass, TypeReference<List<T>> listType,
+			DocumentFQN documentListFQN) {
+		List<T> persList = load(documentListFQN, listType).orElse(Collections.emptyList());
+		// Existing elements.
+		List<? extends IdentityIf> foundElements = inputList.stream().filter(i -> persList.contains(i))
+				.collect(Collectors.toList());
+		ArrayList<T> newList = new ArrayList<>(inputList);
+		newList.removeAll(foundElements);
 
-    protected <T extends IdentityIf> void deleteList(List<T> inputList, Class<T> klass, TypeReference<List<T>> listType,
-                                                     DocumentFQN documentListFQN) {
-        List<T> persList = load(documentListFQN, listType).orElse(Collections.emptyList());
-        persList.removeAll(inputList);
-        store(documentListFQN, listType, persList);// Store
-    }
+		// Override existing.
+		foundElements.stream().forEach(e -> {
+			int indexOf = persList.indexOf(e);
+			IdentityIf pers = persList.get(indexOf);
+			BeanUtils.copyProperties(e, pers);
+		});
 
-    /**
-     * Returns the number of record deleted.
-     *
-     * @param inputIdList
-     * @param klass
-     * @param documentListFQN
-     * @param user
-     * @return
-     */
-    protected <T extends IdentityIf> int deleteListById(List<String> inputIdList, Class<T> klass, TypeReference<List<T>> listType,
-                                                        DocumentFQN documentListFQN) {
-        List<T> persList = load(documentListFQN, listType).orElse(Collections.emptyList());
-        List<T> inputList = persList.stream().filter(e -> inputIdList.contains(e.getId())).collect(Collectors.toList());
-        if (!inputList.isEmpty()) {
-            persList.removeAll(inputList);
-            store(documentListFQN, listType, persList);// Store
-        }
-        return inputList.size();
-    }
+		// Add new
+		List<T> finalList = new ArrayList<>(persList);
+		newList.stream().forEach(n -> {
+			Ids.id(n);
+			finalList.add(n);
+		});
 
-    protected DSDocument loadDocument(DocumentFQN documentFQN) {
-        return documentSafeService.readDocument(auth(), documentFQN);
-    }
+		store(documentListFQN, listType, finalList);// Store
+	}
 
-    protected void storeDocument(DocumentFQN documentFQN, byte[] data) {
-        DocumentContent documentContent = new DocumentContent(data);
-        DSDocument dsDocument = new DSDocument(documentFQN, documentContent, null);
-        documentSafeService.storeDocument(auth(), dsDocument);
-    }
+	protected <T extends IdentityIf> List<T> updateList(List<T> inputList, List<T> persList) {
+		// Existing elements.
+		List<? extends IdentityIf> foundElements = inputList.stream().filter(i -> persList.contains(i))
+				.collect(Collectors.toList());
+		ArrayList<T> newList = new ArrayList<>(inputList);
+		newList.removeAll(foundElements);
 
-    protected void deleteDirectory(DocumentDirectoryFQN dirFQN) {
-        documentSafeService.deleteFolder(auth(), dirFQN);
-    }
+		// Override existing.
+		foundElements.stream().forEach(e -> {
+			int indexOf = persList.indexOf(e);
+			IdentityIf pers = persList.get(indexOf);
+			BeanUtils.copyProperties(e, pers);
+		});
 
-    protected ResourceNotFoundException resourceNotFound(Class<?> klass, String id) {
-        return new ResourceNotFoundException(klass, id);
-    }
+		// Add new
+		List<T> finalList = new ArrayList<>(persList);
+		newList.stream().forEach(n -> {
+			Ids.id(n);
+			finalList.add(n);
+		});
 
-    protected boolean documentExists(DocumentFQN documentFQN) {
-        return documentSafeService.documentExists(auth(), documentFQN);
-    }
+		return finalList;// Store
+	}
 
-    private <T> T loadFunction(DocumentFQN documentFQN, TypeReference<T> valueType) {
-        DSDocument dsDocument = loadInternal(documentFQN);
-        if (dsDocument == null) return null;
-        try {
-            return objectMapper.readValue(dsDocument.getDocumentContent().getValue(), valueType);
-        } catch (IOException e) {
-            throw new BaseException(e);
-        }
-    }
+	protected <T extends IdentityIf> void deleteList(List<T> inputList, Class<T> klass, TypeReference<List<T>> listType,
+			DocumentFQN documentListFQN) {
+		List<T> persList = load(documentListFQN, listType).orElse(Collections.emptyList());
+		persList.removeAll(inputList);
+		store(documentListFQN, listType, persList);// Store
+	}
 
-    private DSDocument loadInternal(DocumentFQN documentFQN) {
-        if (documentSafeService.documentExists(auth(), documentFQN)) {
-            return documentSafeService.readDocument(auth(), documentFQN);
-        }
-        return null;
-    }
+	/**
+	 * Returns the number of record deleted.
+	 *
+	 * @param inputIdList
+	 * @param klass
+	 * @param documentListFQN
+	 * @param user
+	 * @return
+	 */
+	protected <T extends IdentityIf> int deleteListById(List<String> inputIdList, Class<T> klass,
+			TypeReference<List<T>> listType, DocumentFQN documentListFQN) {
+		List<T> persList = load(documentListFQN, listType).orElse(Collections.emptyList());
+		List<T> inputList = persList.stream().filter(e -> inputIdList.contains(e.getId())).collect(Collectors.toList());
+		if (!inputList.isEmpty()) {
+			persList.removeAll(inputList);
+			store(documentListFQN, listType, persList);// Store
+		}
+		return inputList.size();
+	}
 
-    protected <T> void flush(DocumentFQN documentFQN, T entity) {
-        user().getRequestCounter().flush(documentFQN);
-        DocumentContent documentContent;
-        try {
-            documentContent = new DocumentContent(objectMapper.writeValueAsBytes(entity));
-        } catch (JsonProcessingException e) {
-            throw new BaseException(e);
-        }
-        DSDocument dsDocument = new DSDocument(documentFQN, documentContent, null);
-        documentSafeService.storeDocument(auth(), dsDocument);
-    }
+	protected DSDocument loadDocument(DocumentFQN documentFQN) {
+		return documentSafeService.readDocument(auth(), documentFQN);
+	}
 
-    protected <T> void delete(DocumentFQN documentFQN) {
-        user().getRequestCounter().delete(documentFQN);
-        documentSafeService.deleteDocument(auth(), documentFQN);
-    }
+	protected void storeDocument(DocumentFQN documentFQN, byte[] data) {
+		DocumentContent documentContent = new DocumentContent(data);
+		DSDocument dsDocument = new DSDocument(documentFQN, documentContent, null);
+		documentSafeService.storeDocument(auth(), dsDocument);
+	}
 
-    protected void enableCaching() {
-        user().setCacheEnabled(true);
-    }
+	protected void deleteDirectory(DocumentDirectoryFQN dirFQN) {
+		documentSafeService.deleteFolder(auth(), dirFQN);
+	}
 
-    protected void flush() {
-        if (!user().isCacheEnabled()) return;
-        Collection<Map<DocumentFQN, CacheEntry<?>>> values = user().getCache().values();
-        for (Map<DocumentFQN, CacheEntry<?>> map : values) {
-            Collection<CacheEntry<?>> collection = map.values();
-            for (CacheEntry<?> cacheEntry : collection) {
-                if (cacheEntry.isDirty()) {
-                    if (cacheEntry.getEntry().isPresent()) {
-                        flush(cacheEntry.getDocFqn(), cacheEntry.getEntry().get());
-                    } else {
-                        delete(cacheEntry.getDocFqn());
-                    }
-                }
-            }
-        }
-    }
+	protected ResourceNotFoundException resourceNotFound(Class<?> klass, String id) {
+		return new ResourceNotFoundException(klass, id);
+	}
+
+	private <T> T loadFunction(DocumentFQN documentFQN, TypeReference<T> valueType) {
+		DSDocument dsDocument = loadInternal(documentFQN);
+		if (dsDocument == null)
+			return null;
+		try {
+			return objectMapper.readValue(dsDocument.getDocumentContent().getValue(), valueType);
+		} catch (IOException e) {
+			throw new BaseException(e);
+		}
+	}
+
+	private DSDocument loadInternal(DocumentFQN documentFQN) {
+		if (documentSafeService.documentExists(auth(), documentFQN)) {
+			return documentSafeService.readDocument(auth(), documentFQN);
+		}
+		return null;
+	}
+
+	protected <T> void flush(DocumentFQN documentFQN, T entity) {
+		user().getRequestCounter().flush(documentFQN);
+		DocumentContent documentContent;
+		try {
+			documentContent = new DocumentContent(objectMapper.writeValueAsBytes(entity));
+		} catch (JsonProcessingException e) {
+			throw new BaseException(e);
+		}
+		DSDocument dsDocument = new DSDocument(documentFQN, documentContent, null);
+		documentSafeService.storeDocument(auth(), dsDocument);
+	}
+
+	protected <T> void delete(DocumentFQN documentFQN) {
+		user().getRequestCounter().delete(documentFQN);
+		documentSafeService.deleteDocument(auth(), documentFQN);
+	}
+
+	protected void enableCaching() {
+		user().setCacheEnabled(true);
+	}
+
+	protected void flush() {
+		if (!user().isCacheEnabled())
+			return;
+		Collection<Map<DocumentFQN, CacheEntry<?>>> values = user().getCache().values();
+		for (Map<DocumentFQN, CacheEntry<?>> map : values) {
+			Collection<CacheEntry<?>> collection = map.values();
+			for (CacheEntry<?> cacheEntry : collection) {
+				if (cacheEntry.isDirty()) {
+					if (cacheEntry.getEntry().isPresent()) {
+						flush(cacheEntry.getDocFqn(), cacheEntry.getEntry().get());
+					} else {
+						delete(cacheEntry.getDocFqn());
+					}
+				}
+			}
+		}
+	}
 
 }

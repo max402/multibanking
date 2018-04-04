@@ -104,7 +104,7 @@ public class MockBankingTest {
         bankAccountEntity.setIban("DE81199999993528307800");
         bankAccountEntity.setAccountNumber("765551851");
 
-        bookingService.syncBookings(bankAccessEntity, bankAccountEntity, BankApi.MOCK, "12345");
+        bookingService.syncBookings(bankAccessEntity.getId(), bankAccountEntity.getId(), BankApi.MOCK, "12345");
 
         DSDocument loadDomainAnalytics = analyticsService.loadDomainAnalytics("test-access-id", "test-account-id");
         

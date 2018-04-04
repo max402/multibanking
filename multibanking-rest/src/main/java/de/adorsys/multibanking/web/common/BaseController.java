@@ -1,8 +1,12 @@
 package de.adorsys.multibanking.web.common;
 
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+
 import org.adorsys.docusafe.business.types.complex.DSDocument;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
@@ -12,6 +16,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import de.adorsys.multibanking.auth.UserContext;
 import de.adorsys.multibanking.exception.ResourceNotFoundException;
+import de.adorsys.multibanking.web.UserDataController;
 
 public abstract class BaseController {
 
@@ -66,5 +71,9 @@ public abstract class BaseController {
 		return objectMapper;
 	}
 	
-	
+	protected HttpHeaders userDataLocationHeader(){
+		HttpHeaders headers = new HttpHeaders();
+		headers.setLocation(linkTo(methodOn(UserDataController.class).loadUserData()).toUri());
+		return headers;
+	}
 }

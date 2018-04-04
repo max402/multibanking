@@ -5,7 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
-import static org.springframework.util.Assert.isTrue;
+import static org.springframework.util.Assert.isInstanceOf;
 
 import java.util.Arrays;
 
@@ -21,10 +21,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import de.adorsys.multibanking.domain.BankAccessData;
 import de.adorsys.multibanking.domain.BankAccessEntity;
+import de.adorsys.multibanking.domain.BankAccountData;
 import de.adorsys.multibanking.domain.BankAccountEntity;
 import de.adorsys.multibanking.exception.InvalidBankAccessException;
 import de.adorsys.multibanking.exception.InvalidPinException;
+import de.adorsys.multibanking.exception.ResourceNotFoundException;
 import de.adorsys.multibanking.service.config.BaseServiceTest;
 import de.adorsys.multibanking.service.old.TestConstants;
 import de.adorsys.multibanking.service.old.TestUtil;
@@ -41,9 +44,9 @@ public class BankAccessServiceBlankTest extends BaseServiceTest {
     @MockBean
     protected OnlineBankingServiceProducer bankingServiceProducer;
     @Autowired
-    private BankAccountService bankAccountService;
-    @Autowired
     private BankAccessService bankAccessService;
+    @Autowired
+    private UserDataService uds;
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -88,7 +91,6 @@ public class BankAccessServiceBlankTest extends BaseServiceTest {
 
     @Test
     public void create_bank_access_no_accounts() {
-//        when(bankProvider.getBank(anyString())).thenReturn(new BankEntity());
         when(mockBanking.bankSupported(anyString())).thenReturn(true);
         thrown.expect(InvalidBankAccessException.class);
 
@@ -123,9 +125,8 @@ public class BankAccessServiceBlankTest extends BaseServiceTest {
                 .thenReturn(Arrays.asList(bankAccountEntity));
 
         bankAccessService.createBankAccess(bankAccessEntity);
-
-        isTrue(bankAccessService.loadbankAccess(bankAccessEntity.getId()).isPresent(), "bankaccess not exists");
-        isTrue(bankAccountService.loadBankAccount(bankAccessEntity.getId(), bankAccountEntity.getId()).isPresent(), "bankaccount not exists");
+        isInstanceOf(BankAccessData.class, uds.load().bankAccessData(bankAccessEntity.getId()));
+        isInstanceOf(BankAccountData.class, uds.load().bankAccountData(bankAccessEntity.getId(), bankAccountEntity.getId()));
     }
 
     @Test
@@ -147,23 +148,7 @@ public class BankAccessServiceBlankTest extends BaseServiceTest {
     	bankAccessService.createBankAccess(bankAccessEntity);
         boolean deleteBankAccess = bankAccessService.deleteBankAccess(bankAccessEntity.getId());
         assertThat(deleteBankAccess).isEqualTo(true);
-
-        isTrue(!bankAccessService.loadbankAccess(bankAccessEntity.getId()).isPresent(), "bankaccess shall not exists");
-    }
-
-    @Test
-    public void get_bank_code() {
-        BankAccessEntity bankAccessEntity = TestUtil.getBankAccessEntity(userId(), randomAccessId(), "49999999", "0000");
-        BankAccountEntity bankAccountEntity = TestUtil.getBankAccountEntity(bankAccessEntity, randomAccountId());
-        
-        when(mockBanking.bankSupported(anyString())).thenReturn(true);
-        when(mockBanking.loadBankAccounts(any(), any(), anyString(), anyString(), anyBoolean()))
-                .thenReturn(Arrays.asList(bankAccountEntity));
-
-    	bankAccessService.createBankAccess(bankAccessEntity);
-
-        String bankCode = bankAccessService.loadbankAccess(bankAccessEntity.getId())
-        		.orElse(null).getBankCode();
-        assertThat(bankCode).isEqualTo("49999999");
+        thrown.expect(ResourceNotFoundException.class);
+        isInstanceOf(BankAccessData.class, uds.load().bankAccessData(bankAccessEntity.getId()));
     }
 }

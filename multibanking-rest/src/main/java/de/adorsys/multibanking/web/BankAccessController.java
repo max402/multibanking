@@ -1,23 +1,15 @@
 package de.adorsys.multibanking.web;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
-
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import de.adorsys.multibanking.domain.BankAccessEntity;
@@ -36,27 +28,14 @@ public class BankAccessController extends BankAccessBasedController {
 	public static final String BASE_PATH = "/api/v1/bankaccesses"; 
 	
     private final static Logger LOGGER = LoggerFactory.getLogger(BankAccessController.class);
-    
-    @RequestMapping(method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_UTF8_VALUE })
-    public @ResponseBody ResponseEntity<List<BankAccessEntity>>  getBankAccesses() {
-    	return returnDocument(bankAccessService.getBankAccesses(), MediaType.APPLICATION_JSON_UTF8);
-    }
-    
-    @RequestMapping(value = "/{accessId}", method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_UTF8_VALUE })
-    public @ResponseBody ResponseEntity<BankAccessEntity>  getBankAccess(@PathVariable String accessId) {
-    	return returnDocument(bankAccessService.loadbankAccess(accessId)
-    			.orElseThrow(() -> resourceNotFound(BankAccessEntity.class, accessId)), MediaType.APPLICATION_JSON_UTF8);
-    }
-    
+
     @RequestMapping(method = RequestMethod.POST)
     public HttpEntity<Void> createBankaccess(@RequestBody BankAccessEntity bankAccess) {
     	try {
-    		BankAccessEntity entity = bankAccessService.createBankAccess(bankAccess);
+    		bankAccessService.createBankAccess(bankAccess);
     		// Trigger Perform Services operations.
-    		HttpHeaders headers = new HttpHeaders();
-    		headers.setLocation(linkTo(methodOn(BankAccessController.class).getBankAccess(entity.getId())).toUri());
     		LOGGER.info("Bank access created for " + userId());
-    		return new ResponseEntity<>(headers, HttpStatus.CREATED);
+    		return new ResponseEntity<>(userDataLocationHeader(), HttpStatus.CREATED);
     	} catch(BankAccessAlreadyExistException e){
     		return new ResponseEntity<>(HttpStatus.CONFLICT);
     	}
@@ -70,6 +49,6 @@ public class BankAccessController extends BankAccessBasedController {
             return new ResponseEntity<Void>(HttpStatus.GONE);
         }
 
-        return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<Void>(userDataLocationHeader(), HttpStatus.NO_CONTENT);
     }
 }

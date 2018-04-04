@@ -1,22 +1,22 @@
 package de.adorsys.multibanking.service;
 
-import java.util.Collections;
+import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 
 import org.adorsys.docusafe.business.types.complex.DocumentFQN;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import de.adorsys.multibanking.domain.BankAccessCredentials;
+import de.adorsys.multibanking.domain.BankAccessData;
 import de.adorsys.multibanking.domain.BankAccessEntity;
+import de.adorsys.multibanking.domain.BankAccountData;
 import de.adorsys.multibanking.domain.BankAccountEntity;
+import de.adorsys.multibanking.domain.UserData;
 import de.adorsys.multibanking.domain.UserEntity;
 import de.adorsys.multibanking.exception.BankAccessAlreadyExistException;
 import de.adorsys.multibanking.exception.InvalidPinException;
@@ -36,13 +36,12 @@ import spi.OnlineBankingService;
 @Service
 public class BankAccessService extends BaseUserIdService  {
 
-	private static final Logger log = LoggerFactory.getLogger(BankAccessService.class);
+	@Autowired
+    UserDataService uds;
 
 	@Autowired
     private OnlineBankingServiceProducer bankingServiceProducer;
 
-    @Autowired
-    private UserService userService;
     @Autowired
     private BankAccountService bankAccountService;
 	
@@ -92,11 +91,11 @@ public class BankAccessService extends BaseUserIdService  {
         
     	return bankAccess;
     }
-    
-	public List<BankAccessEntity> getBankAccesses() {
-		return load(FQNUtils.bankAccessListFQN(), accessEntitiesType())
-				.orElse(Collections.emptyList());
-	}
+//    
+//	public List<BankAccessEntity> getBankAccesses() {
+//		return load(FQNUtils.bankAccessListFQN(), accessEntitiesType())
+//				.orElse(Collections.emptyList());
+//	}
 
     /**
      * Update the bank access object.
@@ -109,8 +108,10 @@ public class BankAccessService extends BaseUserIdService  {
     }
 
     public boolean deleteBankAccess(String accessId) {
-		int deleted = deleteListById(Collections.singletonList(accessId), BankAccessEntity.class, accessEntitiesType(), FQNUtils.bankAccessListFQN());
-		if(deleted>0){
+    	UserData userData = uds.load();
+    	BankAccessData accessData = userData.getBankAccesses().remove(accessId);
+		if(accessData!=null){
+			uds.store(userData);
 			// TODO: for transactionality. Still check existence of these files.
 	    	removeRemoteRegistrations(accessId);
 	    	deleteDirectory(FQNUtils.bankAccessDirFQN(accessId));
@@ -138,7 +139,8 @@ public class BankAccessService extends BaseUserIdService  {
 	 * @return
 	 */
 	public boolean exists(String accessId){
-		return documentExists(FQNUtils.bankAccountsFileFQN(accessId));
+		UserData userData = uds.load();
+		return userData.getBankAccesses().containsKey(accessId);
 	}
 
 	private void invalidate(BankAccessCredentials credentials) {
@@ -154,21 +156,37 @@ public class BankAccessService extends BaseUserIdService  {
      */
 	private void storeBankAccess(BankAccessEntity bankAccess) {
 		BankAccessCredentials.cleanCredentials(bankAccess);
-		updateList(Collections.singletonList(bankAccess), 
-				BankAccessEntity.class, accessEntitiesType(), FQNUtils.bankAccessListFQN());
+		UserData userData = uds.load();
+		BankAccessData accessData = userData.getBankAccess(bankAccess.getId())
+				.orElseGet(() -> {
+					BankAccessData b = new BankAccessData();
+					userData.getBankAccesses().put(bankAccess.getId(), b);
+					return b;
+				});
+
+		accessData.setBankAccess(bankAccess);
+		uds.store(userData);
 	}
 	
-	public Optional<BankAccessEntity> loadbankAccess(String bankAcessId){
-		return find(bankAcessId, BankAccessEntity.class, 
-				accessEntitiesType(), FQNUtils.bankAccessListFQN());
-	}
+//	public Optional<BankAccessEntity> loadbankAccess(String bankAcessId){
+//		UserData userData = uds.load();
+//		if(userData.getBankAccesses().containsKey(bankAcessId)) return Optional.empty();
+//		return userData.getBankAccesses().containsKey(bankAcessId)?
+//				Optional.of(userData.getBankAccesses().get(bankAcessId).getBankAccess()):
+//					Optional.empty();
+//	}
 
 	private void removeRemoteRegistrations(String accessId) {
+		UserData userData = uds.load();
+		if(!userData.getBankAccesses().containsKey(accessId)) return;
+		BankAccessData accessData = userData.getBankAccesses().get(accessId);
+		
     	// Load bank Accounts
-		List<BankAccountEntity> bankAccountEntities = bankAccountService.loadForBankAccess(accessId);
-        UserEntity userEntity = userService.readUser();
+		Collection<BankAccountData> bankAccountDataList = accessData.getBankAccounts().values();
+        UserEntity userEntity = userData.getUserEntity();
         
-        bankAccountEntities.stream().forEach(bankAccountEntity -> {
+		bankAccountDataList.stream().forEach(bankAccountData -> {
+			BankAccountEntity bankAccountEntity = bankAccountData.getBankAccount();
 		   	bankAccountEntity.getExternalIdMap().keySet().forEach(bankApi -> {
 	   			OnlineBankingService bankingService = bankingServiceProducer.getBankingService(bankApi);
 	   			//remove remote bank api user
@@ -183,11 +201,7 @@ public class BankAccessService extends BaseUserIdService  {
 	   		});
 	   	});
 	}
-	
-	private static TypeReference<List<BankAccessEntity>> accessEntitiesType(){
-		return new TypeReference<List<BankAccessEntity>>() {};
-	}
-	
+
 	private static TypeReference<BankAccessCredentials> credentialsType(){
 		return new TypeReference<BankAccessCredentials>() {};
 	}

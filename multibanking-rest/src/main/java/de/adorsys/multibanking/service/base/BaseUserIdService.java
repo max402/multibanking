@@ -1,13 +1,10 @@
 package de.adorsys.multibanking.service.base;
 
-import javax.annotation.PostConstruct;
-
 import org.adorsys.docusafe.business.types.complex.UserIDAuth;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import de.adorsys.multibanking.auth.UserContext;
-import de.adorsys.multibanking.auth.UserContextCache;
 
 /**
  * Services that access the repository of the current user use this service.

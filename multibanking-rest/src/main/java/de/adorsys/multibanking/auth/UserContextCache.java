@@ -5,8 +5,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.adorsys.docusafe.business.types.complex.DocumentFQN;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -32,6 +30,23 @@ public class UserContextCache {
 		return Optional.ofNullable(cacheEntry);
 	}
 
+	/**
+	 * Checks if a document is in the cache.
+	 * 
+	 * @param documentFQN
+	 * @param valueType
+	 * @return
+	 */
+	public <T> boolean isCached(DocumentFQN documentFQN, TypeReference<T> valueType){
+		if(!userContext.isCacheEnabled()) return false;
+		
+		if(valueType==null) return false;
+		
+		Map<DocumentFQN, CacheEntry<?>> typeCache = typeCache(valueType);
+		CacheEntry<T> cacheEntry = (CacheEntry<T>) typeCache.get(documentFQN);
+		return cacheEntry!=null;
+	}
+	
 	/**
 	 * @param documentFQN
 	 * @param valueType

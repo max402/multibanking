@@ -8,12 +8,10 @@ import org.adorsys.cryptoutils.exceptions.BaseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-
+import de.adorsys.multibanking.domain.UserData;
 import de.adorsys.multibanking.domain.UserEntity;
 import de.adorsys.multibanking.service.base.BaseUserIdService;
 import de.adorsys.multibanking.service.base.StorageUserService;
-import de.adorsys.multibanking.utils.FQNUtils;
 import domain.BankApi;
 import domain.BankApiUser;
 import spi.OnlineBankingService;
@@ -32,7 +30,9 @@ public class UserService extends BaseUserIdService {
     @Autowired
     private StorageUserService storageUserService;
     @Autowired
-    DeleteExpiredUsersService deleteExpiredUsersService;
+    private DeleteExpiredUsersService deleteExpiredUsersService;
+    @Autowired
+    private UserDataService uds;
 
 	/**
 	 * Read the user or throw an illegal state exception if the user does not exist. This
@@ -40,8 +40,7 @@ public class UserService extends BaseUserIdService {
 	 * @return
 	 */
 	public UserEntity readUser(){
-		return load(FQNUtils.userFQN(), valueType())
-				.orElseThrow(() -> resourceNotFound(UserEntity.class, auth().getUserID().getValue()));
+		return uds.load().getUserEntity();
 	}
 
     /**
@@ -49,11 +48,17 @@ public class UserService extends BaseUserIdService {
      */
     public UserEntity createUser(Date expire) {
     	storageUserService.createUser(auth());
+
     	UserEntity userEntity = new UserEntity();
     	userEntity.setApiUser(new ArrayList<>());
     	userEntity.setId(auth().getUserID().getValue());
     	userEntity.setExpireUser(expire);
-    	store(userEntity);
+    	
+    	UserData userData = new UserData();
+    	userData.setUserEntity(userEntity);
+    	uds.store(userData);
+		if(userEntity.getExpireUser()!=null)
+			deleteExpiredUsersService.scheduleExpiry(userEntity);
     	return userEntity;
     }
 
@@ -74,8 +79,8 @@ public class UserService extends BaseUserIdService {
         if (onlineBankingService.userRegistrationRequired()) {
         	if(!storageUserService.userExists(auth().getUserID())) 
         		throw new BaseException("Storage user with id: "+ auth().getUserID().getValue() + " non existent ");
-        	
-            UserEntity userEntity = readUser();
+        	UserData userData = uds.load();
+            UserEntity userEntity = userData.getUserEntity();
 
             return userEntity.getApiUser()
                     .stream()
@@ -84,7 +89,7 @@ public class UserService extends BaseUserIdService {
                     .orElseGet(() -> {
                         BankApiUser bankApiUser = onlineBankingService.registerUser(UUID.randomUUID().toString());
                         userEntity.getApiUser().add(bankApiUser);
-                        store(userEntity);
+                        uds.store(userData);
 
                         return bankApiUser;
                     });
@@ -93,16 +98,5 @@ public class UserService extends BaseUserIdService {
             bankApiUser.setBankApi(onlineBankingService.bankApi());
             return bankApiUser;
         }
-    }
-	
-	private void store(UserEntity userEntity){
-		if(userEntity.getExpireUser()!=null)
-			deleteExpiredUsersService.scheduleExpiry(userEntity);
-		store(FQNUtils.userFQN(), valueType(), userEntity);		
-	}
-	
-	private static TypeReference<UserEntity> valueType(){
-		return new TypeReference<UserEntity>() {};
-	}
-	
+    }	
 }

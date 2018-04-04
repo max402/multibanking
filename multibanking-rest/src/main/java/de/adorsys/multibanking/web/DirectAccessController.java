@@ -21,9 +21,9 @@ import de.adorsys.multibanking.domain.BankAccountEntity;
 import de.adorsys.multibanking.domain.BookingEntity;
 import de.adorsys.multibanking.domain.BookingFile;
 import de.adorsys.multibanking.domain.BookingPeriod;
-import de.adorsys.multibanking.exception.ResourceNotFoundException;
 import de.adorsys.multibanking.service.AccountSynchPrefService;
 import de.adorsys.multibanking.service.BookingService;
+import de.adorsys.multibanking.service.UserDataService;
 import de.adorsys.multibanking.service.UserService;
 import de.adorsys.multibanking.web.common.BankAccountBasedController;
 import domain.BankAccountBalance;
@@ -44,6 +44,8 @@ public class DirectAccessController extends BankAccountBasedController {
     private UserService userService;
     @Autowired
     private AccountSynchPrefService accountSynchService;
+    @Autowired
+    private UserDataService uds;
 
     @Value("${threshold_temporaryData:15}")
     private Integer thresholdTemporaryData;
@@ -61,29 +63,32 @@ public class DirectAccessController extends BankAccountBasedController {
         AccountSynchPref pref = accountSynchService.loadAccessLevelSynchPref(bankAccess.getId());
         pref.setBookingPeriod(BookingPeriod.ALL);
         accountSynchService.storeAccessLevelSynchPref(bankAccess.getId(), pref);
-        
-        return returnDocument(bankAccountService.loadForBankAccess(bankAccess.getId()));
+        return returnDocument(uds.load().bankAccessData(bankAccess.getId()).getBankAccountEntityAsList());
     }
 
     @RequestMapping(path = "/bookings", method = RequestMethod.PUT)
     public ResponseEntity<LoadBookingsResponse> loadBookings(@RequestBody LoadBookingsRequest loadBookingsRequest, @RequestParam(required = false) BankApi bankApi) {
-        BankAccessEntity bankAccessEntity = bankAccessService.loadbankAccess(loadBookingsRequest.getAccessId())
-        		.orElseThrow(() -> new ResourceNotFoundException(BankAccessEntity.class, loadBookingsRequest.getAccessId()));
+//        BankAccessEntity bankAccessEntity = bankAccessService.loadbankAccess(loadBookingsRequest.getAccessId())
+//        		.orElseThrow(() -> new ResourceNotFoundException(BankAccessEntity.class, loadBookingsRequest.getAccessId()));
+//
+//        BankAccountEntity bankAccountEntity = uds.load().bankAccountData(bankAccessEntity.getId(),loadBookingsRequest.getAccountId()).getBankAccount();
+//        BankAccountEntity bankAccountEntity = bankAccountService.loadBankAccount(bankAccessEntity.getId(),loadBookingsRequest.getAccountId())
+//        		.orElseThrow(() -> new ResourceNotFoundException(BankAccountEntity.class, loadBookingsRequest.getAccountId()));
 
-        BankAccountEntity bankAccountEntity = bankAccountService.loadBankAccount(bankAccessEntity.getId(),loadBookingsRequest.getAccountId())
-        		.orElseThrow(() -> new ResourceNotFoundException(BankAccountEntity.class, loadBookingsRequest.getAccountId()));
-
-        bookingService.syncBookings(bankAccessEntity, bankAccountEntity, bankApi, loadBookingsRequest.getPin());
+    	String accessId = loadBookingsRequest.getAccessId();
+    	String accountId = loadBookingsRequest.getAccountId();
+        bookingService.syncBookings(accessId, accountId, bankApi, loadBookingsRequest.getPin());
         
-        AccountSynchResult synchResult = accountSynchService.loadAccountSynchResult(bankAccessEntity.getId(), bankAccountEntity.getId());
+        AccountSynchResult synchResult = accountSynchService.loadAccountSynchResult(accessId, accountId);
         List<BookingFile> bookingFiles = synchResult.getBookingFileExts();
         List<BookingEntity> bookings = new ArrayList<BookingEntity>();
         bookingFiles.forEach(bfe -> {
-        	bookings.addAll(bookingService.listBookings(bankAccessEntity.getId(), bankAccountEntity.getId(), bfe.getFileExt()));
+        	bookings.addAll(bookingService.listBookings(accessId, accountId, bfe.getPeriod()));
         });
 
         LoadBookingsResponse loadBookingsResponse = new LoadBookingsResponse();
         loadBookingsResponse.setBookings(bookings);
+        BankAccountEntity bankAccountEntity = uds.load().bankAccountData(accessId,accountId).getBankAccount();
         loadBookingsResponse.setBalance(bankAccountEntity.getBankAccountBalance());
 
         return returnDocument(loadBookingsResponse);

@@ -16,7 +16,7 @@ import de.adorsys.multibanking.utils.FQNUtils;
 public class SystemImageService extends BaseSystemIdService {
 
 	public boolean hasImage(String imageName){
-		return documentExists(FQNUtils.imageFQN(imageName));
+		return documentExists(FQNUtils.imageFQN(imageName), null);
 	}
 
 	/**

@@ -74,7 +74,7 @@ public class SyncTest {
         bankAccountEntity.setUserId("test-user-id");
         bankAccountEntity.setAccountNumber(System.getProperty("account"));
 
-        bookingService.syncBookings(bankAccessEntity, bankAccountEntity, BankApi.HBCI, System.getProperty("pin"));
+        bookingService.syncBookings(bankAccessEntity.getId(), bankAccountEntity.getId(), BankApi.HBCI, System.getProperty("pin"));
 
         DSDocument loadDomainAnalytics = analyticsService.loadDomainAnalytics("test-access-id", "test-account-id");
         

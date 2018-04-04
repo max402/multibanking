@@ -2,6 +2,7 @@ package de.adorsys.multibanking.service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -21,11 +22,14 @@ import com.fasterxml.jackson.core.type.TypeReference;
 
 import de.adorsys.multibanking.domain.AccountSynchPref;
 import de.adorsys.multibanking.domain.AccountSynchResult;
+import de.adorsys.multibanking.domain.BankAccessData;
 import de.adorsys.multibanking.domain.BankAccessEntity;
+import de.adorsys.multibanking.domain.BankAccountData;
 import de.adorsys.multibanking.domain.BankAccountEntity;
 import de.adorsys.multibanking.domain.BankEntity;
 import de.adorsys.multibanking.domain.BookingEntity;
 import de.adorsys.multibanking.domain.BookingFile;
+import de.adorsys.multibanking.domain.UserData;
 import de.adorsys.multibanking.exception.ResourceNotFoundException;
 import de.adorsys.multibanking.service.base.BaseUserIdService;
 import de.adorsys.multibanking.service.helper.BookingHelper;
@@ -46,6 +50,10 @@ import utils.Utils;
  */
 @Service
 public class BookingService extends BaseUserIdService {
+	
+	@Autowired
+    private UserDataService uds;
+	
 
     @Autowired
     private BankAccessService bankAccessService;
@@ -94,16 +102,18 @@ public class BookingService extends BaseUserIdService {
      * - Get additional booking from the remote repository.
      * - Triggers analytics
      * 
-     * @param bankAccess
-     * @param bankAccount
+     * @param accessId
+     * @param accountId
      * @param bankApi
      * @param pin
      */
-    public void syncBookings(BankAccessEntity bankAccess, BankAccountEntity bankAccount, BankApi bankApi, String pin) {
+    public void syncBookings(String accessId, String accountId, BankApi bankApi, String pin) {
     	// Set the synch status.
-        bankAccountService.updateSyncStatus(bankAccess.getId(), bankAccount.getId(), BankAccount.SyncStatus.SYNC);
-        accountSynchService.updateSyncStatus(bankAccess.getId(), bankAccount.getId(), BankAccount.SyncStatus.SYNC);
-
+        bankAccountService.updateSyncStatus(accessId, accountId, BankAccount.SyncStatus.SYNC);
+        accountSynchService.updateSyncStatus(accessId, accountId, BankAccount.SyncStatus.SYNC);
+        UserData userData = uds.load();
+        BankAccessEntity bankAccess = userData.bankAccessData(accessId).getBankAccess();
+        BankAccountEntity bankAccount = userData.bankAccountData(accessId, accountId).getBankAccount();
         try {
             LoadBookingsResponse response = loadBookingsOnline(bankApi, bankAccess, bankAccount, pin);
 
@@ -165,7 +175,7 @@ public class BookingService extends BaseUserIdService {
             BookingFile bookingFile = bookingFileMap.get(period);
             if(bookingFile==null){
             	bookingFile = new BookingFile();
-            	bookingFile.setFileExt(period);
+            	bookingFile.setPeriod(period);
             	synchResult.update(Collections.singletonList(bookingFile));            	
             }
             bookingFile.setNumberOfRecords(bookingEntities.size());
@@ -228,15 +238,20 @@ public class BookingService extends BaseUserIdService {
     }
 
     private void checkExternalBankAccountExists(BankAccessEntity bankAccess, BankAccountEntity bankAccount, String pin, BankApiUser bankApiUser, OnlineBankingService onlineBankingService) {
+        UserData userData = uds.load();
+    	
         String externalAccountId = bankAccount.getExternalIdMap().get(onlineBankingService.bankApi());
         //account not created by given bank-api, account must be created, otherwise loading bookings will not work
         if (externalAccountId == null) {
             String blzHbci = bankService.findByBankCode(bankAccess.getBankCode())
                     .orElseThrow(() -> new ResourceNotFoundException(BankEntity.class, bankAccess.getBankCode())).getBlzHbci();
             List<BankAccount> apiBankAccounts = onlineBankingService.loadBankAccounts(bankApiUser, bankAccess, blzHbci, pin, bankAccess.isStorePin());
-            List<BankAccountEntity> dbBankAccounts = bankAccountService.loadForBankAccess(bankAccess.getId());
+            BankAccessData bankAccessData = userData.bankAccessData(bankAccess.getId());
+	        Collection<BankAccountData> dbBankAccounts = bankAccessData.getBankAccounts().values();
+//            List<BankAccountEntity> dbBankAccounts = bankAccountService.loadForBankAccess(bankAccess.getId());
             apiBankAccounts.forEach(apiBankAccount -> {
-                dbBankAccounts.forEach(dbBankAccount -> {
+                dbBankAccounts.forEach(dbBankAccountData -> {
+                	BankAccountEntity dbBankAccount = dbBankAccountData.getBankAccount();
                     if (apiBankAccount.getAccountNumber().equals(dbBankAccount.getAccountNumber())) {
                         dbBankAccount.externalId(onlineBankingService.bankApi(), apiBankAccount.getExternalIdMap().get(onlineBankingService.bankApi()));
                         if (bankAccess.getId().equals(dbBankAccount.getId())) {
@@ -245,8 +260,10 @@ public class BookingService extends BaseUserIdService {
                     }
                 });
             });
-            bankAccountService.saveBankAccounts(bankAccess.getId(),dbBankAccounts);
+//            bankAccountService.saveBankAccounts(bankAccess.getId(),dbBankAccounts);
+            uds.store(userData);
         }
+        
     }
 
 	private static TypeReference<List<BookingEntity>> listType(){

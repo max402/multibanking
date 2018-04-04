@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.adorsys.docusafe.business.types.complex.DocumentFQN;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,7 +31,7 @@ public class DeleteExpiredUsersService extends BaseSystemIdService {
     @Autowired
     BankAccessService bankAccessService;
 
-    private static final Logger LOG = LoggerFactory.getLogger(DeleteExpiredUsersService.class);
+//    private static final Logger LOG = LoggerFactory.getLogger(DeleteExpiredUsersService.class);
 
 	/**
 	 * TODO: navigate to former days. Still have to be done.
@@ -43,7 +41,7 @@ public class DeleteExpiredUsersService extends BaseSystemIdService {
 	public List<UserEntity> findExpiredUser() {
 		Date now = new Date();
 		DocumentFQN expireFileFQN = FQNUtils.expireDayFileFQN(DayFormat.printDay(new Date()));
-		if(!documentExists(expireFileFQN)) return Collections.emptyList();
+		if(!documentExists(expireFileFQN, listType())) return Collections.emptyList();
 		
 		List<UserEntity> entities = load(expireFileFQN, listType())
 				.orElse(Collections.emptyList());

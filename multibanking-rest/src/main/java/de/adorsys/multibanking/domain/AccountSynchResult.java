@@ -32,17 +32,17 @@ public class AccountSynchResult extends AbstractId {
 	private LocalDateTime lastSynch;
 	
 	public AccountSynchResult update(Collection<BookingFile> newEntries) {
-		Map<String, BookingFile> map = bookingFileExtsMap(bookingFileExts);
-		map.putAll(bookingFileExtsMap(newEntries));
+		Map<String, BookingFile> map = bookingPeriodsMap(bookingFileExts);
+		map.putAll(bookingPeriodsMap(newEntries));
 		bookingFileExts = map.values().stream().sorted().collect(Collectors.toList());
 		return this;
 	}
 	
-	private static Map<String, BookingFile> bookingFileExtsMap(Collection<BookingFile> bookingFileExts){
-		return bookingFileExts.stream().collect(Collectors.toMap(BookingFile::getFileExt, Function.identity()));
+	private static Map<String, BookingFile> bookingPeriodsMap(Collection<BookingFile> bookingFileExts){
+		return bookingFileExts.stream().collect(Collectors.toMap(BookingFile::getPeriod, Function.identity()));
 	}
 
 	public Map<String, BookingFile> bookingFileMap() {
-		return bookingFileExtsMap(bookingFileExts);
+		return bookingPeriodsMap(bookingFileExts);
 	}
 }

@@ -1,15 +1,11 @@
 package de.adorsys.multibanking.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.util.Date;
 
-import org.adorsys.cryptoutils.storeconnectionfactory.ExtendedStoreConnectionFactory;
-import org.adorsys.cryptoutils.storeconnectionfactory.StoreConnectionFactoryConfig;
-import org.adorsys.encobject.service.api.ExtendedStoreConnection;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -71,10 +67,8 @@ public class BankAccessServiceFakeUserTest extends BaseServiceTest {
     	auth("fakeUser", "fakePassword");
 
         // TODO Exception doesnt rise.
-        // thrown.expect(ResourceNotFoundException.class);
-        // "badLogin",
-        boolean deleteBankAccess = bankAccessService.deleteBankAccess("badAccess");
-        assertThat(deleteBankAccess).isEqualTo(false);
+         thrown.expect(ResourceNotFoundException.class);
+        bankAccessService.deleteBankAccess("badAccess");
     }
 
     @Test

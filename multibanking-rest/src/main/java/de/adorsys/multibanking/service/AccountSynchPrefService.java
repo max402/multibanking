@@ -2,14 +2,16 @@ package de.adorsys.multibanking.service;
 
 import java.time.LocalDateTime;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.fasterxml.jackson.core.type.TypeReference;
 
 import de.adorsys.multibanking.domain.AccountSynchPref;
 import de.adorsys.multibanking.domain.AccountSynchResult;
+import de.adorsys.multibanking.domain.BankAccessData;
+import de.adorsys.multibanking.domain.BankAccountData;
+import de.adorsys.multibanking.domain.UserData;
+import de.adorsys.multibanking.exception.ResourceNotFoundException;
 import de.adorsys.multibanking.service.base.BaseUserIdService;
-import de.adorsys.multibanking.utils.FQNUtils;
 import domain.BankAccount.SyncStatus;
 
 /**
@@ -20,43 +22,52 @@ import domain.BankAccount.SyncStatus;
  */
 @Service
 public class AccountSynchPrefService extends BaseUserIdService {
-	
+
+	@Autowired
+    UserDataService uds;
+		
 	public AccountSynchPref loadAccountLevelSynchPref(String accessId, String accountId){
-		return load(FQNUtils.accountLevelSynchPrefFQN(accessId, accountId), synchPrefType())
-				.orElse(new AccountSynchPref());
+		return uds.load().bankAccountData(accessId, accountId).getAccountSynchPref();
 	}	
 	public void storeAccountLevelSynchPref(String accessId, String accountId, AccountSynchPref pref){
-		store(FQNUtils.accountLevelSynchPrefFQN(accessId, accountId), synchPrefType(), pref);
+		UserData userData = uds.load();
+		userData.bankAccountData(accessId, accountId).setAccountSynchPref(pref);
+		uds.store(userData);
 	}
 
 	public AccountSynchPref loadAccessLevelSynchPref(String accessId){
-		return load(FQNUtils.accessLevelSynchPrefFQN(accessId), synchPrefType())
-				.orElse(new AccountSynchPref());
+		return uds.load().bankAccessData(accessId).getAccountSynchPref();
 	}	
 	public void storeAccessLevelSynchPref(String accessId, AccountSynchPref pref){
-		store(FQNUtils.accessLevelSynchPrefFQN(accessId), synchPrefType(), pref);
+		UserData userData = uds.load();
+		userData.bankAccessData(accessId).setAccountSynchPref(pref);
+		uds.store(userData);
 	}
 
 	public AccountSynchPref loadUserLevelSynchPref(){
-		return load(FQNUtils.userLevelSynchPrefFQN(), synchPrefType())
-				.orElse(new AccountSynchPref());
+		return uds.load().getAccountSynchPref();
 	}	
 	public void storeUserLevelSynchPref(AccountSynchPref pref){
-		store(FQNUtils.userLevelSynchPrefFQN(), synchPrefType(), pref);
+		UserData userData = uds.load();
+		userData.setAccountSynchPref(pref);
+		uds.store(userData);
 	}
 	
 	public AccountSynchResult loadAccountSynchResult(String accessId, String accountId) {
-		return load(FQNUtils.accountSynchResultFQN(accessId, accountId), synchResultType())
-			.orElse(new AccountSynchResult());
+		return uds.load().bankAccountData(accessId, accountId).getSynchResult();
 	}
 	public void storeAccountSynchResult(String accessId, String accountId, AccountSynchResult currentResult) {
-		store(FQNUtils.accountSynchResultFQN(accessId, accountId), synchResultType(), currentResult);
+		UserData userData = uds.load();
+		userData.bankAccountData(accessId, accountId).setSynchResult(currentResult);
+		uds.store(userData);
 	}
+	
 	public void updateSyncStatus(String accessId, String accountId, SyncStatus syncStatus) {
-		AccountSynchResult synchResult = loadAccountSynchResult(accessId, accountId);
+		UserData userData = uds.load();
+		AccountSynchResult synchResult = userData.bankAccountData(accessId, accountId).getSynchResult();
 		synchResult.setSyncStatus(syncStatus);
 		synchResult.setStatusTime(LocalDateTime.now());
-		storeAccountSynchResult(accessId, accountId, synchResult);
+		uds.store(userData);
 	}
 	
 	/**
@@ -66,23 +77,14 @@ public class AccountSynchPrefService extends BaseUserIdService {
 	 * @return 
 	 */
 	public AccountSynchPref findAccountSynchPref(String accessId, String accountId) {
-		if(documentExists(FQNUtils.accountLevelSynchPrefFQN(accessId, accountId)))
-			return loadAccountLevelSynchPref(accessId, accountId);
+		AccountSynchPref synchPref = loadAccountLevelSynchPref(accessId, accountId);
+		if(synchPref==null) 
+			synchPref = loadAccessLevelSynchPref(accessId);
+		if(synchPref==null) 
+			synchPref = loadUserLevelSynchPref();
+		if(synchPref==null) 
+			synchPref = new AccountSynchPref();
 		
-		if(documentExists(FQNUtils.accessLevelSynchPrefFQN(accessId)))
-			return loadAccountLevelSynchPref(accessId, accountId);
-
-		if(documentExists(FQNUtils.userLevelSynchPrefFQN()))
-			return loadAccountLevelSynchPref(accessId, accountId);
-		
-		return new AccountSynchPref();
-	}
-
-	private static TypeReference<AccountSynchPref> synchPrefType(){
-		return new TypeReference<AccountSynchPref>() {};
-	}
-	
-	private static TypeReference<AccountSynchResult> synchResultType(){
-		return new TypeReference<AccountSynchResult>() {};
+		return synchPref;
 	}
 }

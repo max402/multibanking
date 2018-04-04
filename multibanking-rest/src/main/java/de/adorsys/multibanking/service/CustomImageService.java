@@ -22,7 +22,7 @@ public class CustomImageService extends BaseUserIdService {
 	 * @return
 	 */
 	public boolean hasImage(String imageName){
-		return documentExists(FQNUtils.imageFQN(imageName));
+		return documentExists(FQNUtils.imageFQN(imageName), null);
 	}
 
 	/**

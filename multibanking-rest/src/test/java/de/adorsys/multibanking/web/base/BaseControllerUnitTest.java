@@ -17,6 +17,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -25,6 +26,7 @@ import de.adorsys.multibanking.auth.RequestCounter;
 import de.adorsys.multibanking.auth.SystemContext;
 import de.adorsys.multibanking.auth.UserContext;
 import de.adorsys.multibanking.service.old.TestConstants;
+import de.adorsys.multibanking.web.UserDataController;
 import de.adorsys.multibanking.web.config.ControllerUnitTestConfig;
 
 /**
@@ -54,10 +56,6 @@ public abstract class BaseControllerUnitTest {
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
     	TestConstants.setup();		
-//        DateObjectMapperBuilder domb = new DateObjectMapperBuilder();
-//        mapper = domb.getMapperLocalDateTime();
-//        mapper = new ObjectMapper();
-    	
 	}
 
     protected void auth(String userId, String password){
@@ -69,5 +67,9 @@ public abstract class BaseControllerUnitTest {
     	when(userContext.getCache()).thenReturn(cache);
     	
     }
-    
+
+    protected final UriComponentsBuilder userDataBasePath(){
+    	return UriComponentsBuilder.fromPath(UserDataController.BASE_PATH);
+    }
+
 }

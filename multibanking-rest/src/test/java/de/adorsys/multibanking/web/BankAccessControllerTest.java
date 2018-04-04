@@ -1,11 +1,5 @@
 package de.adorsys.multibanking.web;
 
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Before;
@@ -36,61 +30,11 @@ public class BankAccessControllerTest extends BaseControllerUnitTest {
 
     @MockBean
     private BankAccessService bankAccessService;
-    
-    private List<BankAccessEntity> bankAccesses = null;
-    private List<BankAccessEntity> emptyBankAccesses = Collections.emptyList();
         
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
         this.mockMvc = MockMvcBuilders.standaloneSetup(bankAccessController).build();
-        InputStream stream = this.getClass().getClassLoader().getResourceAsStream("BankAccessControllerTest/bank_access.json");
-        bankAccesses = Arrays.asList(mapper.readValue(stream, BankAccessEntity[].class));
-	}
-
-	@Test
-	public void testGetBankAccesses200() throws Exception {
-        BDDMockito.when(bankAccessService.getBankAccesses()).thenReturn(bankAccesses);
-
-        String expectedJson = mapper.writeValueAsString(bankAccesses);
-        mockMvc.perform(MockMvcRequestBuilders.get(basePath().build().toString()).contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON_VALUE)).andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(MockMvcResultMatchers.content().json(expectedJson));
-	}
-
-	@Test
-	public void testGetBankAccesses200EmptyList() throws Exception {
-        BDDMockito.when(bankAccessService.getBankAccesses()).thenReturn(emptyBankAccesses);
-
-		String expectedJson = mapper.writeValueAsString(emptyBankAccesses);
-        mockMvc.perform(MockMvcRequestBuilders.get(basePath().build().toString()).contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON_VALUE)).andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(MockMvcResultMatchers.content().json(expectedJson));
-	}
-	
-	@Test
-	public void testGetBankAccess200() throws Exception {
-		String access_id = "5a998c0c7077e800014ca672";
-		Optional<BankAccessEntity> bankAccess = Optional.of(bankAccesses.get(0));
-        BDDMockito.when(bankAccessService.loadbankAccess(access_id)).thenReturn(bankAccess);
-
-        String expectedJson = mapper.writeValueAsString(bankAccess.get());
-
-        mockMvc.perform(MockMvcRequestBuilders.get(idPath().build().toString(), access_id).contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON_VALUE)).andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(MockMvcResultMatchers.content().json(expectedJson));
-	}
-
-	@Test
-	public void testGetBankAccess404NotFound() throws Exception {
-		String access_id = "5a998c0c7077e800014ca672";
-        BDDMockito.when(bankAccessService.loadbankAccess(access_id)).thenReturn(Optional.empty());
-
-        mockMvc.perform(MockMvcRequestBuilders.get(idPath().build().toString(), access_id).contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON_VALUE)).andExpect(MockMvcResultMatchers.status().isNotFound());
 	}
 	
 	@Test
@@ -112,7 +56,7 @@ public class BankAccessControllerTest extends BaseControllerUnitTest {
         		.andReturn();
 		
 		String locationHeader = mvcResult.getResponse().getHeader("Location");
-		Assert.assertTrue(StringUtils.endsWith(locationHeader, idPath().build(newBankAccess.getId()).toString()));
+		Assert.assertTrue(StringUtils.endsWith(locationHeader, userDataBasePath().build().toString()));
 	}
 
 	@Test

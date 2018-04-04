@@ -9,17 +9,21 @@ public class FQNUtils {
 		return new DocumentFQN("banks");
 	}
 	
-	public static final DocumentFQN userFQN(){
-		return new DocumentFQN("user.aes");
+	public static final DocumentFQN userDataFQN(){
+		return new DocumentFQN("userData.aes");
 	}
+//
+//	public static final DocumentFQN userFQN(){
+//		return new DocumentFQN("user.aes");
+//	}
 	
 	private static final DocumentDirectoryFQN bankAccessesDirFQN() {
 		return new DocumentDirectoryFQN("bankaccesses");
 	}
 
-	public static final DocumentFQN bankAccessListFQN() {
-		return bankAccessesDirFQN().addName("bankaccesses.aes");
-	}
+//	public static final DocumentFQN bankAccessListFQN() {
+//		return bankAccessesDirFQN().addName("bankaccesses.aes");
+//	}
 
 	public static final DocumentDirectoryFQN bankAccessDirFQN(String bankAccessId) {
 		return bankAccessesDirFQN().addDirectory(bankAccessId);
@@ -33,9 +37,9 @@ public class FQNUtils {
     	return bankAccessDirFQN(bankAccessId).addDirectory("accounts");
 	}
 
-	public static final DocumentFQN bankAccountsFileFQN(String bankAccessId) {
-    	return bankAccountsDirFQN(bankAccessId).addName("accounts.aes");
-	}
+//	public static final DocumentFQN bankAccountsFileFQN(String bankAccessId) {
+//    	return bankAccountsDirFQN(bankAccessId).addName("accounts.aes");
+//	}
 	private static final DocumentDirectoryFQN bankAccountDirFQN(String bankAccessId, String accountId) {
     	return bankAccountsDirFQN(bankAccessId).addDirectory(accountId);
 	}
@@ -60,21 +64,21 @@ public class FQNUtils {
     	return bankAccountDirFQN(accessId, accountId).addName("standingOrders.aes");
 	}
 	
-	public static DocumentFQN accountSynchResultFQN(String accessId, String accountId) {
-    	return bankAccountDirFQN(accessId, accountId).addName("synchResult.aes");
-	}
+//	public static DocumentFQN accountSynchResultFQN(String accessId, String accountId) {
+//    	return bankAccountDirFQN(accessId, accountId).addName("synchResult.aes");
+//	}
 	
-	public static DocumentFQN accountLevelSynchPrefFQN(String accessId, String accountId) {
-    	return bankAccountDirFQN(accessId, accountId).addName("synchPref.aes");
-	}
+//	public static DocumentFQN accountLevelSynchPrefFQN(String accessId, String accountId) {
+//    	return bankAccountDirFQN(accessId, accountId).addName("synchPref.aes");
+//	}
 	
-	public static DocumentFQN accessLevelSynchPrefFQN(String accessId) {
-    	return bankAccessDirFQN(accessId).addName("synchPref.aes");
-	}
+//	public static DocumentFQN accessLevelSynchPrefFQN(String accessId) {
+//    	return bankAccessDirFQN(accessId).addName("synchPref.aes");
+//	}
 
-	public static DocumentFQN userLevelSynchPrefFQN() {
-		return new DocumentFQN("synchPref.aes");
-	}
+//	public static DocumentFQN userLevelSynchPrefFQN() {
+//		return new DocumentFQN("synchPref.aes");
+//	}
 
 	public static DocumentFQN bookingRulesFQN() {
 		return new DocumentFQN("bookingRules.aes");

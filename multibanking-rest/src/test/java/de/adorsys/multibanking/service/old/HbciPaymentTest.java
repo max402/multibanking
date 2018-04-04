@@ -27,6 +27,7 @@ import de.adorsys.multibanking.service.BankAccountService;
 import de.adorsys.multibanking.service.BookingService;
 import de.adorsys.multibanking.service.OnlineBankingServiceProducer;
 import de.adorsys.multibanking.service.PaymentService;
+import de.adorsys.multibanking.service.UserDataService;
 import de.adorsys.multibanking.service.UserService;
 import domain.BankApi;
 import domain.Payment;
@@ -52,6 +53,8 @@ public class HbciPaymentTest {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private UserDataService uds;
 
     @MockBean
     private OnlineBankingServiceProducer bankingServiceProducer;
@@ -82,12 +85,13 @@ public class HbciPaymentTest {
             bankAccessEntity.setCategorizeBookings(false);
             bankAccessEntity.setStoreAnalytics(false);
 
-            List<BankAccountEntity> bankAccountEntities = bankAccountService.loadForBankAccess(bankAccessEntity.getId());
+            List<BankAccountEntity> bankAccountEntities = uds.load().bankAccessData(bankAccessEntity.getId()).getBankAccountEntityAsList();
+//            List<BankAccountEntity> bankAccountEntities = bankAccountService.loadForBankAccess(bankAccessEntity.getId());
             BankAccountEntity bankAccountEntitity = bankAccountEntities.stream()
                     .filter(bankAccountEntity -> bankAccountEntity.getAccountNumber().equals("2257793"))
                     .findFirst().get();
 
-            bookingService.syncBookings(bankAccessEntity, bankAccountEntitity, BankApi.HBCI, System.getProperty("pin"));
+            bookingService.syncBookings(bankAccessEntity.getId(), bankAccountEntitity.getId(), BankApi.HBCI, System.getProperty("pin"));
 
             Payment payment = new Payment();
             payment.setReceiverIban("DE56760905000002257793");

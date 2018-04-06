@@ -22,6 +22,12 @@ import lombok.Data;
 @Data
 public class AccountSynchPref extends AbstractId {
 	
+	/**
+	 * Mark is this bank account shall be synchronized or not.
+	 * 
+	 */
+	private boolean synchAccount;
+	
 	/*
 	 *  Default preference is per year.
 	 */

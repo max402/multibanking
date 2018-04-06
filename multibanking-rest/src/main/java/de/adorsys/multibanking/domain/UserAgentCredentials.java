@@ -10,12 +10,13 @@ import lombok.Data;
  * user agent. Concrete example can be an AES key used by the user agent 
  * to encrypt data cached on the user device.
  * 
- * @author fpo
+ * @author fpo 2018-04-04 06:57
  *
  */
 @Data
 public class UserAgentCredentials {
 	
-	private Map<String, String> credentials = new HashMap<>();
-
+	private String userAgentId;
+	
+	private Map<String, UserAgentKeyEntry> keyEntries = new HashMap<>();
 }

@@ -1,8 +1,3 @@
-/*
- * LoggingFilterAdvice.java erzeugt am 14.07.2017
- * <p>
- * Eigentum der TeamBank AG Nürnberg
- */
 package de.adorsys.multibanking.config;
 
 import org.slf4j.MDC;

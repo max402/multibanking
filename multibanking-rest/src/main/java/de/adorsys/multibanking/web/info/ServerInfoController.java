@@ -1,4 +1,4 @@
-package de.adorsys.multibanking.web;
+package de.adorsys.multibanking.web.info;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

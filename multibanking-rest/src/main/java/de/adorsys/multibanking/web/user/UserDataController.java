@@ -1,4 +1,4 @@
-package de.adorsys.multibanking.web;
+package de.adorsys.multibanking.web.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;

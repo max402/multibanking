@@ -1,9 +1,10 @@
-package de.adorsys.multibanking.exception.domain;
+package de.adorsys.multibanking.exception;
 
 
-import de.adorsys.multibanking.exception.ParametrizedMessageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
+
+import de.adorsys.multibanking.exception.base.ParametrizedMessageException;
 
 import java.text.MessageFormat;
 

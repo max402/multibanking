@@ -1,9 +1,8 @@
 package de.adorsys.multibanking.domain;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -11,6 +10,7 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import de.adorsys.multibanking.domain.common.AbstractId;
+import de.adorsys.multibanking.utils.DateConstants;
 import domain.BankAccount.SyncStatus;
 import lombok.Data;
 
@@ -22,32 +22,23 @@ import lombok.Data;
  */
 @Data
 public class AccountSynchResult extends AbstractId {
-	
-	/*
-	 * List of booking file info
-	 */
-	private List<BookingFile> bookingFileExts = new ArrayList<>();
+
+	private Map<String, BookingFile> bookingFiles = new HashMap<>();
 	
 	private SyncStatus syncStatus;
 
-	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+	@JsonFormat(pattern = DateConstants.DATE_TIME_FORMAT_ISO8601_ZONELESS)
 	private LocalDateTime statusTime;
 	
-	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+	@JsonFormat(pattern = DateConstants.DATE_TIME_FORMAT_ISO8601_ZONELESS)
 	private LocalDateTime lastSynch;
 	
 	public AccountSynchResult update(Collection<BookingFile> newEntries) {
-		Map<String, BookingFile> map = bookingPeriodsMap(bookingFileExts);
-		map.putAll(bookingPeriodsMap(newEntries));
-		bookingFileExts = map.values().stream().sorted().collect(Collectors.toList());
+		bookingFiles.putAll(bookingPeriodsMap(newEntries));
 		return this;
 	}
 	
 	private static Map<String, BookingFile> bookingPeriodsMap(Collection<BookingFile> bookingFileExts){
 		return bookingFileExts.stream().collect(Collectors.toMap(BookingFile::getPeriod, Function.identity()));
-	}
-
-	public Map<String, BookingFile> bookingFileMap() {
-		return bookingPeriodsMap(bookingFileExts);
 	}
 }

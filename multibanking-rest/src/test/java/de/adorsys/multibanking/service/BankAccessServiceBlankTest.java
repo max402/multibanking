@@ -28,7 +28,12 @@ import de.adorsys.multibanking.domain.BankAccountEntity;
 import de.adorsys.multibanking.exception.InvalidBankAccessException;
 import de.adorsys.multibanking.exception.InvalidPinException;
 import de.adorsys.multibanking.exception.ResourceNotFoundException;
+import de.adorsys.multibanking.service.base.SystemObjectService;
+import de.adorsys.multibanking.service.base.UserObjectService;
 import de.adorsys.multibanking.service.config.BaseServiceTest;
+import de.adorsys.multibanking.service.interceptor.CacheInterceptor;
+import de.adorsys.multibanking.service.interceptor.SystemCacheService;
+import de.adorsys.multibanking.service.interceptor.UserCacheService;
 import de.adorsys.multibanking.service.old.TestConstants;
 import de.adorsys.multibanking.service.old.TestUtil;
 import de.adorsys.multibanking.service.producer.OnlineBankingServiceProducer;
@@ -48,10 +53,13 @@ public class BankAccessServiceBlankTest extends BaseServiceTest {
     private BankAccessService bankAccessService;
     @Autowired
     private UserDataService uds;
+	@Autowired
+	private UserObjectService uos;
+	@Autowired
+	private SystemObjectService sos;
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
-
     @BeforeClass
     public static void beforeClass() {
     	TestConstants.setup();
@@ -60,6 +68,8 @@ public class BankAccessServiceBlankTest extends BaseServiceTest {
     @Before
     public void beforeTest() throws Exception {
     	MockitoAnnotations.initMocks(this);
+    	sos.enableCaching();
+    	uos.enableCaching();
         when(bankingServiceProducer.getBankingService(anyString())).thenReturn(mockBanking);
     	randomAuthAndUser();
     	importBanks();
@@ -67,6 +77,9 @@ public class BankAccessServiceBlankTest extends BaseServiceTest {
     
     @After
     public void after() throws Exception{
+    	sos.flush();
+    	uos.flush();
+
     	if(userContext!=null)
     		rcMap.put(userContext.getAuth().getUserID().getValue()+ ":"+testName.getMethodName(), userContext.getRequestCounter());
     	if(systemContext!=null)
@@ -102,7 +115,7 @@ public class BankAccessServiceBlankTest extends BaseServiceTest {
 
     @Test
     public void create_bank_access_invalid_pin() {
-
+    	
     	// Mock bank access
         BankAccessEntity bankAccessEntity = TestUtil.getBankAccessEntity(userId(), randomAccessId(), "29999999", "0000");
 

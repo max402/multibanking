@@ -2,7 +2,7 @@ package de.adorsys.multibanking.web.common;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import de.adorsys.multibanking.domain.BankAccessEntity;
+import de.adorsys.multibanking.domain.BankAccountEntity;
 import de.adorsys.multibanking.exception.ResourceNotFoundException;
 import de.adorsys.multibanking.exception.SyncInProgressException;
 import de.adorsys.multibanking.service.BankAccountService;
@@ -16,12 +16,12 @@ public abstract class BankAccountBasedController extends BankAccessBasedControll
     protected void checkBankAccountExists(String accessId, String accountId){
     	checkBankAccessExists(accessId);
         if (!bankAccountService.exists(accessId, accountId)) 
-            throw new ResourceNotFoundException(BankAccessEntity.class, accessId);
+            throw new ResourceNotFoundException(BankAccountEntity.class, accessId + ":" +accountId);
     }
     
     protected void checkSynch(String accessId, String accountId){
-        if (bankAccountService.getSyncStatus(accessId, accountId) == BankAccount.SyncStatus.SYNC) {
-            throw new SyncInProgressException(accountId);
+        if (bankAccountService.getSyncStatus(accessId, accountId) != BankAccount.SyncStatus.READY) {
+            throw new SyncInProgressException(accessId, accountId);
         }
     }
 }

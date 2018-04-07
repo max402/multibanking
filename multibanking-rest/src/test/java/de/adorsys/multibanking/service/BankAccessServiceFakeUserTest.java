@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import de.adorsys.multibanking.exception.ResourceNotFoundException;
+import de.adorsys.multibanking.exception.UserNotFoundException;
 import de.adorsys.multibanking.service.config.BaseServiceTest;
 import de.adorsys.multibanking.service.old.TestConstants;
 import de.adorsys.multibanking.service.producer.OnlineBankingServiceProducer;
@@ -64,7 +64,7 @@ public class BankAccessServiceFakeUserTest extends BaseServiceTest {
     	auth("fakeUser", "fakePassword");
 
         // TODO Exception doesnt rise.
-         thrown.expect(ResourceNotFoundException.class);
+         thrown.expect(UserNotFoundException.class);
         bankAccessService.deleteBankAccess("badAccess");
     }
 }

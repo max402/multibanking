@@ -1,4 +1,4 @@
-package de.adorsys.multibanking.web;
+package de.adorsys.multibanking.web.payment;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;

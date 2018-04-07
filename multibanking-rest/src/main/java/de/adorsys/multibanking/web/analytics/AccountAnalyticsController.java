@@ -1,4 +1,4 @@
-package de.adorsys.multibanking.web;
+package de.adorsys.multibanking.web.analytics;
 
 import org.adorsys.docusafe.business.types.complex.DSDocument;
 import org.slf4j.Logger;

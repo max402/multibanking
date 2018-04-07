@@ -37,7 +37,7 @@ public class BankService {
 				.orElse(Collections.emptyList());
 	}
 
-	public DSDocument search(String string) {
+	public DSDocument loadDocument() {
 		return sos.loadDocument(FQNUtils.banksFQN());
 	}
 	

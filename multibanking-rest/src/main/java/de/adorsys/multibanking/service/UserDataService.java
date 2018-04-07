@@ -12,6 +12,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 
 import de.adorsys.multibanking.domain.UserData;
 import de.adorsys.multibanking.domain.UserEntity;
+import de.adorsys.multibanking.exception.UserNotFoundException;
 import de.adorsys.multibanking.service.base.UserObjectService;
 import de.adorsys.multibanking.service.base.StorageUserService;
 import de.adorsys.multibanking.service.producer.OnlineBankingServiceProducer;
@@ -40,7 +41,7 @@ public class UserDataService {
 
 	public UserData load(){
 		return uos.load(FQNUtils.userDataFQN(), valueType())
-				.orElseThrow(() -> uos.resourceNotFound(UserData.class, uos.auth().getUserID().getValue()));
+				.orElseThrow(() -> new UserNotFoundException(uos.auth().getUserID().getValue()));
 	}
 	
 	public boolean exists(){

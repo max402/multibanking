@@ -1,8 +1,3 @@
-/**
- * Message.java erzeugt am 25.02.2016
- * <p/>
- * Eigentum der TeamBank AG Nürnberg
- */
 package de.adorsys.multibanking.exception.domain;
 
 import lombok.AllArgsConstructor;
@@ -12,6 +7,8 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Map;
+
+import io.swagger.annotations.ApiModelProperty;
 
 @Data
 @Builder
@@ -24,6 +21,7 @@ public class Message implements Serializable {
     /**
      * Key/Code zur Identifizierung der Message.
      */
+    @ApiModelProperty(value = "The http status code", example = "401")
     private String key;
 
     private Severity severity;
@@ -41,7 +39,7 @@ public class Message implements Serializable {
     /**
      * Zurätzliche Informationen zu dem Fehler- Optional.
      */
-    private Map<String, String> paramsMap; // NOSONAR
+    private Map<String, String> paramsMap; // NOSONARz
 
     public enum Severity {
         ERROR,

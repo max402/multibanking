@@ -24,6 +24,7 @@ import de.adorsys.multibanking.service.UserAgentCredentialsService;
 import de.adorsys.multibanking.utils.Ids;
 import de.adorsys.multibanking.web.base.BaseControllerUnitTest;
 import de.adorsys.multibanking.web.config.WebMvcUnitTest;
+import de.adorsys.multibanking.web.user.UserAgentCredentialsController;
 
 @WebMvcUnitTest(controllers = UserAgentCredentialsController.class)
 public class UserAgentCredentialsControllerTest extends BaseControllerUnitTest {

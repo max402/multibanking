@@ -26,8 +26,8 @@ import de.adorsys.multibanking.auth.RequestCounter;
 import de.adorsys.multibanking.auth.SystemContext;
 import de.adorsys.multibanking.auth.UserContext;
 import de.adorsys.multibanking.service.old.TestConstants;
-import de.adorsys.multibanking.web.UserDataController;
 import de.adorsys.multibanking.web.config.ControllerUnitTestConfig;
+import de.adorsys.multibanking.web.user.UserDataController;
 
 /**
  * Base class for unit testing controllers.

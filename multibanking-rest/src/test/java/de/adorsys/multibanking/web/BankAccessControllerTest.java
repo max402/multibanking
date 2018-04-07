@@ -19,6 +19,7 @@ import de.adorsys.multibanking.domain.BankAccessEntity;
 import de.adorsys.multibanking.exception.BankAccessAlreadyExistException;
 import de.adorsys.multibanking.service.BankAccessService;
 import de.adorsys.multibanking.utils.Ids;
+import de.adorsys.multibanking.web.account.BankAccessController;
 import de.adorsys.multibanking.web.base.BaseControllerUnitTest;
 import de.adorsys.multibanking.web.config.WebMvcUnitTest;
 

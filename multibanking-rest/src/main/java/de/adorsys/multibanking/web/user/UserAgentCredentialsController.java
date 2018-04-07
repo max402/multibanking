@@ -1,4 +1,4 @@
-package de.adorsys.multibanking.web;
+package de.adorsys.multibanking.web.user;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

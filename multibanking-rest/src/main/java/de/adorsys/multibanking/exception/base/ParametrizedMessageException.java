@@ -1,4 +1,4 @@
-package de.adorsys.multibanking.exception;
+package de.adorsys.multibanking.exception.base;
 
 import lombok.Data;
 

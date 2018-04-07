@@ -5,6 +5,8 @@ import org.junit.Test;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import de.adorsys.multibanking.web.account.BankAccessController;
+
 public class URIBuilderTest {
 	
 	@Test

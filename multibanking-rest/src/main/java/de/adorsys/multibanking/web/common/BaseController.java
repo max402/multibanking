@@ -16,7 +16,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import de.adorsys.multibanking.auth.UserContext;
 import de.adorsys.multibanking.exception.ResourceNotFoundException;
-import de.adorsys.multibanking.web.UserDataController;
+import de.adorsys.multibanking.web.user.UserDataController;
 
 public abstract class BaseController {
 

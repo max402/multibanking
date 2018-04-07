@@ -31,6 +31,7 @@ import de.adorsys.multibanking.domain.BookingEntity;
 import de.adorsys.multibanking.domain.BookingFile;
 import de.adorsys.multibanking.domain.UserData;
 import de.adorsys.multibanking.exception.ResourceNotFoundException;
+import de.adorsys.multibanking.exception.UnexistentBookingFileException;
 import de.adorsys.multibanking.service.analytics.AnalyticsService;
 import de.adorsys.multibanking.service.analytics.AnonymizationService;
 import de.adorsys.multibanking.service.base.UserObjectService;
@@ -85,21 +86,12 @@ public class BookingService {
      */
     public DSDocument getBookings(String accessId, String accountId, String period) {
     	AccountSynchResult accountSynchResult = bankAccountService.loadAccountSynchResult(accessId, accountId);
-    	if(accountSynchResult.getBookingFileExts().contains(period))
-    		throw new ResourceNotFoundException(Booking.class, 
-    				FQNUtils.bookingFQN(accessId,accountId,period).getValue());
-        return uos.loadDocument(FQNUtils.bookingFQN(accessId,accountId,period));
+    	DocumentFQN bookingFQN = FQNUtils.bookingFQN(accessId,accountId,period);
+    	if(!accountSynchResult.getBookingFiles().containsKey(period))
+    		throw new UnexistentBookingFileException(bookingFQN.getValue());
+        return uos.loadDocument(bookingFQN);
     }
 
-//    public List<BookingEntity> listBookings(String accessId, String accountId, String period) {
-//    	AccountSynchResult accountSynchResult = bankAccountService.loadAccountSynchResult(accessId, accountId);
-//    	if(accountSynchResult.getBookingFileExts().contains(period))
-//    		throw new ResourceNotFoundException(Booking.class, 
-//    				FQNUtils.bookingFQN(accessId,accountId,period).getValue());
-//    	return load(FQNUtils.bookingFQN(accessId,accountId,period), listType())
-//    			.orElse(Collections.emptyList());
-//    }
-    
     /**
      * - Get additional booking from the remote repository.
      * - Triggers analytics
@@ -149,7 +141,7 @@ public class BookingService {
     	
         Map<String, List<BookingEntity>> bookings = BookingHelper.mapBookings(bankAccount, accountSynchPref, response.getBookings());
         
-        Map<String, BookingFile> bookingFileMap = synchResult.bookingFileMap();
+        Map<String, BookingFile> bookingFileMap = synchResult.getBookingFiles();
         Set<Entry<String,List<BookingEntity>>> entrySet = bookings.entrySet();
         for (Entry<String, List<BookingEntity>> entry : entrySet) {
         	List<BookingEntity> bookingEntities = entry.getValue();

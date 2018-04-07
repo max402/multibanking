@@ -23,6 +23,7 @@ import de.adorsys.multibanking.service.BankAccessService;
 import de.adorsys.multibanking.service.BankAccountService;
 import de.adorsys.multibanking.service.BookingService;
 import de.adorsys.multibanking.utils.FQNUtils;
+import de.adorsys.multibanking.web.account.BookingController;
 import de.adorsys.multibanking.web.base.BaseControllerUnitTest;
 import de.adorsys.multibanking.web.config.WebMvcUnitTest;
 import domain.BankAccess;

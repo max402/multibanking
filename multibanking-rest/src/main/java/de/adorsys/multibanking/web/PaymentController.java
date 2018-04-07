@@ -24,6 +24,7 @@ import de.adorsys.multibanking.service.BankAccessService;
 import de.adorsys.multibanking.service.BankAccountService;
 import de.adorsys.multibanking.service.PaymentService;
 import de.adorsys.multibanking.service.UserDataService;
+import de.adorsys.multibanking.web.annotation.UserResource;
 import de.adorsys.multibanking.web.common.BaseController;
 import domain.Payment;
 import lombok.Data;

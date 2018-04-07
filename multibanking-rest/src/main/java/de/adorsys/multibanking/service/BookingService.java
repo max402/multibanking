@@ -31,8 +31,11 @@ import de.adorsys.multibanking.domain.BookingEntity;
 import de.adorsys.multibanking.domain.BookingFile;
 import de.adorsys.multibanking.domain.UserData;
 import de.adorsys.multibanking.exception.ResourceNotFoundException;
-import de.adorsys.multibanking.service.base.BaseUserIdService;
+import de.adorsys.multibanking.service.analytics.AnalyticsService;
+import de.adorsys.multibanking.service.analytics.AnonymizationService;
+import de.adorsys.multibanking.service.base.UserObjectService;
 import de.adorsys.multibanking.service.helper.BookingHelper;
+import de.adorsys.multibanking.service.producer.OnlineBankingServiceProducer;
 import de.adorsys.multibanking.utils.FQNUtils;
 import domain.BankAccount;
 import domain.BankApi;
@@ -49,28 +52,27 @@ import utils.Utils;
  *
  */
 @Service
-public class BookingService extends BaseUserIdService {
+public class BookingService {
+	
+	@Autowired
+	private UserObjectService uos;
 	
 	@Autowired
     private UserDataService uds;
-	
-
     @Autowired
     private BankAccessService bankAccessService;
     @Autowired
     private BankAccountService bankAccountService;
+	@Autowired
+	private BankAccessCredentialService credentialService;
     @Autowired
     private AnalyticsService analyticsService;
     @Autowired
     private BankService bankService;
     @Autowired
-    private UserService userService;
-    @Autowired
-    private AccountSynchPrefService accountSynchService;
-    @Autowired
     private OnlineBankingServiceProducer bankingServiceProducer;
     @Autowired
-    private StandingOrderService standingOrderService;
+    private AnonymizationService anonymizationService;
     
     /**
      * Read and returns the booking file for a given period. Single bookings are not deserialized in
@@ -82,21 +84,21 @@ public class BookingService extends BaseUserIdService {
      * @return
      */
     public DSDocument getBookings(String accessId, String accountId, String period) {
-    	AccountSynchResult accountSynchResult = accountSynchService.loadAccountSynchResult(accessId, accountId);
+    	AccountSynchResult accountSynchResult = bankAccountService.loadAccountSynchResult(accessId, accountId);
     	if(accountSynchResult.getBookingFileExts().contains(period))
     		throw new ResourceNotFoundException(Booking.class, 
     				FQNUtils.bookingFQN(accessId,accountId,period).getValue());
-        return loadDocument(FQNUtils.bookingFQN(accessId,accountId,period));
+        return uos.loadDocument(FQNUtils.bookingFQN(accessId,accountId,period));
     }
 
-    public List<BookingEntity> listBookings(String accessId, String accountId, String period) {
-    	AccountSynchResult accountSynchResult = accountSynchService.loadAccountSynchResult(accessId, accountId);
-    	if(accountSynchResult.getBookingFileExts().contains(period))
-    		throw new ResourceNotFoundException(Booking.class, 
-    				FQNUtils.bookingFQN(accessId,accountId,period).getValue());
-    	return load(FQNUtils.bookingFQN(accessId,accountId,period), listType())
-    			.orElse(Collections.emptyList());
-    }
+//    public List<BookingEntity> listBookings(String accessId, String accountId, String period) {
+//    	AccountSynchResult accountSynchResult = bankAccountService.loadAccountSynchResult(accessId, accountId);
+//    	if(accountSynchResult.getBookingFileExts().contains(period))
+//    		throw new ResourceNotFoundException(Booking.class, 
+//    				FQNUtils.bookingFQN(accessId,accountId,period).getValue());
+//    	return load(FQNUtils.bookingFQN(accessId,accountId,period), listType())
+//    			.orElse(Collections.emptyList());
+//    }
     
     /**
      * - Get additional booking from the remote repository.
@@ -108,9 +110,11 @@ public class BookingService extends BaseUserIdService {
      * @param pin
      */
     public void syncBookings(String accessId, String accountId, BankApi bankApi, String pin) {
-    	// Set the synch status.
+    	// Set the synch status and flush
         bankAccountService.updateSyncStatus(accessId, accountId, BankAccount.SyncStatus.SYNC);
-        accountSynchService.updateSyncStatus(accessId, accountId, BankAccount.SyncStatus.SYNC);
+        uos.flush();
+        
+        // Reload
         UserData userData = uds.load();
         BankAccessEntity bankAccess = userData.bankAccessData(accessId).getBankAccess();
         BankAccountEntity bankAccount = userData.bankAccountData(accessId, accountId).getBankAccount();
@@ -134,27 +138,23 @@ public class BookingService extends BaseUserIdService {
             throw e;
         } finally {
             bankAccountService.updateSyncStatus(bankAccess.getId(), bankAccount.getId(), BankAccount.SyncStatus.PENDING);
-            accountSynchService.updateSyncStatus(bankAccess.getId(), bankAccount.getId(), BankAccount.SyncStatus.PENDING);
         }
     }
 
     private void processBookings(BankAccessEntity bankAccess, 
     		BankAccountEntity bankAccount, LoadBookingsResponse response) {
     	
-    	AccountSynchResult synchResult = accountSynchService.loadAccountSynchResult(bankAccess.getId(), bankAccount.getId());
-    	AccountSynchPref accountSynchPref = accountSynchService.findAccountSynchPref(bankAccess.getId(), bankAccount.getId());
+    	AccountSynchResult synchResult = bankAccountService.loadAccountSynchResult(bankAccess.getId(), bankAccount.getId());
+    	AccountSynchPref accountSynchPref = bankAccountService.findAccountSynchPref(bankAccess.getId(), bankAccount.getId());
     	
         Map<String, List<BookingEntity>> bookings = BookingHelper.mapBookings(bankAccount, accountSynchPref, response.getBookings());
-        
-        // First update preference set.
-//        accountSynchService.storeAccountSynchResult(bankAccess.getId(), bankAccount.getId(), synchResult.update(bookings.keySet()));
         
         Map<String, BookingFile> bookingFileMap = synchResult.bookingFileMap();
         Set<Entry<String,List<BookingEntity>>> entrySet = bookings.entrySet();
         for (Entry<String, List<BookingEntity>> entry : entrySet) {
         	List<BookingEntity> bookingEntities = entry.getValue();
             bookingEntities.forEach(booking ->
-            response.getStandingOrders()
+            	response.getStandingOrders()
                     .stream()
                     .filter(so -> so.getAmount().negate().compareTo(booking.getAmount()) == 0 &&
                             Utils.inCycle(booking.getValutaDate(), so.getExecutionDay()) &&
@@ -167,7 +167,7 @@ public class BookingService extends BaseUserIdService {
                     }));
             String period = entry.getKey();
 			DocumentFQN bookingFQN = FQNUtils.bookingFQN(bankAccess.getId(),bankAccount.getId(),period);
-			List<BookingEntity> existingBookings = load(bookingFQN, listType())
+			List<BookingEntity> existingBookings = uos.load(bookingFQN, listType())
 					.orElse(Collections.emptyList());
             bookingEntities = mergeBookings(existingBookings,bookingEntities);
 
@@ -176,31 +176,35 @@ public class BookingService extends BaseUserIdService {
             if(bookingFile==null){
             	bookingFile = new BookingFile();
             	bookingFile.setPeriod(period);
+            	bookingFile.setLastUpdate(LocalDateTime.now());
             	synchResult.update(Collections.singletonList(bookingFile));            	
             }
             bookingFile.setNumberOfRecords(bookingEntities.size());
-            accountSynchService.storeAccountSynchResult(bankAccess.getId(),bankAccount.getId(), synchResult);
+            bankAccountService.storeAccountSynchResult(bankAccess.getId(),bankAccount.getId(), synchResult);
 
             // Sort and store bookings
             Collections.sort(bookingEntities, (o1, o2) -> o2.getBookingDate().compareTo(o1.getBookingDate()));
             if (bankAccess.isStoreBookings()) {
-            	store(bookingFQN, listType(), bookingEntities);
+            	uos.store(bookingFQN, listType(), bookingEntities);
             }
 		}
-        standingOrderService.saveStandingOrders(bankAccount, response.getStandingOrders());
+        bankAccountService.saveStandingOrders(bankAccount, response.getStandingOrders());
         bankAccountService.updateSyncStatus(bankAccount.getBankAccessId(), bankAccount.getId(), BankAccount.SyncStatus.READY);
-        accountSynchService.updateSyncStatus(bankAccount.getBankAccessId(), bankAccount.getId(), BankAccount.SyncStatus.READY);
+        uos.flush();
         
-        if (bankAccess.isCategorizeBookings() || bankAccess.isStoreAnalytics() || bankAccess.isStoreAnonymizedBookings()) {
+        if (bankAccess.isCategorizeBookings() || bankAccess.isStoreAnalytics()) {
         	// create analytics
         	// identify and store contracts
-        	// anonymize and store booking
         	analyticsService.startAccountAnalytics(bankAccount.getBankAccessId(), bankAccount.getId());
+        }
+        if(bankAccess.isStoreAnonymizedBookings()){
+        	// anonymize and store booking
+        	anonymizationService.anonymizeAndStoreBookingsAsync(bankAccess.getId(), bankAccount.getId());
         }
     }
 
     private LoadBookingsResponse loadBookingsOnline(BankApi bankApi, BankAccessEntity bankAccess, BankAccountEntity bankAccount, String pin) {
-        BankApiUser bankApiUser = userService.checkApiRegistration(bankApi, bankAccess.getBankCode());
+        BankApiUser bankApiUser = uds.checkApiRegistration(bankApi, bankAccess.getBankCode());
 
         OnlineBankingService onlineBankingService = checkAndGetOnlineBankingService(bankAccess, bankAccount, pin, bankApiUser);
 
@@ -212,7 +216,7 @@ public class BookingService extends BaseUserIdService {
             response.setOnlineBankingService(onlineBankingService);
             return response;
         } catch (InvalidPinException e) {
-            bankAccessService.setInvalidPin(bankAccess.getId());
+        	credentialService.setInvalidPin(bankAccess.getId());
             throw new de.adorsys.multibanking.exception.InvalidPinException(bankAccess.getId());
         }
     }
@@ -248,7 +252,6 @@ public class BookingService extends BaseUserIdService {
             List<BankAccount> apiBankAccounts = onlineBankingService.loadBankAccounts(bankApiUser, bankAccess, blzHbci, pin, bankAccess.isStorePin());
             BankAccessData bankAccessData = userData.bankAccessData(bankAccess.getId());
 	        Collection<BankAccountData> dbBankAccounts = bankAccessData.getBankAccounts().values();
-//            List<BankAccountEntity> dbBankAccounts = bankAccountService.loadForBankAccess(bankAccess.getId());
             apiBankAccounts.forEach(apiBankAccount -> {
                 dbBankAccounts.forEach(dbBankAccountData -> {
                 	BankAccountEntity dbBankAccount = dbBankAccountData.getBankAccount();
@@ -260,7 +263,6 @@ public class BookingService extends BaseUserIdService {
                     }
                 });
             });
-//            bankAccountService.saveBankAccounts(bankAccess.getId(),dbBankAccounts);
             uds.store(userData);
         }
         
@@ -268,5 +270,5 @@ public class BookingService extends BaseUserIdService {
 
 	private static TypeReference<List<BookingEntity>> listType(){
 		return new TypeReference<List<BookingEntity>>() {};
-	}
+	}	
 }

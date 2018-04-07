@@ -1,5 +1,6 @@
 package de.adorsys.multibanking.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -8,7 +9,7 @@ import com.nimbusds.jose.jwk.JWK;
 
 import de.adorsys.multibanking.domain.UserAgentCredentials;
 import de.adorsys.multibanking.domain.UserData;
-import de.adorsys.multibanking.service.base.BaseUserIdService;
+import de.adorsys.multibanking.service.base.UserObjectService;
 import de.adorsys.multibanking.service.crypto.KeyGen;
 import de.adorsys.multibanking.utils.FQNUtils;
 import de.adorsys.multibanking.utils.Ids;
@@ -24,19 +25,21 @@ import de.adorsys.multibanking.utils.Ids;
  *
  */
 @Service
-public class UserAgentCredentialsService extends BaseUserIdService {
+public class UserAgentCredentialsService {
+	@Autowired
+	private UserObjectService uos;
 
 	public UserAgentCredentials load(String userAgentId){
-		return load(FQNUtils.userAgentCredentialFQN(userAgentId), valueType())
-				.orElseThrow(() -> resourceNotFound(UserData.class, auth().getUserID().getValue()));
+		return uos.load(FQNUtils.userAgentCredentialFQN(userAgentId), valueType())
+				.orElseThrow(() -> uos.resourceNotFound(UserData.class, uos.auth().getUserID().getValue()));
 	}
 	
 	public boolean exists(String userAgentId){
-		return documentExists(FQNUtils.userAgentCredentialFQN(userAgentId), valueType());
+		return uos.documentExists(FQNUtils.userAgentCredentialFQN(userAgentId), valueType());
 	}
 
 	public void store(UserAgentCredentials userAgentCredentials){
-		store(FQNUtils.userAgentCredentialFQN(userAgentCredentials.getUserAgentId()), valueType(), userAgentCredentials);		
+		uos.store(FQNUtils.userAgentCredentialFQN(userAgentCredentials.getUserAgentId()), valueType(), userAgentCredentials);		
 	}
 
 	public JWK newAESKey(String keyId, EncryptionMethod encryptionMethod){

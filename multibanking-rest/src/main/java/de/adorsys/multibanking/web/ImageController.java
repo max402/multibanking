@@ -20,8 +20,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import de.adorsys.multibanking.service.CustomImageService;
-import de.adorsys.multibanking.service.SystemImageService;
+import de.adorsys.multibanking.service.analytics.CustomImageService;
+import de.adorsys.multibanking.service.analytics.SystemImageService;
+import de.adorsys.multibanking.web.annotation.UserResource;
 import de.adorsys.multibanking.web.common.BaseController;
 
 /**

@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import de.adorsys.multibanking.web.annotation.UserResource;
+
 import javax.servlet.http.HttpServletRequest;
 
 @UserResource

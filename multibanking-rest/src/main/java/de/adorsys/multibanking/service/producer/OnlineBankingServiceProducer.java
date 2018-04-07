@@ -1,10 +1,11 @@
-package de.adorsys.multibanking.service;
+package de.adorsys.multibanking.service.producer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import de.adorsys.multibanking.domain.BankEntity;
+import de.adorsys.multibanking.service.BankService;
 import de.adorsys.onlinebanking.mock.MockBanking;
 import domain.BankApi;
 import figo.FigoBanking;

@@ -17,6 +17,7 @@ import lombok.Data;
 public class UserData {
 	private UserEntity userEntity;
 	private Map<String, BankAccessData> bankAccesses = new HashMap<>();
+	private Map<String, ContractEntity> contracts = new HashMap<>();
 	
 	private AccountSynchPref accountSynchPref;
 

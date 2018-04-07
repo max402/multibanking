@@ -1,16 +1,21 @@
 package de.adorsys.multibanking.service.interceptor;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import de.adorsys.multibanking.service.base.BaseSystemIdService;
+import de.adorsys.multibanking.service.base.SystemObjectService;
 
 @Service
-public class SystemCacheService extends BaseSystemIdService {
+public class SystemCacheService {
+	
+	@Autowired
+	private SystemObjectService sos;
+	
 	public void preHandle(){
-		enableCaching();
+		sos.enableCaching();
 	}
 	
 	public void postHandle(){
-		flush();
+		sos.flush();
 	}
 }

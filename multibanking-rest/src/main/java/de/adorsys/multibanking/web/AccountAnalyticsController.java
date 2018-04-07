@@ -12,7 +12,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import de.adorsys.multibanking.service.AnalyticsService;
+import de.adorsys.multibanking.service.analytics.AnalyticsService;
+import de.adorsys.multibanking.web.annotation.UserResource;
 import de.adorsys.multibanking.web.common.BaseController;
 
 /**

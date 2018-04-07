@@ -22,7 +22,6 @@ public class FQNUtils {
 	public static final DocumentFQN userAgentCredentialFQN(String userAgentId) {
     	return userAgentDirFQN(userAgentId).addName("credentials.aes");
 	}
-
 	
 	private static final DocumentDirectoryFQN bankAccessesDirFQN() {
 		return new DocumentDirectoryFQN("bankaccesses");
@@ -56,13 +55,13 @@ public class FQNUtils {
     	return bankAccountDirFQN(accessId, accountId).addName("analytics.aes");
 	}
 	
-	public static DocumentFQN contractsFQN(String accessId, String accountId) {
-    	return bankAccountDirFQN(accessId, accountId).addName("contracts.aes");
-	}
+//	public static DocumentFQN contractsFQN(String accessId, String accountId) {
+//    	return bankAccountDirFQN(accessId, accountId).addName("contracts.aes");
+//	}
 	
-	public static DocumentFQN standingOrdersFQN(String accessId, String accountId) {
-    	return bankAccountDirFQN(accessId, accountId).addName("standingOrders.aes");
-	}
+//	public static DocumentFQN standingOrdersFQN(String accessId, String accountId) {
+//    	return bankAccountDirFQN(accessId, accountId).addName("standingOrders.aes");
+//	}
 
 	public static DocumentFQN bookingRulesFQN() {
 		return new DocumentFQN("bookingRules.aes");

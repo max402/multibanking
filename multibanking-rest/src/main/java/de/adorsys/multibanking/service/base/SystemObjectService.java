@@ -4,26 +4,27 @@ import org.adorsys.docusafe.business.types.complex.UserIDAuth;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import de.adorsys.multibanking.auth.SystemContext;
 import de.adorsys.multibanking.auth.UserContext;
 
 /**
- * Services that access the repository of the current user use this service.
+ * Service that access the system repository use this service.
  * 
- * @author fpo
+ * @author fpo 2018-04-06 06:00
  *
  */
 @Service
-public abstract class BaseUserIdService extends BaseService {
+public class SystemObjectService extends CacheBasedService {
 	@Autowired
-	private UserContext userContext;
+	private SystemContext systemContext;
 
 	@Override
 	public UserContext user() {
-		return userContext;
+		return systemContext.getUser();
 	}
 
 	@Override
 	public UserIDAuth auth() {
-		return userContext.getAuth();
+		return systemContext.getUser().getAuth();
 	}
 }

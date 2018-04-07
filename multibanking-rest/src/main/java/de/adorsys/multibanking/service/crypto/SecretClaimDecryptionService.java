@@ -1,4 +1,4 @@
-package de.adorsys.multibanking.service;
+package de.adorsys.multibanking.service.crypto;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

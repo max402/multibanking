@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import de.adorsys.multibanking.domain.BankEntity;
 import de.adorsys.multibanking.exception.ResourceNotFoundException;
 import de.adorsys.multibanking.service.BankService;
+import de.adorsys.multibanking.web.annotation.UserResource;
 import de.adorsys.multibanking.web.common.BaseController;
 
 /**

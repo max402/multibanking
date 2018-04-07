@@ -4,12 +4,10 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.util.Date;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -22,6 +20,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import de.adorsys.multibanking.exception.ResourceNotFoundException;
 import de.adorsys.multibanking.service.config.BaseServiceTest;
 import de.adorsys.multibanking.service.old.TestConstants;
+import de.adorsys.multibanking.service.producer.OnlineBankingServiceProducer;
 import de.adorsys.onlinebanking.mock.MockBanking;
 import figo.FigoBanking;
 
@@ -35,11 +34,9 @@ public class BankAccessServiceFakeUserTest extends BaseServiceTest {
     @MockBean
     private OnlineBankingServiceProducer bankingServiceProducer;
     @Autowired
-    private UserService userService;
+    private UserDataService uds;
     @Autowired
     private BankAccessService bankAccessService;
-    @Autowired
-    private DeleteExpiredUsersScheduled userScheduler;
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -69,15 +66,5 @@ public class BankAccessServiceFakeUserTest extends BaseServiceTest {
         // TODO Exception doesnt rise.
          thrown.expect(ResourceNotFoundException.class);
         bankAccessService.deleteBankAccess("badAccess");
-    }
-
-    @Test
-    @Ignore
-    public void cleaup_users_job() {
-    	randomAuthAndUser(new Date());
-//        importBanks();
-        userScheduler.deleteJob();
-        thrown.expect(ResourceNotFoundException.class);
-        userService.readUser();
     }
 }

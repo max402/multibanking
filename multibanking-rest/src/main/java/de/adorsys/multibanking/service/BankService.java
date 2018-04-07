@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.adorsys.docusafe.business.types.complex.DSDocument;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -14,26 +15,30 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import de.adorsys.multibanking.domain.BankEntity;
-import de.adorsys.multibanking.service.base.BaseSystemIdService;
+import de.adorsys.multibanking.service.base.SystemObjectService;
+import de.adorsys.multibanking.service.base.ListUtils;
 import de.adorsys.multibanking.utils.FQNUtils;
 
 @Service
-public class BankService extends BaseSystemIdService {
+public class BankService {
 
+	@Autowired
+	private SystemObjectService sos;
+	
 	private final YAMLFactory ymlFactory = new YAMLFactory();
 	private final ObjectMapper ymlObjectMapper = new ObjectMapper(ymlFactory);
 
 	public Optional<BankEntity> findByBankCode(String bankCode) {
-		return find(bankCode, BankEntity.class, listType(), FQNUtils.banksFQN());
+		return ListUtils.find(bankCode, sos.load(FQNUtils.banksFQN(), listType()).orElse(Collections.emptyList()));
 	}
 	
 	public List<BankEntity> load(){
-		return load(FQNUtils.banksFQN(), listType())
+		return sos.load(FQNUtils.banksFQN(), listType())
 				.orElse(Collections.emptyList());
 	}
 
 	public DSDocument search(String string) {
-		return loadDocument(FQNUtils.banksFQN());
+		return sos.loadDocument(FQNUtils.banksFQN());
 	}
 	
     public void importBanks(InputStream inputStream) throws IOException {
@@ -41,7 +46,7 @@ public class BankService extends BaseSystemIdService {
     	List<BankEntity> banks = ymlObjectMapper.readValue(inputStream, new TypeReference<List<BankEntity>>() {});
     	// Copy bank code to id.
     	banks.stream().forEach(b -> { b.setId(b.getBankCode());});
-    	store(FQNUtils.banksFQN(), listType(), banks);
+    	sos.store(FQNUtils.banksFQN(), listType(), banks);
     }
 
 	private static TypeReference<List<BankEntity>> listType(){

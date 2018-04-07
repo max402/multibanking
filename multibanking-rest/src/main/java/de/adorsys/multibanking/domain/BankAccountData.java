@@ -1,5 +1,7 @@
 package de.adorsys.multibanking.domain;
 
+import java.util.Map;
+
 import lombok.Data;
 
 /**
@@ -16,4 +18,6 @@ public class BankAccountData {
 	private AccountSynchResult synchResult = new AccountSynchResult();
 
 	private AccountSynchPref accountSynchPref;
+	
+	private Map<String, StandingOrderEntity> standingOrders;
 }

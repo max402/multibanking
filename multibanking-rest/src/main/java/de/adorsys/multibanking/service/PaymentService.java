@@ -18,7 +18,9 @@ import de.adorsys.multibanking.domain.BankEntity;
 import de.adorsys.multibanking.domain.PaymentEntity;
 import de.adorsys.multibanking.exception.ResourceNotFoundException;
 import de.adorsys.multibanking.exception.domain.MissingPinException;
-import de.adorsys.multibanking.service.base.BaseUserIdService;
+import de.adorsys.multibanking.service.base.UserObjectService;
+import de.adorsys.multibanking.service.base.ListUtils;
+import de.adorsys.multibanking.service.producer.OnlineBankingServiceProducer;
 import de.adorsys.multibanking.utils.FQNUtils;
 import domain.BankApiUser;
 import domain.Payment;
@@ -31,19 +33,21 @@ import spi.OnlineBankingService;
  * 
  */
 @Service
-public class PaymentService extends BaseUserIdService {
+public class PaymentService {
 
+	@Autowired
+	private UserObjectService uos;
     @Autowired
     private OnlineBankingServiceProducer bankingServiceProducer;
     @Autowired
-    private UserService userService;
+    private UserDataService uds;
     @Autowired
     private BankService bankService;
 
     public PaymentEntity createPayment(BankAccessEntity bankAccess, BankAccountEntity bankAccount, String pin, Payment payment) {
         OnlineBankingService bankingService = bankingServiceProducer.getBankingService(bankAccess.getBankCode());
 
-        BankApiUser bankApiUser = userService.checkApiRegistration(bankingService.bankApi(), bankAccess.getBankCode());
+        BankApiUser bankApiUser = uds.checkApiRegistration(bankingService.bankApi(), bankAccess.getBankCode());
 
         pin = pin == null ? bankAccess.getPin() : pin;
         if (pin == null) {
@@ -83,15 +87,21 @@ public class PaymentService extends BaseUserIdService {
     }
 	
 	public Optional<PaymentEntity> findPayment(String accessId, String accountId, String paymentId){
-		return find(paymentId, PaymentEntity.class, listType(), FQNUtils.paymentsFQN(accessId, accessId));
+		List<PaymentEntity> persList = uos.load(FQNUtils.paymentsFQN(accessId, accountId), listType()).orElse(Collections.emptyList());
+		return ListUtils.find(paymentId, persList);
 	}
 
     private void create(PaymentEntity payment) {
-    	updateList(Collections.singletonList(payment), PaymentEntity.class, listType(), paymentsFQN(payment));
+		List<PaymentEntity> persList = uos.load(paymentsFQN(payment), listType()).orElse(Collections.emptyList());
+		persList = ListUtils.updateList(Collections.singletonList(payment), persList);
+		uos.store(paymentsFQN(payment), listType(), persList);
 	}
 	
-	private void delete(PaymentEntity payment) {
-		deleteList(Collections.singletonList(payment), PaymentEntity.class, listType(), paymentsFQN(payment));
+	private boolean delete(PaymentEntity payment) {
+		List<PaymentEntity> persList = uos.load(paymentsFQN(payment), listType()).orElse(Collections.emptyList());
+		List<PaymentEntity> newPersList = ListUtils.deleteList(Collections.singletonList(payment), persList);
+		uos.store(paymentsFQN(payment), listType(), persList);
+		return persList.size() - newPersList.size()!=0;
 	}
 
     private static DocumentFQN paymentsFQN(PaymentEntity target){

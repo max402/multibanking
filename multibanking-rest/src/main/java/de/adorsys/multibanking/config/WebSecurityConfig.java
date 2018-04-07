@@ -28,7 +28,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import de.adorsys.multibanking.auth.UserContext;
-import de.adorsys.multibanking.service.SecretClaimDecryptionService;
+import de.adorsys.multibanking.service.crypto.SecretClaimDecryptionService;
 import de.adorsys.sts.filter.JWTAuthenticationFilter;
 import de.adorsys.sts.token.authentication.TokenAuthenticationService;
 import de.adorsys.sts.tokenauth.BearerToken;

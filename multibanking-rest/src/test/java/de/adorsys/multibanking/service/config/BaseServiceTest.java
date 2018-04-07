@@ -28,7 +28,7 @@ import de.adorsys.multibanking.auth.RequestCounter;
 import de.adorsys.multibanking.auth.SystemContext;
 import de.adorsys.multibanking.auth.UserContext;
 import de.adorsys.multibanking.service.BankService;
-import de.adorsys.multibanking.service.UserService;
+import de.adorsys.multibanking.service.UserDataService;
 import de.adorsys.multibanking.service.old.TestConstants;
 import de.adorsys.multibanking.utils.Ids;
 import de.adorsys.multibanking.utils.PrintMap;
@@ -37,10 +37,10 @@ import de.adorsys.multibanking.utils.PrintMap;
 @SpringBootTest(properties={Tp.p1,Tp.p2,Tp.p3,Tp.p4,Tp.p5,Tp.p6,Tp.p7,Tp.p8,Tp.p9,Tp.p10,Tp.p11,Tp.p12,
 		Tp.p13,Tp.p14,Tp.p15,Tp.p16,Tp.p17,Tp.p18,Tp.p19,Tp.p20,Tp.p21,Tp.p22,Tp.p23,
 		Tp.p24,Tp.p25,Tp.p26,Tp.p27,Tp.p28,Tp.p29})
-public class BaseServiceTest {
+public abstract class BaseServiceTest {
 
 	@Autowired
-    protected UserService userService;
+    protected UserDataService uds;
 
     @Autowired
     private BankService bankService;
@@ -81,7 +81,7 @@ public class BaseServiceTest {
     }
     protected void randomAuthAndUser(Date expire){
     	auth(randomUserId(), randomPassword());
-    	userService.createUser(expire);
+    	uds.createUser(expire);
     }
     
     boolean banksImported = false;

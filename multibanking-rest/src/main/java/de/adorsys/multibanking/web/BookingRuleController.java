@@ -27,8 +27,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.adorsys.multibanking.domain.CustomRuleEntity;
 import de.adorsys.multibanking.domain.RuleEntity;
 import de.adorsys.multibanking.exception.InvalidRulesException;
-import de.adorsys.multibanking.service.CustomBookingRuleService;
-import de.adorsys.multibanking.service.SystemBookingRuleService;
+import de.adorsys.multibanking.service.analytics.CustomBookingRuleService;
+import de.adorsys.multibanking.service.analytics.SystemBookingRuleService;
+import de.adorsys.multibanking.web.annotation.UserResource;
 import de.adorsys.multibanking.web.common.BaseController;
 
 /**
@@ -44,51 +45,51 @@ public class BookingRuleController extends BaseController {
     private static final ObjectMapper YAML_OBJECT_MAPPER = yamlObjectMapper();
 
     @Autowired
-    private CustomBookingRuleService bookingRuleService;
+    private CustomBookingRuleService customBookingRuleService;
     @Autowired
     private SystemBookingRuleService systemBookingRuleService;
 
     @RequestMapping(method = RequestMethod.POST)
     public HttpEntity<Void> createRule(@RequestBody CustomRuleEntity ruleEntity) {
-        bookingRuleService.createOrUpdateCustomRule(ruleEntity);
+        customBookingRuleService.createOrUpdateRule(ruleEntity);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @RequestMapping(value = "/custom", method = RequestMethod.GET)
     public @ResponseBody ResponseEntity<ByteArrayResource> getCustomRules() {
-        DSDocument dsDocument = bookingRuleService.getCustomBookingRules();
+        DSDocument dsDocument = customBookingRuleService.getBookingRules();
     	return loadBytesForWeb(dsDocument);
     }
 
     @RequestMapping(value = "/static", method = RequestMethod.GET)
     public @ResponseBody ResponseEntity<ByteArrayResource> getStaticRules() {
-        DSDocument dsDocument = systemBookingRuleService.getStaticBookingRules();
+        DSDocument dsDocument = systemBookingRuleService.getBookingRules();
     	return loadBytesForWeb(dsDocument);
     }
 
     @RequestMapping(value = "/custom/{ruleId}", method = RequestMethod.PUT)
     public HttpEntity<Void> updateCustomRule(@PathVariable String ruleId, @RequestBody CustomRuleEntity ruleEntity) {
     	ruleEntity.setId(ruleId);
-    	bookingRuleService.createOrUpdateCustomRule(ruleEntity);
+    	customBookingRuleService.createOrUpdateRule(ruleEntity);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @RequestMapping(value = "/static/{ruleId}", method = RequestMethod.PUT)
     public HttpEntity<Void> updateRule(@PathVariable String ruleId, @RequestBody RuleEntity ruleEntity) {
     	ruleEntity.setId(ruleId);
-    	systemBookingRuleService.createOrUpdateStaticRule(ruleEntity);
+    	systemBookingRuleService.createOrUpdateRule(ruleEntity);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @RequestMapping(path = "/custom", method = RequestMethod.PUT)
     public HttpEntity<Void> createOrUpdateCustomRules(@RequestBody List<CustomRuleEntity> ruleEntities) {
-    	bookingRuleService.createOrUpdateCustomRules(ruleEntities);
+    	customBookingRuleService.createOrUpdateRules(ruleEntities);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @RequestMapping(path = "/static", method = RequestMethod.PUT)
     public HttpEntity<Void> createOrUpdateStaticRules(@RequestBody List<RuleEntity> ruleEntities) {
-    	systemBookingRuleService.createOrUpdateStaticRules(ruleEntities);
+    	systemBookingRuleService.createOrUpdateRules(ruleEntities);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
     
@@ -99,7 +100,7 @@ public class BookingRuleController extends BaseController {
 
         try {
             List<CustomRuleEntity> rulesEntities = YAML_OBJECT_MAPPER.readValue(rulesFile.getInputStream(), new TypeReference<List<CustomRuleEntity>>() {});
-            bookingRuleService.replceCustomRules(rulesEntities);
+            customBookingRuleService.replaceRules(rulesEntities);
             return new ResponseEntity<>(HttpStatus.CREATED);
         } catch (IOException e) {
             throw new InvalidRulesException(e.getMessage());
@@ -113,7 +114,7 @@ public class BookingRuleController extends BaseController {
 
         try {
             List<RuleEntity> rulesEntities = YAML_OBJECT_MAPPER.readValue(rulesFile.getInputStream(), new TypeReference<List<RuleEntity>>() {});
-            systemBookingRuleService.replceStaticRules(rulesEntities);
+            systemBookingRuleService.replaceRules(rulesEntities);
             return new ResponseEntity<>(HttpStatus.CREATED);
         } catch (IOException e) {
             throw new InvalidRulesException(e.getMessage());
@@ -122,26 +123,26 @@ public class BookingRuleController extends BaseController {
 
     @RequestMapping(value = "/custom/{ruleId}", method = RequestMethod.DELETE)
     public HttpEntity<Void> deleteCustomRule(@PathVariable String ruleId) {
-        bookingRuleService.deleteCustomRule(ruleId);
+        customBookingRuleService.deleteRule(ruleId);
         log.info("Rule [{}] deleted.", ruleId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
     @RequestMapping(value = "/static/{ruleId}", method = RequestMethod.DELETE)
     public HttpEntity<Void> deleteStaticRule(@PathVariable String ruleId) {
-    	systemBookingRuleService.deleteStaticRule(ruleId);
+    	systemBookingRuleService.deleteRule(ruleId);
         log.info("Rule [{}] deleted.", ruleId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @RequestMapping(value = "/custom", method = RequestMethod.DELETE)
     public HttpEntity<Void> deleteCustomRules(@PathVariable List<String> ruleIds) {
-        bookingRuleService.deleteCustomRules(ruleIds);
+        customBookingRuleService.deleteRules(ruleIds);
         log.info("Rule [{}] deleted.", ruleIds);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
     @RequestMapping(value = "/static", method = RequestMethod.DELETE)
     public HttpEntity<Void> deleteStaticRules(@PathVariable List<String> ruleIds) {
-    	systemBookingRuleService.deleteStaticRules(ruleIds);
+    	systemBookingRuleService.deleteRules(ruleIds);
         log.info("Rule [{}] deleted.", ruleIds);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

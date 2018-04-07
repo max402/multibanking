@@ -1,4 +1,4 @@
-package de.adorsys.multibanking.service;
+package de.adorsys.multibanking.service.interceptor;
 
 import org.springframework.web.client.RestTemplate;
 

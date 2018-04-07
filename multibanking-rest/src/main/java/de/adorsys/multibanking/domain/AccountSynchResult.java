@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import de.adorsys.multibanking.domain.common.AbstractId;
 import domain.BankAccount.SyncStatus;
 import lombok.Data;
@@ -27,8 +29,11 @@ public class AccountSynchResult extends AbstractId {
 	private List<BookingFile> bookingFileExts = new ArrayList<>();
 	
 	private SyncStatus syncStatus;
+
+	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
 	private LocalDateTime statusTime;
 	
+	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
 	private LocalDateTime lastSynch;
 	
 	public AccountSynchResult update(Collection<BookingFile> newEntries) {

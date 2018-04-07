@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import de.adorsys.multibanking.auth.UserContext;
-import de.adorsys.multibanking.service.TokenBasedMockBanking;
+import de.adorsys.multibanking.service.interceptor.TokenBasedMockBanking;
 import de.adorsys.onlinebanking.mock.MockBanking;
 
 @Configuration

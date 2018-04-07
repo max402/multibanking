@@ -23,9 +23,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import de.adorsys.multibanking.domain.BankAccessEntity;
 import de.adorsys.multibanking.domain.BankAccountEntity;
-import de.adorsys.multibanking.service.AnalyticsService;
 import de.adorsys.multibanking.service.BookingService;
-import de.adorsys.multibanking.service.OnlineBankingServiceProducer;
+import de.adorsys.multibanking.service.analytics.AnalyticsService;
+import de.adorsys.multibanking.service.producer.OnlineBankingServiceProducer;
 import domain.BankApi;
 import hbci4java.Hbci4JavaBanking;
 

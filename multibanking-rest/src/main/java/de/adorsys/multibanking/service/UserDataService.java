@@ -1,13 +1,25 @@
 package de.adorsys.multibanking.service;
 
+import java.util.ArrayList;
+import java.util.Date;
+
+import org.adorsys.cryptoutils.exceptions.BaseException;
 import org.adorsys.docusafe.business.types.complex.DSDocument;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import de.adorsys.multibanking.domain.UserData;
-import de.adorsys.multibanking.service.base.BaseUserIdService;
+import de.adorsys.multibanking.domain.UserEntity;
+import de.adorsys.multibanking.service.base.UserObjectService;
+import de.adorsys.multibanking.service.base.StorageUserService;
+import de.adorsys.multibanking.service.producer.OnlineBankingServiceProducer;
 import de.adorsys.multibanking.utils.FQNUtils;
+import de.adorsys.multibanking.utils.Ids;
+import domain.BankApi;
+import domain.BankApiUser;
+import spi.OnlineBankingService;
 
 /**
  * Manage Access to the user data. Manages all state information for this user account.
@@ -18,26 +30,88 @@ import de.adorsys.multibanking.utils.FQNUtils;
  *
  */
 @Service
-public class UserDataService extends BaseUserIdService {
+public class UserDataService {
+	@Autowired
+	private UserObjectService uos;
+    @Autowired
+    private OnlineBankingServiceProducer bankingServiceProducer;
+    @Autowired
+    private StorageUserService storageUserService;
 
 	public UserData load(){
-		return load(FQNUtils.userDataFQN(), valueType())
-				.orElseThrow(() -> resourceNotFound(UserData.class, auth().getUserID().getValue()));
+		return uos.load(FQNUtils.userDataFQN(), valueType())
+				.orElseThrow(() -> uos.resourceNotFound(UserData.class, uos.auth().getUserID().getValue()));
 	}
 	
 	public boolean exists(){
-		return documentExists(FQNUtils.userDataFQN(), valueType());
+		return uos.documentExists(FQNUtils.userDataFQN(), valueType());
 	}
 
 	public void store(UserData userData){
-		store(FQNUtils.userDataFQN(), valueType(), userData);		
+		uos.store(FQNUtils.userDataFQN(), valueType(), userData);		
 	}
 	
     public DSDocument loadDocument() {
-    	return loadDocument(FQNUtils.userDataFQN());
+    	return uos.loadDocument(FQNUtils.userDataFQN());
+    }
+	
+	
+    /**
+     * Returns the user entity or create one if the user does not exist.
+     */
+    public UserData createUser(Date expire) {
+    	storageUserService.createUser(uos.auth());
+
+    	UserEntity userEntity = new UserEntity();
+    	userEntity.setApiUser(new ArrayList<>());
+    	userEntity.setId(uos.auth().getUserID().getValue());
+    	userEntity.setExpireUser(expire);
+    	
+    	UserData userData = new UserData();
+    	userData.setUserEntity(userEntity);
+    	store(userData);
+    	return userData;
     }
 	
 	private static TypeReference<UserData> valueType(){
 		return new TypeReference<UserData>() {};
 	}
+
+    /**
+     * Returns the bank API user. Registers with the banking API if necessary.
+     * 
+     * User must have been create before.
+     * 
+     * @param bankApi
+     * @param bankCode
+     * @return
+     */
+    public BankApiUser checkApiRegistration(BankApi bankApi, String bankCode) {
+        OnlineBankingService onlineBankingService = bankApi != null
+                ? bankingServiceProducer.getBankingService(bankApi)
+                : bankingServiceProducer.getBankingService(bankCode);
+
+        if (onlineBankingService.userRegistrationRequired()) {
+        	if(!storageUserService.userExists(uos.auth().getUserID())) 
+        		throw new BaseException("Storage user with id: "+ uos.auth().getUserID().getValue() + " non existent ");
+        	UserData userData = load();
+            UserEntity userEntity = userData.getUserEntity();
+
+            return userEntity.getApiUser()
+                    .stream()
+                    .filter(bankApiUser -> bankApiUser.getBankApi() == onlineBankingService.bankApi())
+                    .findFirst()
+                    .orElseGet(() -> {
+                        BankApiUser bankApiUser = onlineBankingService.registerUser(Ids.uuid());
+                        userEntity.getApiUser().add(bankApiUser);
+                        store(userData);
+
+                        return bankApiUser;
+                    });
+        } else {
+            BankApiUser bankApiUser = new BankApiUser();
+            bankApiUser.setBankApi(onlineBankingService.bankApi());
+            return bankApiUser;
+        }
+    }	
 }

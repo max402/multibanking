@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import de.adorsys.multibanking.domain.BankAccessEntity;
 import de.adorsys.multibanking.exception.BankAccessAlreadyExistException;
+import de.adorsys.multibanking.web.annotation.UserResource;
 import de.adorsys.multibanking.web.common.BankAccessBasedController;
 
 /**

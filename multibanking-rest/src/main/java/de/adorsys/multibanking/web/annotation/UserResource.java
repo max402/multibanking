@@ -1,4 +1,4 @@
-package de.adorsys.multibanking.web;
+package de.adorsys.multibanking.web.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;

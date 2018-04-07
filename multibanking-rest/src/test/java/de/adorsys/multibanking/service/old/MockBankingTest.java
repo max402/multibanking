@@ -15,8 +15,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -25,13 +23,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import de.adorsys.multibanking.domain.BankAccessEntity;
 import de.adorsys.multibanking.domain.BankAccountEntity;
-import de.adorsys.multibanking.domain.UserEntity;
-import de.adorsys.multibanking.service.AnalyticsService;
-import de.adorsys.multibanking.service.BankAccessService;
 import de.adorsys.multibanking.service.BookingService;
-import de.adorsys.multibanking.service.OnlineBankingServiceProducer;
-import de.adorsys.multibanking.service.PaymentService;
-import de.adorsys.multibanking.service.UserService;
+import de.adorsys.multibanking.service.UserDataService;
+import de.adorsys.multibanking.service.analytics.AnalyticsService;
+import de.adorsys.multibanking.service.producer.OnlineBankingServiceProducer;
 import de.adorsys.onlinebanking.mock.MockBanking;
 import domain.BankApi;
 
@@ -47,23 +42,12 @@ public class MockBankingTest {
 
     @Autowired
     private BookingService bookingService;
-
-    @Autowired
-    private BankAccessService bankAccessService;
-
-    @Autowired
-    private PaymentService paymentService;
-
     @Autowired
     private AnalyticsService analyticsService;
-
     @Autowired
-    private UserService userService;
-
+    private UserDataService uds;
     @MockBean
     private OnlineBankingServiceProducer bankingServiceProducer;
-
-    private static final Logger LOG = LoggerFactory.getLogger(MockBankingTest.class);
 
     @BeforeClass
     public static void beforeClass() {
@@ -90,9 +74,7 @@ public class MockBankingTest {
 
     @Test
     public void testSyncBookings() {
-    	// TODO: inject UserIdAuth
-//    	UserEntity userEntity = TestUtil.getUserEntity("test-user-id");
-    	UserEntity userEntity = userService.createUser(null);
+    	uds.createUser(null);
 
         BankAccessEntity bankAccessEntity = TestUtil.getBankAccessEntity("test-user-id", "test-access-id", "19999999", "12345");
         bankAccessEntity.setBankLogin("m.becker");
@@ -109,6 +91,5 @@ public class MockBankingTest {
         DSDocument loadDomainAnalytics = analyticsService.loadDomainAnalytics("test-access-id", "test-account-id");
         
         Assert.assertNotNull(loadDomainAnalytics);
-//        LOG.info(analyticsEntity.get().toString());
     }
 }

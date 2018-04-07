@@ -1,38 +1,44 @@
 package de.adorsys.multibanking.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import de.adorsys.multibanking.domain.AccountSynchPref;
+import de.adorsys.multibanking.domain.AccountSynchResult;
 import de.adorsys.multibanking.domain.BankAccessCredentials;
 import de.adorsys.multibanking.domain.BankAccessData;
 import de.adorsys.multibanking.domain.BankAccessEntity;
 import de.adorsys.multibanking.domain.BankAccountData;
 import de.adorsys.multibanking.domain.BankAccountEntity;
 import de.adorsys.multibanking.domain.BankEntity;
+import de.adorsys.multibanking.domain.StandingOrderEntity;
 import de.adorsys.multibanking.domain.UserData;
 import de.adorsys.multibanking.exception.BankAccessAlreadyExistException;
 import de.adorsys.multibanking.exception.InvalidBankAccessException;
 import de.adorsys.multibanking.exception.ResourceNotFoundException;
-import de.adorsys.multibanking.service.base.BaseUserIdService;
+import de.adorsys.multibanking.service.producer.OnlineBankingServiceProducer;
+import de.adorsys.multibanking.utils.Ids;
 import domain.BankAccount;
 import domain.BankAccount.SyncStatus;
 import domain.BankApi;
 import domain.BankApiUser;
+import domain.StandingOrder;
 import exception.InvalidPinException;
 import spi.OnlineBankingService;
 
 @Service
-public class BankAccountService extends BaseUserIdService {
+public class BankAccountService {
     private static final Logger log = LoggerFactory.getLogger(BankAccessService.class);
 
 	@Autowired
@@ -42,14 +48,6 @@ public class BankAccountService extends BaseUserIdService {
     private OnlineBankingServiceProducer bankingServiceProducer;
     @Autowired
     private BankService bankService;
-    @Autowired
-    private UserService userService;
-	
-	public Optional<BankAccountEntity> loadBankAccount(String accessId, String accountId) {
-		Optional<BankAccountData> bankAccountData = uds.load().bankAccessData(accessId).getBankAccount(accountId);
-		if(bankAccountData.isPresent()) return Optional.of(bankAccountData.get().getBankAccount());
-		return Optional.empty();
-	}
 	
     public void synchBankAccounts(BankAccessEntity bankAccess, BankAccessCredentials credentials){
     	List<BankAccountEntity> bankAccounts = loadFromBankingAPI(bankAccess, credentials, null);
@@ -82,7 +80,7 @@ public class BankAccountService extends BaseUserIdService {
             throw new InvalidBankAccessException(bankAccess.getBankCode());
         }
 
-        BankApiUser bankApiUser = userService.checkApiRegistration(bankApi, bankAccess.getBankCode());
+        BankApiUser bankApiUser = uds.checkApiRegistration(bankApi, bankAccess.getBankCode());
         String blzHbci = bankService.findByBankCode(bankAccess.getBankCode())
                 .orElseThrow(() -> new ResourceNotFoundException(BankEntity.class, bankAccess.getBankCode())).getBlzHbci();
 
@@ -108,10 +106,13 @@ public class BankAccountService extends BaseUserIdService {
 
         return bankAccountEntities;
     }
-    
-	public void updateSyncStatus(String bankAccessId, String accountId, final BankAccount.SyncStatus syncStatus) {
+
+	public void updateSyncStatus(String accessId, String accountId, SyncStatus syncStatus) {
 		UserData userData = uds.load();
-		userData.bankAccountData(bankAccessId, accountId).getBankAccount().setSyncStatus(syncStatus);
+		userData.bankAccountData(accessId, accountId).getBankAccount().setSyncStatus(syncStatus);
+		AccountSynchResult synchResult = userData.bankAccountData(accessId, accountId).getSynchResult();
+		synchResult.setSyncStatus(syncStatus);
+		synchResult.setStatusTime(LocalDateTime.now());
 		uds.store(userData);
 	}
 	
@@ -145,6 +146,96 @@ public class BankAccountService extends BaseUserIdService {
 		return userData.bankAccountData(accessId, accountId).getBankAccount().getSyncStatus();
 	}
     
+	public AccountSynchPref loadAccountLevelSynchPref(String accessId, String accountId){
+		return uds.load().bankAccountData(accessId, accountId).getAccountSynchPref();
+	}	
+	public void storeAccountLevelSynchPref(String accessId, String accountId, AccountSynchPref pref){
+		UserData userData = uds.load();
+		userData.bankAccountData(accessId, accountId).setAccountSynchPref(pref);
+		uds.store(userData);
+	}
+
+	public AccountSynchPref loadAccessLevelSynchPref(String accessId){
+		return uds.load().bankAccessData(accessId).getAccountSynchPref();
+	}	
+	public void storeAccessLevelSynchPref(String accessId, AccountSynchPref pref){
+		UserData userData = uds.load();
+		userData.bankAccessData(accessId).setAccountSynchPref(pref);
+		uds.store(userData);
+	}
+
+	public AccountSynchPref loadUserLevelSynchPref(){
+		return uds.load().getAccountSynchPref();
+	}	
+	public void storeUserLevelSynchPref(AccountSynchPref pref){
+		UserData userData = uds.load();
+		userData.setAccountSynchPref(pref);
+		uds.store(userData);
+	}
+	
+	public AccountSynchResult loadAccountSynchResult(String accessId, String accountId) {
+		return uds.load().bankAccountData(accessId, accountId).getSynchResult();
+	}
+	public void storeAccountSynchResult(String accessId, String accountId, AccountSynchResult currentResult) {
+		UserData userData = uds.load();
+		userData.bankAccountData(accessId, accountId).setSynchResult(currentResult);
+		uds.store(userData);
+	}
+	
+	/**
+	 * Search the neares account synch preference for the given account
+	 * @param id
+	 * @param id2
+	 * @return 
+	 */
+	public AccountSynchPref findAccountSynchPref(String accessId, String accountId) {
+		AccountSynchPref synchPref = loadAccountLevelSynchPref(accessId, accountId);
+		if(synchPref==null) 
+			synchPref = loadAccessLevelSynchPref(accessId);
+		if(synchPref==null) 
+			synchPref = loadUserLevelSynchPref();
+		if(synchPref==null) 
+			synchPref = new AccountSynchPref();
+		
+		return synchPref;
+	}
+	
+	/**
+	 * Store standing orders in the user data record. Uses the delivered orderId to identify
+	 * existing records and exchange them.
+	 * 
+	 * @param bankAccount
+	 * @param standingOrders
+	 */
+    public void saveStandingOrders(BankAccountEntity bankAccount, List<StandingOrder> standingOrders) {
+    	UserData userData = uds.load();
+    	Map<String, StandingOrderEntity> standingOrdersMap = userData.bankAccountData(bankAccount.getBankAccessId(), bankAccount.getId()).getStandingOrders();
+        standingOrders.stream()
+                .map(standingOrder -> {
+                	// Assign an order id if none.
+                	if(StringUtils.isBlank(standingOrder.getOrderId())){
+                		standingOrder.setOrderId(Ids.uuid());
+                	}
+                	
+                	// Check existence of this standing order in the user data record.
+                	// Instantiate and add one if none.
+                	StandingOrderEntity target = standingOrdersMap.get(standingOrder.getOrderId());
+                	if(target==null){
+                		target = new StandingOrderEntity();
+                        Ids.id(target);
+                		standingOrdersMap.put(standingOrder.getOrderId(), target);
+                		target.setAccountId(bankAccount.getId());
+                		target.setUserId(bankAccount.getUserId());
+                	}
+                	
+                	// Update the record.
+                    BeanUtils.copyProperties(standingOrder, target);
+                    return target;
+                });
+        uds.store(userData);
+    }
+	
+	
     private void filterAccounts(BankAccessEntity bankAccess, OnlineBankingService onlineBankingService, List<BankAccount> bankAccounts) {
     	UserData userData = uds.load();
     	Collection<BankAccountData> userBankAccounts = userData.bankAccessData(bankAccess.getId()).getBankAccounts().values();
@@ -172,20 +263,4 @@ public class BankAccountService extends BaseUserIdService {
         bankAccess.setBankName(bankAccounts.get(0).getBankName());
     }
 
-//
-//	private static class SetStatusFnct implements Function<BankAccountEntity, Void> {
-//		private BankAccount.SyncStatus syncStatus;
-//		private SetStatusFnct(SyncStatus syncStatus) {
-//			this.syncStatus = syncStatus;
-//		}
-//		@Override
-//		public Void apply(BankAccountEntity t) {
-//			t.setSyncStatus(syncStatus); 
-//			return null;
-//		}
-//	}
-//
-//	private static TypeReference<List<BankAccountEntity>> listType(){
-//		return new TypeReference<List<BankAccountEntity>>() {};
-//	}
 }

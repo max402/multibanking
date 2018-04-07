@@ -5,6 +5,8 @@ import java.util.Comparator;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.Data;
 
 /**
@@ -16,6 +18,9 @@ import lombok.Data;
 @Data
 public class BookingFile implements Comparator<BookingFile> {
 	private String period;
+	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+	private LocalDateTime lastUpdate;
+	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
 	private LocalDateTime lastAnalytics;
 	private String lastAnalyticsVersion;
 	private String lastAnalyticsTool;

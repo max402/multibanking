@@ -1,4 +1,4 @@
-package de.adorsys.multibanking.service.config;
+package de.adorsys.multibanking.config;
 
 import de.adorsys.multibanking.service.base.ExceptionHandlingDocumentSafeService;
 import org.adorsys.cryptoutils.storeconnectionfactory.ExtendedStoreConnectionFactory;

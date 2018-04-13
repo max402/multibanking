@@ -4,11 +4,12 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jwt.JWTClaimsSet;
 import de.adorsys.sts.keymanagement.service.DecryptionService;
-import java.io.IOException;
-import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.util.Map;
 
 @Service
 public class SecretClaimDecryptionService {

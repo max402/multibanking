@@ -36,7 +36,7 @@ import de.adorsys.multibanking.utils.PrintMap;
 @ActiveProfiles({"InMemory"})
 @SpringBootTest(properties={Tp.p1,Tp.p2,Tp.p3,Tp.p4,Tp.p5,Tp.p6,Tp.p7,Tp.p8,Tp.p9,Tp.p10,Tp.p11,Tp.p12,
 		Tp.p13,Tp.p14,Tp.p15,Tp.p16,Tp.p17,Tp.p18,Tp.p19,Tp.p20,Tp.p21,Tp.p22,Tp.p23,
-		Tp.p24,Tp.p25,Tp.p26,Tp.p27,Tp.p28,Tp.p29})
+		Tp.p24,Tp.p25,Tp.p26,Tp.p27,Tp.p28,Tp.p29,Tp.p30,Tp.p31 })
 public abstract class BaseServiceTest {
 
 	@Autowired

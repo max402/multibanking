@@ -34,4 +34,7 @@ public class Tp {
 	public static final String p27 = "sts.keymanagement.rotation.secretKeys.enabled=false";
 	public static final String p28 = "sts.keymanagement.rotation.signKeyPairs.enabled=false";
 	public static final String p29 = "sts.keymanagement.rotation.encKeyPairs.enabled=false";
+	
+	public static final String p30 = "docusafe.system.user.name=peter";
+	public static final String p31 = "docusafe.system.user.password=password";
 }

@@ -75,9 +75,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     /**
      * The user context object is used to hold everything associated with the current user request.
-     * 
+     *
      * It is a sort of first level cache.
-     * 
+     *
      * @param request
      * @return
      */
@@ -97,6 +97,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         userContext.setBearerToken(bearerToken);
         return userContext;
     }
+
+
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {

@@ -184,14 +184,14 @@
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
-        
+
         <dependency>
             <groupId>de.adorsys.multibanking</groupId>
             <artifactId>onlinebanking-xls-loader</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
-        
+
     </dependencies>
 
     <build>
@@ -279,6 +279,11 @@
                         -Dsts.keymanagement.rotation.encKeyPairs.enabled="false"
 
                         -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=10022
+
+                        -Dinfo.project.version=2.2.3
+
+                        -Ddocusafe.system.user.name=peter
+                        -Ddocusafe.system.user.password=password
 
                     </jvmArguments>
                 </configuration>

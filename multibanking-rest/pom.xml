@@ -254,8 +254,7 @@
                         -Dsts.keymanagement.keystore.keys.encKeyPairs.algo="RSA"
                         -Dsts.keymanagement.keystore.keys.encKeyPairs.sigAlgo="SHA256withRSA"
                         -Dsts.keymanagement.keystore.keys.encKeyPairs.size="2048"
-                        -Dsts.keymanagement.keystore.keys.encKeyPairs.name="STS
-                        Multibanking"
+                        -Dsts.keymanagement.keystore.keys.encKeyPairs.name="STS Multibanking"
                         -Dsts.keymanagement.keystore.keys.encKeyPairs.validityInterval="3600000"
                         -Dsts.keymanagement.keystore.keys.encKeyPairs.legacyInterval="86400000"
 
@@ -263,8 +262,7 @@
                         -Dsts.keymanagement.keystore.keys.signKeyPairs.algo="RSA"
                         -Dsts.keymanagement.keystore.keys.signKeyPairs.sigAlgo="SHA256withRSA"
                         -Dsts.keymanagement.keystore.keys.signKeyPairs.size="2048"
-                        -Dsts.keymanagement.keystore.keys.signKeyPairs.name="STS
-                        Multibanking"
+                        -Dsts.keymanagement.keystore.keys.signKeyPairs.name="STS Multibanking"
                         -Dsts.keymanagement.keystore.keys.signKeyPairs.validityInterval="3600000"
                         -Dsts.keymanagement.keystore.keys.signKeyPairs.legacyInterval="86400000"
 
@@ -286,6 +284,9 @@
                         -Ddocusafe.system.user.password=password
 
                     </jvmArguments>
+                    <arguments>
+                        -DSC-MONGO=127.0.0.1,27016,any
+                    </arguments>
                 </configuration>
                 <executions>
                     <execution>

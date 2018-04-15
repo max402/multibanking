@@ -19,7 +19,6 @@ import java.security.Security;
 @SpringBootApplication
 @EnableAsync
 @ComponentScan
-// @PropertySource("classpath:application.properties")
 public class Application {
 
     public static void main(String[] origargs) throws UnknownHostException {

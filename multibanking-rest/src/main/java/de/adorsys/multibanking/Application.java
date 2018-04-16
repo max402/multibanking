@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.EnableAsync;
 
@@ -19,6 +18,7 @@ import java.security.Security;
 @SpringBootApplication
 @EnableAsync
 @ComponentScan
+// @PropertySource("classpath:application.properties")
 public class Application {
 
     public static void main(String[] origargs) throws UnknownHostException {

@@ -282,11 +282,7 @@
 
                         -Ddocusafe.system.user.name=peter
                         -Ddocusafe.system.user.password=password
-
                     </jvmArguments>
-                    <arguments>
-                        -DSC-MONGO=127.0.0.1,27016,any
-                    </arguments>
                 </configuration>
                 <executions>
                     <execution>

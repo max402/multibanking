@@ -153,17 +153,6 @@ public class ExceptionHandlingDocumentSafeService implements DocumentSafeService
     	}
     }
 
-
-
-    @Override
-    public void linkDocument(UserIDAuth userIDAuth, DocumentFQN sourceDocumentFQN, DocumentFQN destinationDocumentFQN) {
-    	try {
-    		delegate.linkDocument(userIDAuth, sourceDocumentFQN, destinationDocumentFQN);
-    	} catch(BaseException b){
-    		throw checkContainer(b, userIDAuth);
-    	}
-    }
-
     @Override
 	public JWK findPublicEncryptionKey(UserID userID) {
     	try {

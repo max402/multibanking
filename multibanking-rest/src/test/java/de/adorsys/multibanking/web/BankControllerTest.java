@@ -18,11 +18,11 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import de.adorsys.multibanking.config.web.WebMvcUnitTest;
 import de.adorsys.multibanking.service.BankService;
 import de.adorsys.multibanking.utils.FQNUtils;
 import de.adorsys.multibanking.web.banks.BankController;
 import de.adorsys.multibanking.web.base.BaseControllerUnitTest;
-import de.adorsys.multibanking.web.config.WebMvcUnitTest;
 
 @WebMvcUnitTest(controllers = BankController.class)
 public class BankControllerTest extends BaseControllerUnitTest {

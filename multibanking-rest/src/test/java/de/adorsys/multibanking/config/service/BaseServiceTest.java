@@ -1,4 +1,4 @@
-package de.adorsys.multibanking.service.config;
+package de.adorsys.multibanking.config.service;
 
 import static org.mockito.Mockito.when;
 
@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.adorsys.docusafe.business.DocumentSafeService;
 import org.adorsys.docusafe.business.types.UserID;
 import org.adorsys.docusafe.business.types.complex.DocumentFQN;
 import org.adorsys.docusafe.business.types.complex.UserIDAuth;
@@ -29,6 +30,7 @@ import de.adorsys.multibanking.auth.SystemContext;
 import de.adorsys.multibanking.auth.UserContext;
 import de.adorsys.multibanking.service.BankService;
 import de.adorsys.multibanking.service.UserDataService;
+import de.adorsys.multibanking.service.base.StorageUserService;
 import de.adorsys.multibanking.service.old.TestConstants;
 import de.adorsys.multibanking.utils.Ids;
 import de.adorsys.multibanking.utils.PrintMap;
@@ -51,6 +53,9 @@ public abstract class BaseServiceTest {
     @Autowired
     protected SystemContext systemContext;
     
+    @Autowired
+    private StorageUserService storageUserService;
+    
     @Rule
     public TestName testName = new TestName();
     
@@ -67,15 +72,18 @@ public abstract class BaseServiceTest {
     }
     
     protected void auth(String userId, String password){
+    	auth(userId, password, true);
+    }
+    protected void auth(String userId, String password, boolean createUser){
     	UserIDAuth userIDAuth = new UserIDAuth(new UserID(userId), new ReadKeyPassword(password));
+    	if(createUser && !storageUserService.userExists(userIDAuth.getUserID()))
+    		storageUserService.createUser(userIDAuth);
     	RequestCounter requestCounter = new RequestCounter();
     	Map<Type, Map<DocumentFQN, CacheEntry<?>>> cache = new HashMap<>();
     	when(userContext.getAuth()).thenReturn(userIDAuth);
     	when(userContext.getRequestCounter()).thenReturn(requestCounter);
     	when(userContext.getCache()).thenReturn(cache);
-    	
     }
-
     protected void randomAuthAndUser(){
     	randomAuthAndUser(null);
     }

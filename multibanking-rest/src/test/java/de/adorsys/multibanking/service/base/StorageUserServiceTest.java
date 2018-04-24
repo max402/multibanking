@@ -11,8 +11,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.nimbusds.jose.jwk.JWK;
 
+import de.adorsys.multibanking.config.service.BaseServiceTest;
 import de.adorsys.multibanking.exception.ResourceNotFoundException;
-import de.adorsys.multibanking.service.config.BaseServiceTest;
 import de.adorsys.multibanking.utils.Ids;
 
 @RunWith(SpringRunner.class)
@@ -23,20 +23,20 @@ public class StorageUserServiceTest extends BaseServiceTest {
 
     @Test
 	public void testCreateUserAndCheckUserExists() {
-    	auth(Ids.uuid(), Ids.uuid());
+    	auth(Ids.uuid(), Ids.uuid(), false);
     	storageUserService.createUser(auth());
     	Assert.assertTrue(storageUserService.userExists(auth().getUserID()));
 	}
 
 	@Test
 	public void testUserExists_false() {
-    	auth(Ids.uuid(), Ids.uuid());
+    	auth(Ids.uuid(), Ids.uuid(), false);
     	Assert.assertFalse(storageUserService.userExists(auth().getUserID()));
 	}
 
 	@Test(expected=UserIDAlreadyExistsException.class)
 	public void testCreateUserAgain() {
-    	auth(Ids.uuid(), Ids.uuid());
+    	auth(Ids.uuid(), Ids.uuid(), false);
     	storageUserService.createUser(auth());
     	Assume.assumeTrue(storageUserService.userExists(auth().getUserID()));
     	storageUserService.createUser(auth());
@@ -44,7 +44,7 @@ public class StorageUserServiceTest extends BaseServiceTest {
 
 	@Test
 	public void testDeleteUser() {
-    	auth(Ids.uuid(), Ids.uuid());
+    	auth(Ids.uuid(), Ids.uuid(), false);
     	storageUserService.createUser(auth());
     	Assume.assumeTrue(storageUserService.userExists(auth().getUserID()));
     	storageUserService.deleteUser(auth());
@@ -53,7 +53,7 @@ public class StorageUserServiceTest extends BaseServiceTest {
 
 	@Test(expected=UserIDDoesNotExistException.class)
 	public void testDeleteUserAgain() {
-    	auth(Ids.uuid(), Ids.uuid());
+    	auth(Ids.uuid(), Ids.uuid(), false);
     	storageUserService.createUser(auth());
     	Assume.assumeTrue(storageUserService.userExists(auth().getUserID()));
     	storageUserService.deleteUser(auth());
@@ -63,7 +63,7 @@ public class StorageUserServiceTest extends BaseServiceTest {
 
 	@Test
 	public void testFindPublicEncryptionKey() {
-    	auth(Ids.uuid(), Ids.uuid());
+    	auth(Ids.uuid(), Ids.uuid(), false);
     	storageUserService.createUser(auth());
     	JWK jwk = storageUserService.findPublicEncryptionKey(auth().getUserID());
     	Assert.assertNotNull(jwk);
@@ -71,7 +71,7 @@ public class StorageUserServiceTest extends BaseServiceTest {
 
 	@Test (expected = ResourceNotFoundException.class)
 	public void testFindPublicEncryptionKeyWrongUser() {
-            auth(Ids.uuid(), Ids.uuid());
+            auth(Ids.uuid(), Ids.uuid(), false);
             storageUserService.findPublicEncryptionKey(auth().getUserID());
 	}
 

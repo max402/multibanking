@@ -10,11 +10,11 @@ public class FQNUtils {
 	}
 	
 	public static final DocumentFQN userDataFQN(){
-		return new DocumentFQN("userData.aes");
+		return new DocumentFQN("mbsUserData.aes");
 	}
 
 	private static final DocumentDirectoryFQN userAgentsDirFQN() {
-		return new DocumentDirectoryFQN("useragents");
+		return new DocumentDirectoryFQN("userAgents");
 	}
 	private static final DocumentDirectoryFQN userAgentDirFQN(String userAgentId) {
 		return userAgentsDirFQN().addDirectory(userAgentId);

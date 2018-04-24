@@ -17,8 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import de.adorsys.multibanking.config.service.BaseServiceTest;
 import de.adorsys.multibanking.exception.UserNotFoundException;
-import de.adorsys.multibanking.service.config.BaseServiceTest;
 import de.adorsys.multibanking.service.old.TestConstants;
 import de.adorsys.multibanking.service.producer.OnlineBankingServiceProducer;
 import de.adorsys.onlinebanking.mock.MockBanking;

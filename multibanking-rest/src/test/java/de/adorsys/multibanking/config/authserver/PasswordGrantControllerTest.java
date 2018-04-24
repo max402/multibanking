@@ -1,4 +1,4 @@
-package de.adorsys.multibanking.sts.authserver;
+package de.adorsys.multibanking.config.authserver;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
@@ -7,11 +7,11 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import de.adorsys.multibanking.utils.Ids;
-import de.adorsys.multibanking.web.base.BaseControllerITTest;
+import de.adorsys.multibanking.web.base.BaseControllerIT;
 import de.adorsys.multibanking.web.base.PasswordGrantResponse;
 
 @RunWith(SpringRunner.class)
-public class PasswordGrantControllerTest extends BaseControllerITTest {
+public class PasswordGrantControllerTest extends BaseControllerIT {
 
     @Test
 	public void testAuth() throws Exception {

@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import de.adorsys.multibanking.config.service.BaseServiceTest;
 import de.adorsys.multibanking.domain.BankAccessData;
 import de.adorsys.multibanking.domain.BankAccessEntity;
 import de.adorsys.multibanking.domain.BankAccountData;
@@ -30,7 +31,6 @@ import de.adorsys.multibanking.exception.InvalidPinException;
 import de.adorsys.multibanking.exception.ResourceNotFoundException;
 import de.adorsys.multibanking.service.base.SystemObjectService;
 import de.adorsys.multibanking.service.base.UserObjectService;
-import de.adorsys.multibanking.service.config.BaseServiceTest;
 import de.adorsys.multibanking.service.old.TestConstants;
 import de.adorsys.multibanking.service.old.TestUtil;
 import de.adorsys.multibanking.service.producer.OnlineBankingServiceProducer;

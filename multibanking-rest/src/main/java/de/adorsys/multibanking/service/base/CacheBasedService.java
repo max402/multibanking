@@ -5,14 +5,11 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.annotation.PostConstruct;
-
 import org.adorsys.cryptoutils.exceptions.BaseException;
 import org.adorsys.docusafe.business.types.complex.DSDocument;
 import org.adorsys.docusafe.business.types.complex.DocumentDirectoryFQN;
 import org.adorsys.docusafe.business.types.complex.DocumentFQN;
 import org.adorsys.docusafe.service.types.DocumentContent;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -33,15 +30,15 @@ import de.adorsys.multibanking.exception.ResourceNotFoundException;
  */
 public abstract class CacheBasedService extends DocumentBasedService {
 
-	@Autowired
 	private ObjectMapper objectMapper;
+	public CacheBasedService(ObjectMapper objectMapper) {
+		this.objectMapper = objectMapper;
+	}
 
 	protected abstract UserContext user();
-	private UserContextCache userContextCache;
-
-	@PostConstruct
-	public void postConstruct() {
-		userContextCache = new UserContextCache(user());
+	
+	public UserContextCache userContextCache() {
+		return new UserContextCache(user());
 	}
 
 	/**
@@ -57,7 +54,7 @@ public abstract class CacheBasedService extends DocumentBasedService {
 		user().getRequestCounter().load(documentFQN);
 		
 		// Check cache.
-		Optional<CacheEntry<T>> cacheHit = userContextCache.cacheHit(documentFQN, valueType);
+		Optional<CacheEntry<T>> cacheHit = userContextCache().cacheHit(documentFQN, valueType);
 		if (cacheHit.isPresent()) {
 			user().getRequestCounter().cacheHit(documentFQN);
 			return cacheHit.get().getEntry();
@@ -70,7 +67,7 @@ public abstract class CacheBasedService extends DocumentBasedService {
 			Optional<T> ot = Optional.of(objectMapper.readValue(loadDocument(documentFQN).getDocumentContent().getValue(), valueType));
 			
 			// Cache document.
-			userContextCache.cacheHit(documentFQN, valueType, ot, false);
+			userContextCache().cacheHit(documentFQN, valueType, ot, false);
 			return ot;
 		} catch (IOException e) {
 			throw new BaseException(e);
@@ -83,7 +80,7 @@ public abstract class CacheBasedService extends DocumentBasedService {
 	 * @param accessId
 	 */
 	public void clearCached(DocumentDirectoryFQN dir) {
-		userContextCache.clearCached(dir);
+		userContextCache().clearCached(dir);
 		
 	}
 
@@ -96,7 +93,7 @@ public abstract class CacheBasedService extends DocumentBasedService {
 	 * @return
 	 */
 	public <T> boolean documentExists(DocumentFQN documentFQN, TypeReference<T> valueType) {
-		if (userContextCache.isCached(documentFQN, valueType))return true;
+		if (userContextCache().isCached(documentFQN, valueType))return true;
 		return documentExists(documentFQN);
 	}
 
@@ -109,7 +106,7 @@ public abstract class CacheBasedService extends DocumentBasedService {
 	 */
 	public <T> void store(DocumentFQN documentFQN, TypeReference<T> valueType, T entity) {
 		user().getRequestCounter().store(documentFQN);
-		boolean cacheHit = userContextCache.cacheHit(documentFQN, valueType, Optional.ofNullable(entity), true);
+		boolean cacheHit = userContextCache().cacheHit(documentFQN, valueType, Optional.ofNullable(entity), true);
 		if (!cacheHit)flush(documentFQN, entity);
 	}
 

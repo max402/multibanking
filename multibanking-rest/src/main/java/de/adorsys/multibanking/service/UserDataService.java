@@ -5,6 +5,7 @@ import java.util.Date;
 
 import org.adorsys.cryptoutils.exceptions.BaseException;
 import org.adorsys.docusafe.business.types.complex.DSDocument;
+import org.adorsys.docusafe.business.types.complex.UserIDAuth;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -61,11 +62,11 @@ public class UserDataService {
      * Returns the user entity or create one if the user does not exist.
      */
     public UserData createUser(Date expire) {
-    	storageUserService.createUser(uos.auth());
+    	UserIDAuth userIDAuth = uos.auth();
 
     	UserEntity userEntity = new UserEntity();
     	userEntity.setApiUser(new ArrayList<>());
-    	userEntity.setId(uos.auth().getUserID().getValue());
+    	userEntity.setId(userIDAuth.getUserID().getValue());
     	userEntity.setExpireUser(expire);
     	
     	UserData userData = new UserData();

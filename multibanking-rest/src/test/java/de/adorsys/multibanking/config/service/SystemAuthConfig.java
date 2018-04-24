@@ -1,4 +1,4 @@
-package de.adorsys.multibanking.service.config;
+package de.adorsys.multibanking.config.service;
 
 import de.adorsys.multibanking.auth.SystemContext;
 import de.adorsys.multibanking.auth.UserContext;

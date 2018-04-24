@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.adorsys.docusafe.business.types.UserID;
 import org.adorsys.docusafe.business.types.complex.UserIDAuth;
 import org.adorsys.encobject.domain.ReadKeyPassword;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,13 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import de.adorsys.multibanking.auth.SystemContext;
 import de.adorsys.multibanking.auth.UserContext;
+import de.adorsys.multibanking.service.base.StorageUserService;
+import de.adorsys.multibanking.service.base.SystemObjectService;
+import de.adorsys.multibanking.service.base.UserObjectService;
 import de.adorsys.multibanking.service.crypto.SecretClaimDecryptionService;
 import de.adorsys.sts.filter.JWTAuthenticationFilter;
 import de.adorsys.sts.token.authentication.TokenAuthenticationService;
@@ -46,7 +53,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private TokenAuthenticationService tokenAuthenticationService;
 
     @Autowired
-    private SecretClaimDecryptionService secretClaimDecryptionService ;
+    private SecretClaimDecryptionService secretClaimDecryptionService;
+    
+    @Autowired
+    private StorageUserService storageUserService;
+    
+    @Autowired
+	private ObjectMapper objectMapper;
+
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -89,7 +103,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Primary
     @Scope(scopeName = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
     public UserContext getUserContext(HttpServletRequest request){
-        LOGGER.info("************************************** bin hier im getUserContext");
+        LOGGER.info("************************************** Enter getUserContext");
     	UserContext userContext = new UserContext();
 
     	String userId = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -100,13 +114,28 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         String token = request.getHeader(BearerTokenValidator.HEADER_KEY);
         BearerToken bearerToken = bearerTokenValidator.extract(token);
         userContext.setBearerToken(bearerToken);
+        if(StringUtils.isNotBlank(userSecret)){
+	        if(!storageUserService.userExists(userContext.getAuth().getUserID())){
+	        	storageUserService.createUser(userContext.getAuth());
+	        }
+        }
 
         LOGGER.info("userContext ist " + userContext.getAuth().getUserID().getValue());
+        LOGGER.info("************************************** Exit getUserContext");
 
         return userContext;
     }
+    
+    @Bean
+    @Scope(scopeName = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
+    UserObjectService userObjectService(UserContext userContext){
+    	return new UserObjectService(objectMapper, userContext);
+    }
 
-
+    @Bean
+    SystemObjectService systemObjectService(SystemContext systemContext){
+    	return new SystemObjectService(objectMapper, systemContext);
+    }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {

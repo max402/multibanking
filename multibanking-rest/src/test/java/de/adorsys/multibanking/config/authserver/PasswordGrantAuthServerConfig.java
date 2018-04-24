@@ -1,10 +1,11 @@
-package de.adorsys.multibanking.sts.authserver;
+package de.adorsys.multibanking.config.authserver;
 
 import org.adorsys.docusafe.business.DocumentSafeService;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Profile;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -19,6 +20,7 @@ import de.adorsys.sts.token.passwordgrant.EnablePasswordGrant;
 @EnablePasswordGrant
 @Import({ STSInMemoryConfig.class })
 @EnableConfigurationProperties
+@Profile("IntegrationTest")
 public class PasswordGrantAuthServerConfig {
 
 	@Bean

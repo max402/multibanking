@@ -18,14 +18,14 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import de.adorsys.multibanking.mock.SimpleMockBanking;
+import de.adorsys.multibanking.config.mock.SimpleMockBanking;
+import de.adorsys.multibanking.config.web.WebMvcUnitTest;
 import de.adorsys.multibanking.service.BankAccessService;
 import de.adorsys.multibanking.service.BankAccountService;
 import de.adorsys.multibanking.service.BookingService;
 import de.adorsys.multibanking.utils.FQNUtils;
 import de.adorsys.multibanking.web.account.BookingController;
 import de.adorsys.multibanking.web.base.BaseControllerUnitTest;
-import de.adorsys.multibanking.web.config.WebMvcUnitTest;
 import domain.BankAccess;
 import domain.BankAccount;
 import domain.Booking;

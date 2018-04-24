@@ -18,12 +18,12 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import de.adorsys.multibanking.config.web.WebMvcUnitTest;
 import de.adorsys.multibanking.domain.UserAgentCredentials;
 import de.adorsys.multibanking.domain.UserAgentKeyEntry;
 import de.adorsys.multibanking.service.UserAgentCredentialsService;
 import de.adorsys.multibanking.utils.Ids;
 import de.adorsys.multibanking.web.base.BaseControllerUnitTest;
-import de.adorsys.multibanking.web.config.WebMvcUnitTest;
 import de.adorsys.multibanking.web.user.UserAgentCredentialsController;
 
 @WebMvcUnitTest(controllers = UserAgentCredentialsController.class)

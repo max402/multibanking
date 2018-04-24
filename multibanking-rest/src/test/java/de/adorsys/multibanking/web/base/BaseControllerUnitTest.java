@@ -25,8 +25,8 @@ import de.adorsys.multibanking.auth.CacheEntry;
 import de.adorsys.multibanking.auth.RequestCounter;
 import de.adorsys.multibanking.auth.SystemContext;
 import de.adorsys.multibanking.auth.UserContext;
+import de.adorsys.multibanking.config.web.ControllerUnitTestConfig;
 import de.adorsys.multibanking.service.old.TestConstants;
-import de.adorsys.multibanking.web.config.ControllerUnitTestConfig;
 import de.adorsys.multibanking.web.user.UserDataController;
 
 /**

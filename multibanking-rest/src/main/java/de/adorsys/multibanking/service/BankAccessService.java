@@ -134,7 +134,12 @@ public class BankAccessService  {
      */
 	private void storeBankAccess(BankAccessEntity bankAccess) {
 		BankAccessCredentials.cleanCredentials(bankAccess);
-		UserData userData = uds.load();
+		UserData userData;
+		if(!uds.exists()){
+			userData = uds.createUser(null);
+		} else {
+			userData = uds.load();
+		}
 		BankAccessData accessData = userData.getBankAccess(bankAccess.getId())
 				.orElseGet(() -> {
 					BankAccessData b = new BankAccessData();

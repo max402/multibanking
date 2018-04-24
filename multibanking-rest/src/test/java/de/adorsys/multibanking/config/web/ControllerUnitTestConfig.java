@@ -1,4 +1,4 @@
-package de.adorsys.multibanking.web.config;
+package de.adorsys.multibanking.config.web;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;

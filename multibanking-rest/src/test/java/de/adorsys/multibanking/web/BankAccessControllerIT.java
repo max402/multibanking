@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assume;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +20,12 @@ import de.adorsys.multibanking.service.BankService;
 import de.adorsys.multibanking.service.old.TestUtil;
 import de.adorsys.multibanking.utils.Ids;
 import de.adorsys.multibanking.web.account.BankAccessController;
-import de.adorsys.multibanking.web.base.BaseLoggedInControllerIT;
+import de.adorsys.multibanking.web.base.BaseControllerIT;
 import de.adorsys.multibanking.web.base.PasswordGrantResponse;
 
 @RunWith(SpringRunner.class)
-public class BankAccessControllerIT extends BaseLoggedInControllerIT {
+@Ignore
+public class BankAccessControllerIT extends BaseControllerIT {
 
     @Autowired
     private BankService bankService;
@@ -34,11 +36,10 @@ public class BankAccessControllerIT extends BaseLoggedInControllerIT {
 	
     @Before
     public void setup() throws Exception {
-    	super.setup();
     	resp = auth(userId, password);
     	Assume.assumeFalse(StringUtils.isEmpty(resp.getAccessToken()));
     	Assume.assumeTrue("Bearer".equals(resp.getTokenType()));
-
+    	
         InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("mock_bank.json");
 		bankService.importBanks(inputStream);
 		Optional<BankEntity> bankEntity = bankService.findByBankCode("19999999");
@@ -57,6 +58,6 @@ public class BankAccessControllerIT extends BaseLoggedInControllerIT {
 	}
 
 	private UriComponentsBuilder bankAccessPath() {
-		return UriComponentsBuilder.fromPath(BankAccessController.BASE_PATH);
+		return path(BankAccessController.BASE_PATH);
 	}
 }

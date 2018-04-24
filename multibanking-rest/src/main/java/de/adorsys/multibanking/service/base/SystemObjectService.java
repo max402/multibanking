@@ -1,8 +1,8 @@
 package de.adorsys.multibanking.service.base;
 
 import org.adorsys.docusafe.business.types.complex.UserIDAuth;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.adorsys.multibanking.auth.SystemContext;
 import de.adorsys.multibanking.auth.UserContext;
@@ -13,10 +13,13 @@ import de.adorsys.multibanking.auth.UserContext;
  * @author fpo 2018-04-06 06:00
  *
  */
-@Service
 public class SystemObjectService extends CacheBasedService {
-	@Autowired
 	private SystemContext systemContext;
+
+	public SystemObjectService(ObjectMapper objectMapper, SystemContext systemContext) {
+		super(objectMapper);
+		this.systemContext = systemContext;
+	}
 
 	@Override
 	public UserContext user() {

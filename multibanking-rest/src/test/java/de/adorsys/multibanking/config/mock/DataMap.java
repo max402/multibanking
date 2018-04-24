@@ -1,4 +1,4 @@
-package de.adorsys.multibanking.mock;
+package de.adorsys.multibanking.config.mock;
 
 import java.util.HashMap;
 import java.util.List;

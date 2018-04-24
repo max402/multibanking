@@ -1,4 +1,4 @@
-package de.adorsys.multibanking.web.config;
+package de.adorsys.multibanking.config.web;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

@@ -1,4 +1,4 @@
-package de.adorsys.multibanking.service.config;
+package de.adorsys.multibanking.config.service;
 
 public class Tp {
 	public static final String p1 = "sts.audience_name=multibanking";
@@ -46,4 +46,7 @@ public class Tp {
 	public static final String p36 ="sts.resourceservermanagement.resourceRetriever.httpReadTimeout=60000";
 	public static final String p37 ="sts.resourceservermanagement.resourceRetriever.httpSizeLimit=512000";
 	
+	public static final String p38 ="sts.authservers.[0].name=sts-embedded-password-grant";
+	public static final String p39 ="sts.authservers.[0].issUrl=http://localhost:8080";
+	public static final String p40 ="sts.authservers.[0].jwksUrl=http://localhost:8080/pop";
 }

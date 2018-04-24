@@ -42,8 +42,14 @@
             <artifactId>sts-spring</artifactId>
             <version>${de.adorsys.sts.version}</version>
         </dependency>
+		<dependency>
+			<groupId>de.adorsys.sts</groupId>
+			<artifactId>sts-persistence-fs</artifactId>
+            <version>${de.adorsys.sts.version}</version>
+            <scope>test</scope>
+		</dependency>
 
-        <!-- Minio Connection -->
+        <!-- Docusafe Connection -->
         <dependency>
             <groupId>de.adorsys.cryptoutils</groupId>
             <artifactId>storeconnectionfactory</artifactId>
@@ -276,13 +282,20 @@
                         -Dsts.keymanagement.rotation.signKeyPairs.enabled="false"
                         -Dsts.keymanagement.rotation.encKeyPairs.enabled="false"
 
-                        -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=10022
+                        
 
                         -Dinfo.project.version=2.2.3
 
                         -Ddocusafe.system.user.name=peter
                         -Ddocusafe.system.user.password=password
+                        
+                        -Dsts.resourceServer.list=multibanking
+						-Dsts.resourceServers.multibanking.jwksUrl=http://localhost:8081/pop
+						-Dsts.resourceServers.multibanking.audience=multibanking
+						-Dsts.resourceServers.multibanking.userSecretClaimName=multibanking
+                        
                     </jvmArguments>
+                    <!-- -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=10022 -->
                 </configuration>
                 <executions>
                     <execution>

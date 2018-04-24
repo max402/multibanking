@@ -63,6 +63,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/api/v1/bank/**").permitAll()
                 .antMatchers("/api/v1/direct/**").permitAll()
                 .antMatchers("/api/v1/image/**").permitAll()
+                .antMatchers("/token/password-grant").permitAll()
                 .antMatchers("/api/v1/**").authenticated()
                 .anyRequest().denyAll()
                 .and().cors();

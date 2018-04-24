@@ -33,9 +33,10 @@ import de.adorsys.multibanking.utils.Ids;
 
 @RunWith(SpringRunner.class)
 @ActiveProfiles({"InMemory"})
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties={Tp.p1,Tp.p2,Tp.p3,Tp.p4,Tp.p5,Tp.p6,Tp.p7,Tp.p8,Tp.p9,Tp.p10,Tp.p11,Tp.p12,
+@SpringBootTest(properties={Tp.p1,Tp.p2,Tp.p3,Tp.p4,Tp.p5,Tp.p6,Tp.p7,Tp.p8,Tp.p9,Tp.p10,Tp.p11,Tp.p12,
 		Tp.p13,Tp.p14,Tp.p15,Tp.p16,Tp.p17,Tp.p18,Tp.p19,Tp.p20,Tp.p21,Tp.p22,Tp.p23,
-		Tp.p24,Tp.p25,Tp.p26,Tp.p27,Tp.p28,Tp.p29})
+		Tp.p24,Tp.p25,Tp.p26,Tp.p27,Tp.p28,Tp.p29,Tp.p30,Tp.p31,Tp.p32,Tp.p33,Tp.p34,Tp.p35,Tp.p36,Tp.p37 },
+		webEnvironment = WebEnvironment.RANDOM_PORT)
 public abstract class BaseControllerITTest {
 
     @LocalServerPort

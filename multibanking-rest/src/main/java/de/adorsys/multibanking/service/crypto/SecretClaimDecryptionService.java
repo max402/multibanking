@@ -4,11 +4,14 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jwt.JWTClaimsSet;
 import de.adorsys.sts.keymanagement.service.DecryptionService;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Map;
 
 @Service
@@ -34,6 +37,7 @@ public class SecretClaimDecryptionService {
         this.decryptionService = decryptionService;
     }
 
+
     public String decryptSecretClaim() {
         Map<String, String> encryptedSecretClaims;
         try {
@@ -43,12 +47,19 @@ public class SecretClaimDecryptionService {
         }
 
         String encryptedSecretClaim = encryptedSecretClaims.get(audience);
-
-        return decryptionService.decrypt(encryptedSecretClaim);
+        if(StringUtils.isNotBlank(encryptedSecretClaim))
+        	return decryptionService.decrypt(encryptedSecretClaim);
+        return null;
     }
 
     private Map<String, String> readSecretClaims() throws IOException {
-        JWTClaimsSet credentials = (JWTClaimsSet) SecurityContextHolder.getContext().getAuthentication().getCredentials();
+    	JWTClaimsSet credentials = null;
+    	Object credentialsObject = SecurityContextHolder.getContext().getAuthentication().getCredentials();
+    	if(credentialsObject instanceof JWTClaimsSet){
+    		credentials = (JWTClaimsSet)credentialsObject ;
+    	} else {
+    		return Collections.emptyMap();
+    	}
 
         String secretClaim = (String)credentials.getClaim(secretClaimPropertyKey);
 

@@ -1,10 +1,10 @@
 package de.adorsys.multibanking.config;
 
-import javax.annotation.PostConstruct;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.web.context.WebApplicationContext;
 
 import de.adorsys.multibanking.auth.UserContext;
 import de.adorsys.multibanking.service.interceptor.TokenBasedMockBanking;
@@ -12,19 +12,9 @@ import de.adorsys.onlinebanking.mock.MockBanking;
 
 @Configuration
 public class MockBankingConfig {
-	
-	@Autowired
-	private UserContext userContext;
-	
-	private MockBanking mockBanking;
-	
-	@PostConstruct
-	public void postConstruct(){
-		mockBanking = new TokenBasedMockBanking(userContext);
-	}
-
 	@Bean
-	public MockBanking mockBanking(){
-		return mockBanking;
+    @Scope(scopeName = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
+	public MockBanking mockBanking(UserContext userContext){
+		return new TokenBasedMockBanking(userContext);
 	}
 }

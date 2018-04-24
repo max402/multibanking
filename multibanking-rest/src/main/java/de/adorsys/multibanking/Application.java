@@ -1,6 +1,7 @@
 package de.adorsys.multibanking;
 
 import org.adorsys.cryptoutils.storeconnectionfactory.ExtendedStoreConnectionFactory;
+import org.adorsys.cryptoutils.utils.ShowProperties;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -34,6 +35,7 @@ public class Application {
         if (env.getProperty("server.ssl.key-store") != null) {
             protocol = "https";
         }
+        ShowProperties.log();
         LoggerFactory.getLogger(Application.class).info("\n----------------------------------------------------------\n\t" +
                         "Application '{}' is running! Access URLs:\n\t" +
                         "Local: \t\t{}://localhost:{}\n\t" +

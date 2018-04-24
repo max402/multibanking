@@ -39,7 +39,7 @@ public class Tp {
 	public static final String p31 = "docusafe.system.user.password=password";
 	
 	public static final String p32 ="sts.resourceservermanagement.resourceservers.[0].audience=multibanking";
-	public static final String p33 ="sts.resourceservermanagement.resourceservers.[0].jwksUrl=http://localhost:8081/pop";
+	public static final String p33 ="sts.resourceservermanagement.resourceservers.[0].jwksUrl=http://localhost:8080/pop";
 	public static final String p34 ="sts.resourceservermanagement.resourceservers.[0].userSecretClaimName=multibanking";
 
 	public static final String p35 ="sts.resourceservermanagement.resourceRetriever.httpConnectTimeout=10000";

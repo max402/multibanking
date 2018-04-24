@@ -8,6 +8,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.adorsys.docusafe.business.types.UserID;
 import org.adorsys.docusafe.business.types.complex.UserIDAuth;
 import org.adorsys.encobject.domain.ReadKeyPassword;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,6 +40,7 @@ import de.adorsys.sts.tokenauth.BearerTokenValidator;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+    private final static Logger LOGGER = LoggerFactory.getLogger(WebSecurityConfig.class);
 
     @Autowired
     private TokenAuthenticationService tokenAuthenticationService;
@@ -86,6 +89,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Primary
     @Scope(scopeName = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
     public UserContext getUserContext(HttpServletRequest request){
+        LOGGER.info("************************************** bin hier im getUserContext");
     	UserContext userContext = new UserContext();
 
     	String userId = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -96,6 +100,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         String token = request.getHeader(BearerTokenValidator.HEADER_KEY);
         BearerToken bearerToken = bearerTokenValidator.extract(token);
         userContext.setBearerToken(bearerToken);
+
+        LOGGER.info("userContext ist " + userContext.getAuth().getUserID().getValue());
+
         return userContext;
     }
 

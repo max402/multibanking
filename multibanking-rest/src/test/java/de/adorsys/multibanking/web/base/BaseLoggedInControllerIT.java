@@ -9,7 +9,7 @@ import de.adorsys.multibanking.utils.Ids;
 public abstract class BaseLoggedInControllerIT extends BaseControllerITTest {
 
     @Before
-    public void setup() {
+    public void setup() throws Exception {
     	super.setup();
     	PasswordGrantResponse resp = auth(Ids.uuid(), Ids.uuid());
     	Assume.assumeFalse(StringUtils.isEmpty(resp.getAccessToken()));

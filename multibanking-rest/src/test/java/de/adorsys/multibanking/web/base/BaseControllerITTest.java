@@ -33,12 +33,6 @@ public abstract class BaseControllerITTest {
 
     @LocalServerPort
     private int port;
-
-//    @MockBean
-//    protected UserContext userContext;
-//    
-//    @Autowired
-//    protected SystemContext systemContext;
     
     @Autowired
     protected TestRestTemplate testRestTemplate;
@@ -52,7 +46,7 @@ public abstract class BaseControllerITTest {
     }
     
     @Before
-    public void setup() {
+    public void setup() throws Exception {
         this.baseUri = "http://localhost:" + port;
         this.baseApiUri = this.baseUri;
     }
@@ -117,11 +111,6 @@ public abstract class BaseControllerITTest {
     	auth(userName, Ids.uuid());
     }
 
-    @After
-    public void tearDown() {
-//    	auth("anonymous", Ids.uuid());
-    }
-    
     protected final UriComponentsBuilder authPath(){
     	return UriComponentsBuilder.fromPath("/token/password-grant");
 	}

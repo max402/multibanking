@@ -99,6 +99,7 @@ public class BankAccountService {
 
         bankAccounts.forEach(source -> {
             BankAccountEntity target = new BankAccountEntity();
+            target.id(source.getIban());
             BeanUtils.copyProperties(source, target);
             target.setUserId(bankAccess.getUserId());
             bankAccountEntities.add(target);

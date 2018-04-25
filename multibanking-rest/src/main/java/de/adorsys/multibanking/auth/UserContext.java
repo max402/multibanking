@@ -25,7 +25,4 @@ public class UserContext {
 	Map<Type, Map<DocumentFQN, CacheEntry<?>>> cache = new HashMap<>();
 	
 	boolean cacheEnabled = false;
-	public boolean isCacheEnabled(){
-		return false;
-	}
 }

@@ -5,9 +5,9 @@ import java.net.URI;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ import de.adorsys.multibanking.web.base.BaseControllerIT;
 import de.adorsys.multibanking.web.base.PasswordGrantResponse;
 
 @RunWith(SpringRunner.class)
-@Ignore
+//@Ignore
 public class BankAccessControllerIT extends BaseControllerIT {
 
     @Autowired
@@ -49,12 +49,16 @@ public class BankAccessControllerIT extends BaseControllerIT {
 	@Test
 	public void testCreateBankaccess201() throws Exception {
 		
-		BankAccessEntity bankAccessEntity = TestUtil.getBankAccessEntity(null, null, "29999999", "12345");
+		BankAccessEntity be = new BankAccessEntity();
+		be.setBankCode("19999999");
+		be.setBankLogin("m.becker");
+		be.setPin("12345");
+//		= TestUtil.getBankAccessEntity(null, null, "19999999", "12345");
     	URI uri = bankAccessPath().build().toUri();
     	
-        URI location = testRestTemplate.postForLocation(uri, bankAccessEntity);
+        URI location = testRestTemplate.postForLocation(uri, be);
         String userData = testRestTemplate.getForObject(location, String.class);
-        String ud = "" + userData;
+        Assert.assertNotNull(userData);
 	}
 
 	private UriComponentsBuilder bankAccessPath() {

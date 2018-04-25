@@ -9,3 +9,4 @@
 */src/**/*.js
 multibanking-app/.history
 multibanking-rest/*.log
+multibanking-rest/*.log.gz

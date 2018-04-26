@@ -61,6 +61,7 @@
 		<module>multibanking-rest</module>
 		<module>multibanking-analytics-api</module>
 		<module>onlinebanking-xls-loader</module>
+		<module>multibanking-examples</module>
 	</modules>
 
 	<dependencyManagement>

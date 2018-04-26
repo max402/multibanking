@@ -1,0 +1,197 @@
+2018/04/26 07:00:13,454 [main] [INFO ] [FileSystemParamParser         ] parse:                                                                                               
+2018/04/26 07:00:13,926 [main] [INFO ] [MultibankingApplication       ] Starting MultibankingApplication on Franciss-MacBook-Pro.local with PID 8447 (/Users/fpo/dev/multibanking/multibanking-examples/multibanking-service-example/target/classes started by fpo in /Users/fpo/dev/multibanking/multibanking-examples/multibanking-service-example) 
+2018/04/26 07:00:13,926 [main] [INFO ] [MultibankingApplication       ] No active profile set, falling back to default profiles: default                                     
+2018/04/26 07:00:13,972 [main] [INFO ] [AnnotationConfigServletWebServerApplicationContext] Refreshing org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext@26abb146: startup date [Thu Apr 26 07:00:13 EDT 2018]; root of context hierarchy 
+2018/04/26 07:00:14,482 [main] [INFO ] [DefaultListableBeanFactory    ] Overriding bean definition for bean 'analyticsService' with a different definition: replacing [Generic bean: class [de.adorsys.multibanking.service.analytics.AnalyticsService]; scope=singleton; abstract=false; lazyInit=false; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=null; factoryMethodName=null; initMethodName=null; destroyMethodName=null; defined in URL [jar:file:/Users/fpo/.m2/repository/de/adorsys/multibanking/multibanking-rest/2.2.3-SNAPSHOT/multibanking-rest-2.2.3-SNAPSHOT.jar!/de/adorsys/multibanking/service/analytics/AnalyticsService.class]] with [Root bean: class [null]; scope=; abstract=false; lazyInit=false; autowireMode=3; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=analyticsServiceConfig; factoryMethodName=analyticsService; initMethodName=null; destroyMethodName=(inferred); defined in class path resource [de/adorsys/mbs/service/example/config/AnalyticsServiceConfig.class]] 
+2018/04/26 07:00:15,091 [main] [INFO ] [PostProcessorRegistrationDelegate$BeanPostProcessorChecker] Bean 'org.springframework.security.config.annotation.configuration.ObjectPostProcessorConfiguration' of type [org.springframework.security.config.annotation.configuration.ObjectPostProcessorConfiguration$$EnhancerBySpringCGLIB$$f8b96fba] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying) 
+2018/04/26 07:00:15,101 [main] [INFO ] [PostProcessorRegistrationDelegate$BeanPostProcessorChecker] Bean 'objectPostProcessor' of type [org.springframework.security.config.annotation.configuration.AutowireBeanFactoryObjectPostProcessor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying) 
+2018/04/26 07:00:15,103 [main] [INFO ] [PostProcessorRegistrationDelegate$BeanPostProcessorChecker] Bean 'org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler@2c8662ac' of type [org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying) 
+2018/04/26 07:00:15,109 [main] [INFO ] [PostProcessorRegistrationDelegate$BeanPostProcessorChecker] Bean 'org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration' of type [org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration$$EnhancerBySpringCGLIB$$1d8e126c] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying) 
+2018/04/26 07:00:15,117 [main] [INFO ] [PostProcessorRegistrationDelegate$BeanPostProcessorChecker] Bean 'methodSecurityMetadataSource' of type [org.springframework.security.access.method.DelegatingMethodSecurityMetadataSource] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying) 
+2018/04/26 07:00:15,417 [main] [INFO ] [TomcatWebServer               ] Tomcat initialized with port(s): 8080 (http)                                                         
+2018/04/26 07:00:15,429 [main] [INFO ] [Http11NioProtocol             ] Initializing ProtocolHandler ["http-nio-8080"]                                                       
+2018/04/26 07:00:15,437 [main] [INFO ] [StandardService               ] Starting service [Tomcat]                                                                            
+2018/04/26 07:00:15,438 [main] [INFO ] [StandardEngine                ] Starting Servlet Engine: Apache Tomcat/8.5.28                                                        
+2018/04/26 07:00:15,445 [localhost-startStop-1] [INFO ] [AprLifecycleListener          ] The APR based Apache Tomcat Native library which allows optimal performance in production environments was not found on the java.library.path: [/Users/fpo/Library/Java/Extensions:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java:.] 
+2018/04/26 07:00:15,534 [localhost-startStop-1] [INFO ] [[/]                           ] Initializing Spring embedded WebApplicationContext                                                   
+2018/04/26 07:00:15,534 [localhost-startStop-1] [INFO ] [ContextLoader                 ] Root WebApplicationContext: initialization completed in 1570 ms                                      
+2018/04/26 07:00:16,130 [localhost-startStop-1] [INFO ] [FilterRegistrationBean        ] Mapping filter: 'characterEncodingFilter' to: [/*]                                                   
+2018/04/26 07:00:16,131 [localhost-startStop-1] [INFO ] [FilterRegistrationBean        ] Mapping filter: 'hiddenHttpMethodFilter' to: [/*]                                                    
+2018/04/26 07:00:16,131 [localhost-startStop-1] [INFO ] [FilterRegistrationBean        ] Mapping filter: 'httpPutFormContentFilter' to: [/*]                                                  
+2018/04/26 07:00:16,131 [localhost-startStop-1] [INFO ] [FilterRegistrationBean        ] Mapping filter: 'requestContextFilter' to: [/*]                                                      
+2018/04/26 07:00:16,131 [localhost-startStop-1] [INFO ] [DelegatingFilterProxyRegistrationBean] Mapping filter: 'springSecurityFilterChain' to: [/*]                                                 
+2018/04/26 07:00:16,131 [localhost-startStop-1] [INFO ] [FilterRegistrationBean        ] Mapping filter: 'httpTraceFilter' to: [/*]                                                           
+2018/04/26 07:00:16,132 [localhost-startStop-1] [INFO ] [FilterRegistrationBean        ] Mapping filter: 'webMvcMetricsFilter' to: [/*]                                                       
+2018/04/26 07:00:16,132 [localhost-startStop-1] [INFO ] [ServletRegistrationBean       ] Servlet dispatcherServlet mapped to [/]                                                              
+2018/04/26 07:00:16,428 [main] [INFO ] [ExtendedStoreConnectionFactory] 
+***************************************
+*                                     *
+*  USE FILE SYSTEM                    *
+*  basedir: target/filesystemstorage  *
+*                                     *
+***************************************
+ 
+2018/04/26 07:00:16,487 [main] [INFO ] [BucketServiceImpl             ] start check bucket exsits BucketDirectory{path=BucketPath{bp-multibanking-service-example-auth - null}} 
+2018/04/26 07:00:16,488 [main] [DEBUG] [FileSystemExtendedStorageConnection] directory does not existstarget/filesystemstorage/bp-multibanking-service-example-auth               
+2018/04/26 07:00:16,489 [main] [INFO ] [BucketServiceImpl             ] finished check bucket exsits BucketDirectory{path=BucketPath{bp-multibanking-service-example-auth - null}} -> false 
+2018/04/26 07:00:16,489 [main] [INFO ] [DocumentSafeServiceImpl       ] start create user for UserIDAuth{UserID{'multibanking-service-example-auth'}, ReadKeyPassword{'mu***rd'}} 
+2018/04/26 07:00:16,489 [main] [INFO ] [BucketServiceImpl             ] start check bucket exsits BucketDirectory{path=BucketPath{bp-multibanking-service-example-auth - null}} 
+2018/04/26 07:00:16,489 [main] [DEBUG] [FileSystemExtendedStorageConnection] directory does not existstarget/filesystemstorage/bp-multibanking-service-example-auth               
+2018/04/26 07:00:16,489 [main] [INFO ] [BucketServiceImpl             ] finished check bucket exsits BucketDirectory{path=BucketPath{bp-multibanking-service-example-auth - null}} -> false 
+2018/04/26 07:00:16,491 [main] [INFO ] [FileSystemExtendedStorageConnection] created folder target/filesystemstorage/bp-multibanking-service-example-auth                         
+2018/04/26 07:00:16,495 [main] [INFO ] [KeyStoreServiceImpl           ] start create keystore BucketPath{bp-multibanking-service-example-auth - .keystore/KS-multibanking-service-example-auth} 
+2018/04/26 07:00:16,495 [main] [DEBUG] [FileSystemExtendedStorageConnection] file does not exist target/filesystemstorage/bp-multibanking-service-example-auth/.keystore/KS-multibanking-service-example-auth.zip 
+2018/04/26 07:00:16,496 [main] [INFO ] [KeyStoreServiceImpl           ] keystoreid = 2E6B657973746F72652F4B532D6D756C746962616E6B696E672D736572766963652D6578616D706C652D61757468 
+2018/04/26 07:00:16,496 [main] [INFO ] [KeyStoreServiceImpl           ] meaning of keystoreid = .keystore/KS-multibanking-service-example-auth                               
+2018/04/26 07:00:19,570 [main] [DEBUG] [FileSystemExtendedStorageConnection] directory exists:target/filesystemstorage/bp-multibanking-service-example-auth                       
+2018/04/26 07:00:19,571 [main] [DEBUG] [ZipFileHelper                 ] write temporary zip file to target/filesystemstorage/bp-multibanking-service-example-auth/.keystore/KS-multibanking-service-example-auth.zip.474c4276-31ae-4631-870e-f2b5b22b0786 
+2018/04/26 07:00:19,579 [main] [DEBUG] [ZipFileHelper                 ] WRITE metadata {
+  "storageType": "BLOB",
+  "name": "bp-multibanking-service-example-auth/.keystore/KS-multibanking-service-example-auth",
+  "userMetaData": {
+    "map": {
+      "INTERNAL_BLOB_STORE_KEYSTORE_PERSISTENCE_TYPE_KEY": "UBER"
+    }
+  }
+} with charset UTF-8 
+2018/04/26 07:00:19,584 [main] [INFO ] [KeyStoreServiceImpl           ] finished create keystore BucketPath{bp-multibanking-service-example-auth - .keystore/KS-multibanking-service-example-auth} 
+2018/04/26 07:00:19,585 [main] [DEBUG] [FileSystemExtendedStorageConnection] directory already exists:target/filesystemstorage/bp-multibanking-service-example-auth               
+2018/04/26 07:00:19,585 [main] [DEBUG] [DocumentSafeServiceImpl       ] start create new guard for BucketDirectory{path=BucketPath{bp-multibanking-service-example-auth - home}} 
+2018/04/26 07:00:19,587 [main] [INFO ] [DocumentGuardServiceImpl      ] start create document guard for DocumentKeyIDWithKeyAndAccessType{documentKeyIDWithKey=DocumentKeyIDWithKey{DocumentKeyID{'DK1048750d-ccf6-46a6-bb8a-69f1cffb2c64'}, DocumentKey{2CA1....AF3E}}, accessType=WRITE} at BucketPath{bp-multibanking-service-example-auth - .keystore/KS-multibanking-service-example-auth} 
+2018/04/26 07:00:19,590 [main] [INFO ] [KeyStore2KeySourceHelper      ] get keysource for secret key of BucketPath{bp-multibanking-service-example-auth - .keystore/KS-multibanking-service-example-auth} 
+2018/04/26 07:00:19,590 [main] [DEBUG] [FileSystemExtendedStorageConnection] directory exists:target/filesystemstorage/bp-multibanking-service-example-auth                       
+2018/04/26 07:00:19,594 [main] [DEBUG] [ZipFileHelper                 ] READ metadata string {
+  "storageType": "BLOB",
+  "name": "bp-multibanking-service-example-auth/.keystore/KS-multibanking-service-example-auth",
+  "userMetaData": {
+    "map": {
+      "INTERNAL_BLOB_STORE_KEYSTORE_PERSISTENCE_TYPE_KEY": "UBER"
+    }
+  }
+}with UTF-8 
+2018/04/26 07:00:19,693 [main] [DEBUG] [GuardKeyForSecretKeyHelper    ] Guard created with symmetric KeyID :GuardKeyID{'2E6B657973746F72652F4B532D6D756C746962616E6B696E672D736572766963652D6578616D706C652D61757468CLBGQ'} 
+2018/04/26 07:00:19,694 [main] [INFO ] [DocumentGuardServiceImpl      ] start persist document guard for DocumentKeyIDWithKeyAndAccessType{documentKeyIDWithKey=DocumentKeyIDWithKey{DocumentKeyID{'DK1048750d-ccf6-46a6-bb8a-69f1cffb2c64'}, DocumentKey{2CA1....AF3E}}, accessType=WRITE} at BucketPath{bp-multibanking-service-example-auth - .keystore/KS-multibanking-service-example-auth} 
+2018/04/26 07:00:19,694 [main] [INFO ] [BucketServiceImpl             ] start file exists BucketPath{bp-multibanking-service-example-auth - .keystore/KS-multibanking-service-example-auth.DK1048750d-ccf6-46a6-bb8a-69f1cffb2c64} 
+2018/04/26 07:00:19,694 [main] [DEBUG] [FileSystemExtendedStorageConnection] file does not exist target/filesystemstorage/bp-multibanking-service-example-auth/.keystore/KS-multibanking-service-example-auth.DK1048750d-ccf6-46a6-bb8a-69f1cffb2c64.zip 
+2018/04/26 07:00:19,695 [main] [INFO ] [BucketServiceImpl             ] finished file exists BucketPath{bp-multibanking-service-example-auth - .keystore/KS-multibanking-service-example-auth.DK1048750d-ccf6-46a6-bb8a-69f1cffb2c64} 
+2018/04/26 07:00:19,768 [main] [INFO ] [EncryptedPersistenceServiceImpl] ENCRYPT BYTES WITH KeyID{'2E6B657973746F72652F4B532D6D756C746962616E6B696E672D736572766963652D6578616D706C652D61757468CLBGQ'} 
+2018/04/26 07:00:19,768 [main] [DEBUG] [FileSystemExtendedStorageConnection] directory exists:target/filesystemstorage/bp-multibanking-service-example-auth                       
+2018/04/26 07:00:19,769 [main] [DEBUG] [ZipFileHelper                 ] WRITE metadata string {
+  "storageType": "BLOB",
+  "name": "bp-multibanking-service-example-auth/.keystore/KS-multibanking-service-example-auth.DK1048750d-ccf6-46a6-bb8a-69f1cffb2c64",
+  "userMetaData": {
+    "map": {
+      "KeyStoreType": "UBER",
+      "serilizer_id": "dgs01",
+      "EncryptedPersistenceServiceImpl.ENCRYPTION_SERVICE": "class org.adorsys.encobject.service.impl.JWEncryptionStreamServiceImpl",
+      "AccessType": "WRITE",
+      "EncryptedPersistenceServiceImpl.ENCRYPTION_KEY_ID": "2E6B657973746F72652F4B532D6D756C746962616E6B696E672D736572766963652D6578616D706C652D61757468CLBGQ"
+    }
+  }
+}with UTF-8 
+2018/04/26 07:00:19,769 [main] [DEBUG] [ZipFileHelper                 ] write temporary zip file to target/filesystemstorage/bp-multibanking-service-example-auth/.keystore/KS-multibanking-service-example-auth.DK1048750d-ccf6-46a6-bb8a-69f1cffb2c64.zip.774b2903-3ff7-4221-87dc-904fffe77e73 
+2018/04/26 07:00:19,770 [main] [INFO ] [DocumentGuardServiceImpl      ] finished persist document guard for DocumentKeyIDWithKeyAndAccessType{documentKeyIDWithKey=DocumentKeyIDWithKey{DocumentKeyID{'DK1048750d-ccf6-46a6-bb8a-69f1cffb2c64'}, DocumentKey{2CA1....AF3E}}, accessType=WRITE} at BucketPath{bp-multibanking-service-example-auth - .keystore/KS-multibanking-service-example-auth} 
+2018/04/26 07:00:19,770 [main] [INFO ] [DocumentGuardServiceImpl      ] finished create document guard for DocumentKeyIDWithKeyAndAccessType{documentKeyIDWithKey=DocumentKeyIDWithKey{DocumentKeyID{'DK1048750d-ccf6-46a6-bb8a-69f1cffb2c64'}, DocumentKey{2CA1....AF3E}}, accessType=WRITE} at BucketPath{bp-multibanking-service-example-auth - .keystore/KS-multibanking-service-example-auth} 
+2018/04/26 07:00:19,772 [main] [INFO ] [BucketServiceImpl             ] start create plain file BucketPath{bp-multibanking-service-example-auth - .keystore/bp-multibanking-service-example-auth/home.bucketGuardKey} 
+2018/04/26 07:00:19,772 [main] [DEBUG] [FileSystemExtendedStorageConnection] directory exists:target/filesystemstorage/bp-multibanking-service-example-auth                       
+2018/04/26 07:00:19,772 [main] [DEBUG] [ZipFileHelper                 ] write temporary zip file to target/filesystemstorage/bp-multibanking-service-example-auth/.keystore/bp-multibanking-service-example-auth/home.bucketGuardKey.zip.a4c514e5-1866-48aa-9ee0-920ca46086fc 
+2018/04/26 07:00:19,773 [main] [DEBUG] [ZipFileHelper                 ] WRITE metadata {
+  "storageType": "BLOB",
+  "name": "bp-multibanking-service-example-auth/.keystore/bp-multibanking-service-example-auth/home.bucketGuardKey",
+  "userMetaData": {
+    "map": {}
+  }
+} with charset UTF-8 
+2018/04/26 07:00:19,773 [main] [INFO ] [BucketServiceImpl             ] finished create plain file BucketPath{bp-multibanking-service-example-auth - .keystore/bp-multibanking-service-example-auth/home.bucketGuardKey} 
+2018/04/26 07:00:19,774 [main] [DEBUG] [DocumentSafeServiceImpl       ] finished create new guard for BucketDirectory{path=BucketPath{bp-multibanking-service-example-auth - home}} 
+2018/04/26 07:00:19,775 [main] [INFO ] [DocumentSafeServiceImpl       ] start storeDocument for UserIDAuth{UserID{'multibanking-service-example-auth'}, ReadKeyPassword{'mu***rd'}} DocumentFQN{'README.txt'} 
+2018/04/26 07:00:19,775 [main] [DEBUG] [DocumentSafeServiceImpl       ] search key for BucketDirectory{path=BucketPath{bp-multibanking-service-example-auth - home}}         
+2018/04/26 07:00:19,776 [main] [INFO ] [BucketServiceImpl             ] start file exists BucketPath{bp-multibanking-service-example-auth - .keystore/bp-multibanking-service-example-auth/home.bucketGuardKey} 
+2018/04/26 07:00:19,776 [main] [DEBUG] [FileSystemExtendedStorageConnection] file does exist target/filesystemstorage/bp-multibanking-service-example-auth/.keystore/bp-multibanking-service-example-auth/home.bucketGuardKey.zip 
+2018/04/26 07:00:19,776 [main] [INFO ] [BucketServiceImpl             ] finished file exists BucketPath{bp-multibanking-service-example-auth - .keystore/bp-multibanking-service-example-auth/home.bucketGuardKey} 
+2018/04/26 07:00:19,776 [main] [INFO ] [BucketServiceImpl             ] start read plain file BucketPath{bp-multibanking-service-example-auth - .keystore/bp-multibanking-service-example-auth/home.bucketGuardKey} 
+2018/04/26 07:00:19,776 [main] [DEBUG] [FileSystemExtendedStorageConnection] directory exists:target/filesystemstorage/bp-multibanking-service-example-auth                       
+2018/04/26 07:00:19,776 [main] [DEBUG] [ZipFileHelper                 ] READ metadata string {
+  "storageType": "BLOB",
+  "name": "bp-multibanking-service-example-auth/.keystore/bp-multibanking-service-example-auth/home.bucketGuardKey",
+  "userMetaData": {
+    "map": {}
+  }
+}with UTF-8 
+2018/04/26 07:00:19,777 [main] [INFO ] [BucketServiceImpl             ] finished read plain file BucketPath{bp-multibanking-service-example-auth - .keystore/bp-multibanking-service-example-auth/home.bucketGuardKey} 
+2018/04/26 07:00:19,777 [main] [INFO ] [DocumentGuardServiceImpl      ] start load DocumentKeyID{'DK1048750d-ccf6-46a6-bb8a-69f1cffb2c64'} from document guard at BucketPath{bp-multibanking-service-example-auth - .keystore/KS-multibanking-service-example-auth} 
+2018/04/26 07:00:19,777 [main] [DEBUG] [FileSystemExtendedStorageConnection] directory exists:target/filesystemstorage/bp-multibanking-service-example-auth                       
+2018/04/26 07:00:19,778 [main] [DEBUG] [ZipFileHelper                 ] READ metadata string {
+  "storageType": "BLOB",
+  "name": "bp-multibanking-service-example-auth/.keystore/KS-multibanking-service-example-auth",
+  "userMetaData": {
+    "map": {
+      "INTERNAL_BLOB_STORE_KEYSTORE_PERSISTENCE_TYPE_KEY": "UBER"
+    }
+  }
+}with UTF-8 
+2018/04/26 07:00:19,782 [main] [INFO ] [BucketServiceImpl             ] start file exists BucketPath{bp-multibanking-service-example-auth - .keystore/KS-multibanking-service-example-auth.DK1048750d-ccf6-46a6-bb8a-69f1cffb2c64} 
+2018/04/26 07:00:19,782 [main] [DEBUG] [FileSystemExtendedStorageConnection] file does exist target/filesystemstorage/bp-multibanking-service-example-auth/.keystore/KS-multibanking-service-example-auth.DK1048750d-ccf6-46a6-bb8a-69f1cffb2c64.zip 
+2018/04/26 07:00:19,782 [main] [INFO ] [BucketServiceImpl             ] finished file exists BucketPath{bp-multibanking-service-example-auth - .keystore/KS-multibanking-service-example-auth.DK1048750d-ccf6-46a6-bb8a-69f1cffb2c64} 
+2018/04/26 07:00:19,783 [main] [DEBUG] [DocumentGuardServiceImpl      ] loadDocumentKey for BucketPath{bp-multibanking-service-example-auth - .keystore/KS-multibanking-service-example-auth.DK1048750d-ccf6-46a6-bb8a-69f1cffb2c64} 
+2018/04/26 07:00:19,783 [main] [DEBUG] [FileSystemExtendedStorageConnection] directory exists:target/filesystemstorage/bp-multibanking-service-example-auth                       
+2018/04/26 07:00:19,783 [main] [DEBUG] [ZipFileHelper                 ] READ metadata string {
+  "storageType": "BLOB",
+  "name": "bp-multibanking-service-example-auth/.keystore/KS-multibanking-service-example-auth.DK1048750d-ccf6-46a6-bb8a-69f1cffb2c64",
+  "userMetaData": {
+    "map": {
+      "KeyStoreType": "UBER",
+      "serilizer_id": "dgs01",
+      "EncryptedPersistenceServiceImpl.ENCRYPTION_SERVICE": "class org.adorsys.encobject.service.impl.JWEncryptionStreamServiceImpl",
+      "AccessType": "WRITE",
+      "EncryptedPersistenceServiceImpl.ENCRYPTION_KEY_ID": "2E6B657973746F72652F4B532D6D756C746962616E6B696E672D736572766963652D6578616D706C652D61757468CLBGQ"
+    }
+  }
+}with UTF-8 
+2018/04/26 07:00:19,783 [main] [INFO ] [EncryptedPersistenceServiceImpl] DECRYPT BYTES WITH KeyID{'2E6B657973746F72652F4B532D6D756C746962616E6B696E672D736572766963652D6578616D706C652D61757468CLBGQ'} 
+2018/04/26 07:00:19,793 [main] [INFO ] [DocumentGuardServiceImpl      ] finished load DocumentKeyID{'DK1048750d-ccf6-46a6-bb8a-69f1cffb2c64'} from document guard at BucketPath{bp-multibanking-service-example-auth - .keystore/KS-multibanking-service-example-auth} 
+2018/04/26 07:00:19,793 [main] [DEBUG] [DocumentSafeServiceImpl       ] found DocumentKeyIDWithKeyAndAccessType{documentKeyIDWithKey=DocumentKeyIDWithKey{DocumentKeyID{'DK1048750d-ccf6-46a6-bb8a-69f1cffb2c64'}, DocumentKey{2CA1....AF3E}}, accessType=WRITE} for BucketDirectory{path=BucketPath{bp-multibanking-service-example-auth - home}} 
+2018/04/26 07:00:19,793 [main] [INFO ] [DocumentPersistenceServiceImpl] start persist BucketPath{bp-multibanking-service-example-auth - home/README.txt}                     
+2018/04/26 07:00:19,794 [main] [DEBUG] [DocumentPersistenceServiceImpl] Document wird verschlüsselt mit DocumentKeyIDWithKey{DocumentKeyID{'DK1048750d-ccf6-46a6-bb8a-69f1cffb2c64'}, DocumentKey{2CA1....AF3E}} 
+2018/04/26 07:00:19,797 [main] [INFO ] [EncryptedPersistenceServiceImpl] ENCRYPT BYTES WITH KeyID{'DK1048750d-ccf6-46a6-bb8a-69f1cffb2c64'}                                   
+2018/04/26 07:00:19,797 [main] [DEBUG] [FileSystemExtendedStorageConnection] directory exists:target/filesystemstorage/bp-multibanking-service-example-auth                       
+2018/04/26 07:00:19,798 [main] [DEBUG] [ZipFileHelper                 ] WRITE metadata string {
+  "storageType": "BLOB",
+  "name": "bp-multibanking-service-example-auth/home/README.txt",
+  "userMetaData": {
+    "map": {
+      "EncryptedPersistenceServiceImpl.ENCRYPTION_SERVICE": "class org.adorsys.encobject.service.impl.AESEncryptionStreamServiceImpl",
+      "EncryptedPersistenceServiceImpl.ENCRYPTION_KEY_ID": "DK1048750d-ccf6-46a6-bb8a-69f1cffb2c64"
+    }
+  },
+  "size": 28
+}with UTF-8 
+2018/04/26 07:00:19,798 [main] [DEBUG] [ZipFileHelper                 ] write temporary zip file to target/filesystemstorage/bp-multibanking-service-example-auth/home/README.txt.zip.01f5edc9-b41b-4dde-aab5-d49fc0545bd6 
+2018/04/26 07:00:19,799 [main] [INFO ] [DocumentPersistenceServiceImpl] finished persist BucketPath{bp-multibanking-service-example-auth - home/README.txt}                  
+2018/04/26 07:00:19,799 [main] [INFO ] [DocumentSafeServiceImpl       ] finished storeDocument for UserIDAuth{UserID{'multibanking-service-example-auth'}, ReadKeyPassword{'mu***rd'}} DocumentFQN{'README.txt'} 
+2018/04/26 07:00:19,799 [main] [INFO ] [DocumentSafeServiceImpl       ] finished create user for UserIDAuth{UserID{'multibanking-service-example-auth'}, ReadKeyPassword{'mu***rd'}} 
+2018/04/26 07:00:20,065 [main] [WARN ] [FigoBanking                   ] missing env properties FIGO_CLIENT_ID and/or FIGO_SECRET                                             
+2018/04/26 07:00:20,066 [main] [WARN ] [FigoBanking                   ] missing env properties FIGO_TECH_USER and/or FIGO_TECH_USER_CREDENTIAL                               
+2018/04/26 07:00:20,066 [main] [WARN ] [FigoBankingAlternative        ] missing env properties FIGO_CLIENT_ID and/or FIGO_SECRET                                             
+2018/04/26 07:00:20,066 [main] [WARN ] [FigoBankingAlternative        ] missing env properties FIGO_TECH_USER and/or FIGO_TECH_USER_CREDENTIAL                               
+2018/04/26 07:00:20,068 [main] [WARN ] [FinapiBanking                 ] missing env properties FINAPI_CLIENT_ID and/or FINAPI_SECRET                                         
+2018/04/26 07:00:20,076 [main] [WARN ] [AnnotationConfigServletWebServerApplicationContext] Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'bankAccessService': Unsatisfied dependency expressed through field 'uds'; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'userDataService': Unsatisfied dependency expressed through field 'bankingServiceProducer'; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'onlineBankingServiceProducer': Unsatisfied dependency expressed through field 'mockBanking'; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type 'de.adorsys.onlinebanking.mock.MockBanking' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {@org.springframework.beans.factory.annotation.Autowired(required=true)} 
+2018/04/26 07:00:20,079 [main] [INFO ] [StandardService               ] Stopping service [Tomcat]                                                                            
+2018/04/26 07:00:20,092 [main] [INFO ] [ConditionEvaluationReportLoggingListener] 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled. 
+2018/04/26 07:00:20,183 [main] [ERROR] [LoggingFailureAnalysisReporter] 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field mockBanking in de.adorsys.multibanking.service.producer.OnlineBankingServiceProducer required a bean of type 'de.adorsys.onlinebanking.mock.MockBanking' that could not be found.
+
+
+Action:
+
+Consider defining a bean of type 'de.adorsys.onlinebanking.mock.MockBanking' in your configuration.
+ 

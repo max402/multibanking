@@ -1,6 +1,5 @@
 package de.adorsys.multibanking.config.authserver;
 
-import org.adorsys.docusafe.business.DocumentSafeService;
 import org.adorsys.docusafe.business.impl.DocumentSafeServiceImpl;
 import org.adorsys.encobject.filesystem.FileSystemExtendedStorageConnection;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -11,7 +10,7 @@ import org.springframework.context.annotation.Profile;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import de.adorsys.multibanking.config.STSInMemoryConfig;
+import de.adorsys.multibanking.config.core.STSInMemoryConfig;
 import de.adorsys.multibanking.service.base.ExceptionHandlingDocumentSafeService;
 import de.adorsys.multibanking.utils.Ids;
 import de.adorsys.sts.persistence.FsUserDataRepository;

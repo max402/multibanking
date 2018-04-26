@@ -9,7 +9,7 @@
         <version>2.2.3-SNAPSHOT</version>
     </parent>
 
-    <artifactId>multibanking-rest</artifactId>
+    <artifactId>multibanking-service-example</artifactId>
     <packaging>jar</packaging>
 
     <dependencies>
@@ -36,6 +36,13 @@
             <artifactId>log4j-over-slf4j</artifactId>
         </dependency>
 
+		<!-- Multibanking Rest -->
+        <dependency>
+            <groupId>de.adorsys.multibanking</groupId>
+            <artifactId>multibanking-rest</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <!-- STS -->
         <dependency>
             <groupId>de.adorsys.sts</groupId>
@@ -46,7 +53,6 @@
 			<groupId>de.adorsys.sts</groupId>
 			<artifactId>sts-persistence-docusafe</artifactId>
             <version>${de.adorsys.sts.version}</version>
-            <scope>test</scope>
 		</dependency>
 
         <!-- Docusafe Connection -->
@@ -56,7 +62,7 @@
             <version>${crypt.version}</version>
         </dependency>
 
-        <!-- banking -->
+        <!-- banking 
         <dependency>
             <groupId>de.adorsys.multibanking</groupId>
             <artifactId>onlinebanking-figo</artifactId>
@@ -78,6 +84,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        -->
         <dependency>
             <groupId>de.adorsys.multibanking</groupId>
             <artifactId>onlinebanking-mock</artifactId>
@@ -97,7 +104,7 @@
             <artifactId>docusafe-business</artifactId>
             <version>${docusafe.version}</version>
         </dependency>
-
+		<!-- 
         <dependency>
             <groupId>de.adorsys.cryptoutils</groupId>
             <artifactId>encobject</artifactId>
@@ -106,6 +113,7 @@
             <groupId>de.adorsys.cryptoutils</groupId>
             <artifactId>jjwk</artifactId>
         </dependency>
+		 -->
 
         <!-- Lombok -->
         <dependency>
@@ -113,12 +121,13 @@
             <artifactId>lombok</artifactId>
         </dependency>
 
-        <!-- jackson buggy 2.8.x version https://github.com/FasterXML/jackson-databind/issues/1595 -->
+        <!-- jackson buggy 2.8.x version https://github.com/FasterXML/jackson-databind/issues/1595 
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
         </dependency>
-		<!-- module to support JSR-310 (Java 8 Date & Time API) data types. -->
+        -->
+		<!-- module to support JSR-310 (Java 8 Date & Time API) data types.
 		<dependency>
 			<groupId>com.fasterxml.jackson.datatype</groupId>
 			<artifactId>jackson-datatype-jsr310</artifactId>
@@ -127,6 +136,7 @@
 			<groupId>com.fasterxml.jackson.module</groupId>
 			<artifactId>jackson-module-parameter-names</artifactId>
 		</dependency>
+		 -->
 
         <!-- monitoring -->
         <dependency>
@@ -139,6 +149,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-hateoas</artifactId>
         </dependency>
+        <!-- 
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
@@ -147,6 +158,7 @@
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-yaml</artifactId>
         </dependency>
+         -->
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -160,7 +172,8 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
-        <!-- Distributed Lock -->
+        <!-- Distributed Lock 
+        -->
         <dependency>
             <groupId>de.adorsys.lock-persistence</groupId>
             <artifactId>lock-persistence-core</artifactId>
@@ -190,13 +203,14 @@
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
-
+		<!--  
         <dependency>
             <groupId>de.adorsys.multibanking</groupId>
             <artifactId>onlinebanking-xls-loader</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
+		-->
 
     </dependencies>
 
@@ -236,64 +250,14 @@
                 <artifactId>maven-project-info-reports-plugin</artifactId>
                 <version>2.7</version>
             </plugin>
-			<!-- 
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot.version}</version>
                 <configuration>
                     <includeSystemScope>true</includeSystemScope>
-                    <profiles>
-                        <profile>InMemory</profile>
-                        <profile>swagger</profile>
-                    </profiles>
                     <jvmArguments>
-                        -DmockConnectionUrl="http://localhost:10010"
-                        -Dsts.audience_name="multibanking"
-                        -Dsts.secret_claim_property_key="user-secret"
-
-                        -Dsts.keymanagement.keystore.password="FEDCBA9876543210"
-                        -Dsts.keymanagement.keystore.name="multibanking-keystore"
-                        -Dsts.keymanagement.keystore.alias_prefix="multibanking-"
-                        -Dsts.keymanagement.keystore.type="UBER"
-                        -Dsts.keymanagement.keystore.keys.encKeyPairs.initialCount="5"
-                        -Dsts.keymanagement.keystore.keys.encKeyPairs.algo="RSA"
-                        -Dsts.keymanagement.keystore.keys.encKeyPairs.sigAlgo="SHA256withRSA"
-                        -Dsts.keymanagement.keystore.keys.encKeyPairs.size="2048"
-                        -Dsts.keymanagement.keystore.keys.encKeyPairs.name="STS Multibanking"
-                        -Dsts.keymanagement.keystore.keys.encKeyPairs.validityInterval="3600000"
-                        -Dsts.keymanagement.keystore.keys.encKeyPairs.legacyInterval="86400000"
-
-                        -Dsts.keymanagement.keystore.keys.signKeyPairs.initialCount="5"
-                        -Dsts.keymanagement.keystore.keys.signKeyPairs.algo="RSA"
-                        -Dsts.keymanagement.keystore.keys.signKeyPairs.sigAlgo="SHA256withRSA"
-                        -Dsts.keymanagement.keystore.keys.signKeyPairs.size="2048"
-                        -Dsts.keymanagement.keystore.keys.signKeyPairs.name="STS Multibanking"
-                        -Dsts.keymanagement.keystore.keys.signKeyPairs.validityInterval="3600000"
-                        -Dsts.keymanagement.keystore.keys.signKeyPairs.legacyInterval="86400000"
-
-                        -Dsts.keymanagement.keystore.keys.secretKeys.initialCount="5"
-                        -Dsts.keymanagement.keystore.keys.secretKeys.algo="AES"
-                        -Dsts.keymanagement.keystore.keys.secretKeys.size="256"
-                        -Dsts.keymanagement.keystore.keys.secretKeys.validityInterval="3600000"
-                        -Dsts.keymanagement.keystore.keys.secretKeys.legacyInterval="86400000"
-
-                        -Dsts.keymanagement.rotation.secretKeys.enabled="false"
-                        -Dsts.keymanagement.rotation.signKeyPairs.enabled="false"
-                        -Dsts.keymanagement.rotation.encKeyPairs.enabled="false"
-
-                        
-
                         -Dinfo.project.version=2.2.3
-
-                        -Ddocusafe.system.user.name=peter
-                        -Ddocusafe.system.user.password=password
-                        
-                        -Dsts.resourceServer.list=multibanking
-						-Dsts.resourceServers.multibanking.jwksUrl=http://localhost:8081/pop
-						-Dsts.resourceServers.multibanking.audience=multibanking
-						-Dsts.resourceServers.multibanking.userSecretClaimName=multibanking
-                        
                     </jvmArguments>
                 </configuration>
                 <executions>
@@ -304,7 +268,6 @@
                     </execution>
                 </executions>
             </plugin>
-			 -->
             <!-- -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=10022 -->
 
             <!-- Maven Release Build fails if javadoc comments are invalid. http://stackoverflow.com/questions/15886209/maven-is-not-working-in-java-8-when-javadoc-tags-are-incomplete -->

@@ -1,0 +1,1869 @@
+{
+  "id": "5b0be8a9e81f06486081676a",
+  "accountId": "5b0be129e81f06208ca123f9",
+  "userId": "880dce0f-4e09-47c3-aea8-91c6ed85e2e2",
+  "analyticsDate": "2018-05-28",
+  "bookingGroups": [{
+    "type": "CUSTOM",
+    "name": "TANKSTELLE",
+    "otherAccount": "",
+    "amount": -93.5,
+    "bookingPeriods": [{
+      "start": "2018-03-01",
+      "end": "2018-03-31",
+      "amount": -78.98,
+      "bookings": [{
+        "bookingId": "6ab47779-dd4e-4451-8095-53787c84f275",
+        "executed": true
+      }, {
+        "bookingId": "d7f7804e-8b11-4485-a8af-8421461e5dfe",
+        "executed": true
+      }]
+    }, {
+      "start": "2018-04-01",
+      "end": "2018-04-30",
+      "amount": -109.64,
+      "bookings": [{
+        "bookingId": "ebac27ac-222e-417f-9432-3e8eec676bf6",
+        "executed": true
+      }, {
+        "bookingId": "025d8f2e-0efc-4fc3-bb67-f2c77c07fb8d",
+        "executed": true
+      }]
+    }, {
+      "start": "2018-05-01",
+      "end": "2018-05-31",
+      "amount": -53.22,
+      "bookings": [{
+        "bookingId": "82b7d4d2-dd25-442f-8602-441addba056c",
+        "executed": true
+      }]
+    }],
+    "contract": {}
+  }, {
+    "type": "RECURRENT_SEPA",
+    "mainCategory": "WOHNEN",
+    "subCategory": "TELEKOMMUNIKATION",
+    "specification": "TELEFON_INTERNET",
+    "otherAccount": "Telekom Deutschland GmbH",
+    "amount": -19.94,
+    "bookingPeriods": [{
+      "start": "2018-03-01",
+      "end": "2018-03-31",
+      "amount": -19.94,
+      "bookings": [{
+        "bookingId": "8c194724-bca1-4eff-a636-9093107dee79",
+        "executed": true
+      }]
+    }, {
+      "start": "2018-04-01",
+      "end": "2018-04-30",
+      "amount": -19.94,
+      "bookings": [{
+        "bookingId": "eb05ad43-29f0-443a-8aa7-079de532cd15",
+        "executed": true
+      }]
+    }, {
+      "start": "2018-05-01",
+      "end": "2018-05-31",
+      "amount": -20.13,
+      "bookings": [{
+        "bookingId": "b5aa6b7f-eb32-45ef-aa4f-984f6c7bfe7e",
+        "executed": true
+      }]
+    }, {
+      "start": "2018-06-01",
+      "end": "2018-06-30",
+      "bookings": [{
+        "bookingId": "8c194724-bca1-4eff-a636-9093107dee79",
+        "executionDate": "2018-06-01",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-07-01",
+      "end": "2018-07-31",
+      "bookings": [{
+        "bookingId": "8c194724-bca1-4eff-a636-9093107dee79",
+        "executionDate": "2018-07-02",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-08-01",
+      "end": "2018-08-31",
+      "bookings": [{
+        "bookingId": "8c194724-bca1-4eff-a636-9093107dee79",
+        "executionDate": "2018-08-01",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-09-01",
+      "end": "2018-09-30",
+      "bookings": [{
+        "bookingId": "8c194724-bca1-4eff-a636-9093107dee79",
+        "executionDate": "2018-09-03",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-10-01",
+      "end": "2018-10-31",
+      "bookings": [{
+        "bookingId": "8c194724-bca1-4eff-a636-9093107dee79",
+        "executionDate": "2018-10-01",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-11-01",
+      "end": "2018-11-30",
+      "bookings": [{
+        "bookingId": "8c194724-bca1-4eff-a636-9093107dee79",
+        "executionDate": "2018-11-01",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-12-01",
+      "end": "2018-12-31",
+      "bookings": [{
+        "bookingId": "8c194724-bca1-4eff-a636-9093107dee79",
+        "executionDate": "2018-12-03",
+        "executed": false
+      }]
+    }, {
+      "start": "2019-01-01",
+      "end": "2019-01-31",
+      "bookings": [{
+        "bookingId": "8c194724-bca1-4eff-a636-9093107dee79",
+        "executionDate": "2019-01-02",
+        "executed": false
+      }]
+    }, {
+      "start": "2019-02-01",
+      "end": "2019-02-28",
+      "bookings": [{
+        "bookingId": "8c194724-bca1-4eff-a636-9093107dee79",
+        "executionDate": "2019-02-01",
+        "executed": false
+      }]
+    }, {
+      "start": "2019-03-01",
+      "end": "2019-03-31",
+      "bookings": [{
+        "bookingId": "8c194724-bca1-4eff-a636-9093107dee79",
+        "executionDate": "2019-03-01",
+        "executed": false
+      }]
+    }, {
+      "start": "2019-04-01",
+      "end": "2019-04-30",
+      "bookings": [{
+        "bookingId": "8c194724-bca1-4eff-a636-9093107dee79",
+        "executionDate": "2019-04-01",
+        "executed": false
+      }]
+    }],
+    "contract": {
+      "mandateReference": "De000201000200000000000000005369397",
+      "interval": "MONTHLY"
+    }
+  }, {
+    "type": "RECURRENT_SEPA",
+    "mainCategory": "FREIZEIT",
+    "subCategory": "MEDIEN",
+    "specification": "PAY_TV",
+    "otherAccount": "Sky Deutschland Fernsehen GmbH",
+    "amount": -29.99,
+    "bookingPeriods": [{
+      "start": "2018-03-01",
+      "end": "2018-03-31",
+      "amount": -29.99,
+      "bookings": [{
+        "bookingId": "295dfeb7-9b21-46fe-a4dd-b276252677a3",
+        "executed": true
+      }]
+    }, {
+      "start": "2018-04-01",
+      "end": "2018-04-30",
+      "amount": -29.99,
+      "bookings": [{
+        "bookingId": "8588f1a1-8e56-4102-9fee-2786d1490d89",
+        "executed": true
+      }]
+    }, {
+      "start": "2018-05-01",
+      "end": "2018-05-31",
+      "amount": -29.99,
+      "bookings": [{
+        "bookingId": "42da6941-43b5-4269-9ce5-64d15739848c",
+        "executed": true
+      }]
+    }, {
+      "start": "2018-06-01",
+      "end": "2018-06-30",
+      "bookings": [{
+        "bookingId": "295dfeb7-9b21-46fe-a4dd-b276252677a3",
+        "executionDate": "2018-06-05",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-07-01",
+      "end": "2018-07-31",
+      "bookings": [{
+        "bookingId": "295dfeb7-9b21-46fe-a4dd-b276252677a3",
+        "executionDate": "2018-07-05",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-08-01",
+      "end": "2018-08-31",
+      "bookings": [{
+        "bookingId": "295dfeb7-9b21-46fe-a4dd-b276252677a3",
+        "executionDate": "2018-08-06",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-09-01",
+      "end": "2018-09-30",
+      "bookings": [{
+        "bookingId": "295dfeb7-9b21-46fe-a4dd-b276252677a3",
+        "executionDate": "2018-09-04",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-10-01",
+      "end": "2018-10-31",
+      "bookings": [{
+        "bookingId": "295dfeb7-9b21-46fe-a4dd-b276252677a3",
+        "executionDate": "2018-10-05",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-11-01",
+      "end": "2018-11-30",
+      "bookings": [{
+        "bookingId": "295dfeb7-9b21-46fe-a4dd-b276252677a3",
+        "executionDate": "2018-11-05",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-12-01",
+      "end": "2018-12-31",
+      "bookings": [{
+        "bookingId": "295dfeb7-9b21-46fe-a4dd-b276252677a3",
+        "executionDate": "2018-12-05",
+        "executed": false
+      }]
+    }, {
+      "start": "2019-01-01",
+      "end": "2019-01-31",
+      "bookings": [{
+        "bookingId": "295dfeb7-9b21-46fe-a4dd-b276252677a3",
+        "executionDate": "2019-01-07",
+        "executed": false
+      }]
+    }, {
+      "start": "2019-02-01",
+      "end": "2019-02-28",
+      "bookings": [{
+        "bookingId": "295dfeb7-9b21-46fe-a4dd-b276252677a3",
+        "executionDate": "2019-02-05",
+        "executed": false
+      }]
+    }, {
+      "start": "2019-03-01",
+      "end": "2019-03-31",
+      "bookings": [{
+        "bookingId": "295dfeb7-9b21-46fe-a4dd-b276252677a3",
+        "executionDate": "2019-03-05",
+        "executed": false
+      }]
+    }, {
+      "start": "2019-04-01",
+      "end": "2019-04-30",
+      "bookings": [{
+        "bookingId": "295dfeb7-9b21-46fe-a4dd-b276252677a3",
+        "executionDate": "2019-04-05",
+        "executed": false
+      }]
+    }],
+    "contract": {
+      "mandateReference": "1845523597-0000",
+      "interval": "MONTHLY"
+    }
+  }, {
+    "type": "CUSTOM",
+    "name": "SHOPPING",
+    "otherAccount": "",
+    "amount": 0,
+    "bookingPeriods": [{
+      "start": "2018-05-01",
+      "end": "2018-05-31",
+      "amount": -87.0,
+      "bookings": [{
+        "bookingId": "6814c4fe-db6f-4789-a726-55324673552c",
+        "executed": true
+      }]
+    }],
+    "contract": {}
+  }, {
+    "type": "RECURRENT_INCOME",
+    "mainCategory": "EINKUENFTE",
+    "subCategory": "SONSTIGES",
+    "specification": "STEUER_RUECKZAHLUNG",
+    "otherAccount": "Melina Geist",
+    "amount": 80.0,
+    "bookingPeriods": [{
+      "start": "2018-03-01",
+      "end": "2018-03-31",
+      "amount": 80.0,
+      "bookings": [{
+        "bookingId": "34d9ad56-ec3b-48a1-ae70-c257d238447f",
+        "executed": true
+      }]
+    }, {
+      "start": "2019-03-01",
+      "end": "2019-03-31",
+      "bookings": [{
+        "bookingId": "34d9ad56-ec3b-48a1-ae70-c257d238447f",
+        "executionDate": "2019-03-12",
+        "executed": false
+      }]
+    }],
+    "contract": {
+      "interval": "YEARLY"
+    }
+  }, {
+    "type": "RECURRENT_SEPA",
+    "mainCategory": "WOHNEN",
+    "subCategory": "TELEKOMMUNIKATION",
+    "specification": "TELEFON_INTERNET",
+    "otherAccount": "Klarmobil",
+    "amount": -2.0,
+    "bookingPeriods": [{
+      "start": "2018-03-01",
+      "end": "2018-03-31",
+      "amount": -2.0,
+      "bookings": [{
+        "bookingId": "1fc49a27-e4d3-4291-ae45-016211c42d59",
+        "executed": true
+      }]
+    }, {
+      "start": "2018-04-01",
+      "end": "2018-04-30",
+      "amount": -2.0,
+      "bookings": [{
+        "bookingId": "141ebdb1-0656-4248-9d1e-f639759084c4",
+        "executed": true
+      }]
+    }, {
+      "start": "2018-05-01",
+      "end": "2018-05-31",
+      "amount": -2.0,
+      "bookings": [{
+        "bookingId": "54347ac1-6136-4d7f-92d3-34dedcf26255",
+        "executed": true
+      }]
+    }, {
+      "start": "2018-06-01",
+      "end": "2018-06-30",
+      "bookings": [{
+        "bookingId": "1fc49a27-e4d3-4291-ae45-016211c42d59",
+        "executionDate": "2018-06-08",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-07-01",
+      "end": "2018-07-31",
+      "bookings": [{
+        "bookingId": "1fc49a27-e4d3-4291-ae45-016211c42d59",
+        "executionDate": "2018-07-09",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-08-01",
+      "end": "2018-08-31",
+      "bookings": [{
+        "bookingId": "1fc49a27-e4d3-4291-ae45-016211c42d59",
+        "executionDate": "2018-08-08",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-09-01",
+      "end": "2018-09-30",
+      "bookings": [{
+        "bookingId": "1fc49a27-e4d3-4291-ae45-016211c42d59",
+        "executionDate": "2018-09-10",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-10-01",
+      "end": "2018-10-31",
+      "bookings": [{
+        "bookingId": "1fc49a27-e4d3-4291-ae45-016211c42d59",
+        "executionDate": "2018-10-09",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-11-01",
+      "end": "2018-11-30",
+      "bookings": [{
+        "bookingId": "1fc49a27-e4d3-4291-ae45-016211c42d59",
+        "executionDate": "2018-11-08",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-12-01",
+      "end": "2018-12-31",
+      "bookings": [{
+        "bookingId": "1fc49a27-e4d3-4291-ae45-016211c42d59",
+        "executionDate": "2018-12-10",
+        "executed": false
+      }]
+    }, {
+      "start": "2019-01-01",
+      "end": "2019-01-31",
+      "bookings": [{
+        "bookingId": "1fc49a27-e4d3-4291-ae45-016211c42d59",
+        "executionDate": "2019-01-09",
+        "executed": false
+      }]
+    }, {
+      "start": "2019-02-01",
+      "end": "2019-02-28",
+      "bookings": [{
+        "bookingId": "1fc49a27-e4d3-4291-ae45-016211c42d59",
+        "executionDate": "2019-02-08",
+        "executed": false
+      }]
+    }, {
+      "start": "2019-03-01",
+      "end": "2019-03-31",
+      "bookings": [{
+        "bookingId": "1fc49a27-e4d3-4291-ae45-016211c42d59",
+        "executionDate": "2019-03-08",
+        "executed": false
+      }]
+    }, {
+      "start": "2019-04-01",
+      "end": "2019-04-30",
+      "bookings": [{
+        "bookingId": "1fc49a27-e4d3-4291-ae45-016211c42d59",
+        "executionDate": "2019-04-08",
+        "executed": false
+      }]
+    }],
+    "contract": {
+      "mandateReference": "Km-1053362195-000001",
+      "interval": "MONTHLY"
+    }
+  }, {
+    "type": "RECURRENT_SEPA",
+    "mainCategory": "WOHNEN",
+    "subCategory": "NEBENKOSTEN",
+    "specification": "WASSER",
+    "otherAccount": "Markt Cadolzburg  Gemeindewerke Cadolzburg",
+    "amount": -32.0,
+    "bookingPeriods": [{
+      "start": "2018-03-01",
+      "end": "2018-03-31",
+      "amount": -32.0,
+      "bookings": [{
+        "bookingId": "a8712f82-603d-4da7-8b9b-e3aac6e6b868",
+        "executed": true
+      }]
+    }, {
+      "start": "2018-04-01",
+      "end": "2018-04-30",
+      "amount": -32.0,
+      "bookings": [{
+        "bookingId": "d4d66724-762d-455a-b382-082f0d8f0a50",
+        "executed": true
+      }]
+    }, {
+      "start": "2018-05-01",
+      "end": "2018-05-31",
+      "amount": -32.0,
+      "bookings": [{
+        "bookingId": "eacef70a-6696-41c6-a167-a362bde7c042",
+        "executed": true
+      }]
+    }, {
+      "start": "2018-06-01",
+      "end": "2018-06-30",
+      "bookings": [{
+        "bookingId": "a8712f82-603d-4da7-8b9b-e3aac6e6b868",
+        "executionDate": "2018-06-15",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-07-01",
+      "end": "2018-07-31",
+      "bookings": [{
+        "bookingId": "a8712f82-603d-4da7-8b9b-e3aac6e6b868",
+        "executionDate": "2018-07-17",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-08-01",
+      "end": "2018-08-31",
+      "bookings": [{
+        "bookingId": "a8712f82-603d-4da7-8b9b-e3aac6e6b868",
+        "executionDate": "2018-08-17",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-09-01",
+      "end": "2018-09-30",
+      "bookings": [{
+        "bookingId": "a8712f82-603d-4da7-8b9b-e3aac6e6b868",
+        "executionDate": "2018-09-14",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-10-01",
+      "end": "2018-10-31",
+      "bookings": [{
+        "bookingId": "a8712f82-603d-4da7-8b9b-e3aac6e6b868",
+        "executionDate": "2018-10-17",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-11-01",
+      "end": "2018-11-30",
+      "bookings": [{
+        "bookingId": "a8712f82-603d-4da7-8b9b-e3aac6e6b868",
+        "executionDate": "2018-11-16",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-12-01",
+      "end": "2018-12-31",
+      "bookings": [{
+        "bookingId": "a8712f82-603d-4da7-8b9b-e3aac6e6b868",
+        "executionDate": "2018-12-11",
+        "executed": false
+      }]
+    }, {
+      "start": "2019-01-01",
+      "end": "2019-01-31",
+      "bookings": [{
+        "bookingId": "a8712f82-603d-4da7-8b9b-e3aac6e6b868",
+        "executionDate": "2019-01-17",
+        "executed": false
+      }]
+    }, {
+      "start": "2019-02-01",
+      "end": "2019-02-28",
+      "bookings": [{
+        "bookingId": "a8712f82-603d-4da7-8b9b-e3aac6e6b868",
+        "executionDate": "2019-02-14",
+        "executed": false
+      }]
+    }, {
+      "start": "2019-03-01",
+      "end": "2019-03-31",
+      "bookings": [{
+        "bookingId": "a8712f82-603d-4da7-8b9b-e3aac6e6b868",
+        "executionDate": "2019-03-15",
+        "executed": false
+      }]
+    }, {
+      "start": "2019-04-01",
+      "end": "2019-04-30",
+      "bookings": [{
+        "bookingId": "a8712f82-603d-4da7-8b9b-e3aac6e6b868",
+        "executionDate": "2019-04-12",
+        "executed": false
+      }]
+    }],
+    "contract": {
+      "mandateReference": "S-0000000000006727",
+      "interval": "MONTHLY"
+    }
+  }, {
+    "type": "RECURRENT_SEPA",
+    "mainCategory": "FINANZEN",
+    "subCategory": "VERSICHERUNGEN",
+    "specification": "KFZ_VERSICHERUNG",
+    "otherAccount": "VHV Allgemeine Versicherung",
+    "amount": -22.67,
+    "bookingPeriods": [{
+      "start": "2018-03-01",
+      "end": "2018-03-31",
+      "amount": -22.67,
+      "bookings": [{
+        "bookingId": "829ffd8c-9cee-497e-b78e-12cb75b4c482",
+        "executed": true
+      }]
+    }, {
+      "start": "2019-03-01",
+      "end": "2019-03-31",
+      "bookings": [{
+        "bookingId": "829ffd8c-9cee-497e-b78e-12cb75b4c482",
+        "executionDate": "2019-03-19",
+        "executed": false
+      }]
+    }],
+    "contract": {
+      "mandateReference": "27686739200010000",
+      "interval": "YEARLY"
+    }
+  }, {
+    "type": "RECURRENT_SEPA",
+    "mainCategory": "FREIZEIT",
+    "subCategory": "HOBBY_SPORT",
+    "specification": "MITGLIEDSCHAFT",
+    "otherAccount": "Turn- und Sportverein 1886W",
+    "amount": -22.5,
+    "bookingPeriods": [{
+      "start": "2018-05-01",
+      "end": "2018-05-31",
+      "amount": -22.5,
+      "bookings": [{
+        "bookingId": "291450c2-0a88-4fff-a995-f27a614b4453",
+        "executed": true
+      }]
+    }],
+    "contract": {
+      "mandateReference": "12076",
+      "interval": "YEARLY"
+    }
+  }, {
+    "type": "RECURRENT_NONSEPA",
+    "mainCategory": "FINANZEN",
+    "subCategory": "KREDITE",
+    "specification": "DARLEHEN",
+    "otherAccount": "IBAN DE48760905000072257793",
+    "amount": -328.0,
+    "bookingPeriods": [{
+      "start": "2018-03-01",
+      "end": "2018-03-31",
+      "amount": -656.0,
+      "bookings": [{
+        "bookingId": "04b42ffa-1090-4b44-9f92-2260c31d622f",
+        "executed": true
+      }, {
+        "bookingId": "3b885af4-615a-448b-88a4-abcbbd5584b7",
+        "executed": true
+      }]
+    }, {
+      "start": "2018-04-01",
+      "end": "2018-04-30",
+      "amount": -328.0,
+      "bookings": [{
+        "bookingId": "e4383517-2568-4d64-809b-a3d80b9a5c5d",
+        "executed": true
+      }]
+    }, {
+      "start": "2018-05-01",
+      "end": "2018-05-31",
+      "bookings": [{
+        "bookingId": "04b42ffa-1090-4b44-9f92-2260c31d622f",
+        "executionDate": "2018-05-30",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-06-01",
+      "end": "2018-06-30",
+      "bookings": [{
+        "bookingId": "04b42ffa-1090-4b44-9f92-2260c31d622f",
+        "executionDate": "2018-06-29",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-07-01",
+      "end": "2018-07-31",
+      "bookings": [{
+        "bookingId": "04b42ffa-1090-4b44-9f92-2260c31d622f",
+        "executionDate": "2018-07-31",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-08-01",
+      "end": "2018-08-31",
+      "bookings": [{
+        "bookingId": "04b42ffa-1090-4b44-9f92-2260c31d622f",
+        "executionDate": "2018-08-31",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-09-01",
+      "end": "2018-09-30",
+      "bookings": [{
+        "bookingId": "04b42ffa-1090-4b44-9f92-2260c31d622f",
+        "executionDate": "2018-09-28",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-10-01",
+      "end": "2018-10-31",
+      "bookings": [{
+        "bookingId": "04b42ffa-1090-4b44-9f92-2260c31d622f",
+        "executionDate": "2018-10-31",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-11-01",
+      "end": "2018-11-30",
+      "bookings": [{
+        "bookingId": "04b42ffa-1090-4b44-9f92-2260c31d622f",
+        "executionDate": "2018-11-30",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-12-01",
+      "end": "2018-12-31",
+      "bookings": [{
+        "bookingId": "04b42ffa-1090-4b44-9f92-2260c31d622f",
+        "executionDate": "2018-12-28",
+        "executed": false
+      }]
+    }, {
+      "start": "2019-01-01",
+      "end": "2019-01-31",
+      "bookings": [{
+        "bookingId": "04b42ffa-1090-4b44-9f92-2260c31d622f",
+        "executionDate": "2019-01-31",
+        "executed": false
+      }]
+    }, {
+      "start": "2019-02-01",
+      "end": "2019-02-28",
+      "bookings": [{
+        "bookingId": "04b42ffa-1090-4b44-9f92-2260c31d622f",
+        "executionDate": "2019-02-28",
+        "executed": false
+      }]
+    }, {
+      "start": "2019-03-01",
+      "end": "2019-03-31",
+      "bookings": [{
+        "bookingId": "04b42ffa-1090-4b44-9f92-2260c31d622f",
+        "executionDate": "2019-03-29",
+        "executed": false
+      }]
+    }],
+    "contract": {
+      "interval": "MONTHLY"
+    }
+  }, {
+    "type": "RECURRENT_SEPA",
+    "mainCategory": "WOHNEN",
+    "subCategory": "NEBENKOSTEN",
+    "specification": "ENERGIE",
+    "otherAccount": "E.ON Energie Deutschland GmbH",
+    "amount": -59.0,
+    "bookingPeriods": [{
+      "start": "2018-03-01",
+      "end": "2018-03-31",
+      "amount": -59.0,
+      "bookings": [{
+        "bookingId": "6ca861c5-e33a-4ab4-b0e3-b76723c19c2b",
+        "executed": true
+      }]
+    }, {
+      "start": "2018-04-01",
+      "end": "2018-04-30",
+      "amount": -59.0,
+      "bookings": [{
+        "bookingId": "40b11047-c1a8-4b99-8519-14822b0eaea9",
+        "executed": true
+      }]
+    }, {
+      "start": "2018-05-01",
+      "end": "2018-05-31",
+      "amount": -59.0,
+      "bookings": [{
+        "bookingId": "1ef77452-50fc-4dd3-a951-e862c201ddb6",
+        "executed": true
+      }]
+    }, {
+      "start": "2018-06-01",
+      "end": "2018-06-30",
+      "bookings": [{
+        "bookingId": "6ca861c5-e33a-4ab4-b0e3-b76723c19c2b",
+        "executionDate": "2018-06-21",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-07-01",
+      "end": "2018-07-31",
+      "bookings": [{
+        "bookingId": "6ca861c5-e33a-4ab4-b0e3-b76723c19c2b",
+        "executionDate": "2018-07-23",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-08-01",
+      "end": "2018-08-31",
+      "bookings": [{
+        "bookingId": "6ca861c5-e33a-4ab4-b0e3-b76723c19c2b",
+        "executionDate": "2018-08-23",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-09-01",
+      "end": "2018-09-30",
+      "bookings": [{
+        "bookingId": "6ca861c5-e33a-4ab4-b0e3-b76723c19c2b",
+        "executionDate": "2018-09-20",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-10-01",
+      "end": "2018-10-31",
+      "bookings": [{
+        "bookingId": "6ca861c5-e33a-4ab4-b0e3-b76723c19c2b",
+        "executionDate": "2018-10-23",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-11-01",
+      "end": "2018-11-30",
+      "bookings": [{
+        "bookingId": "6ca861c5-e33a-4ab4-b0e3-b76723c19c2b",
+        "executionDate": "2018-11-22",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-12-01",
+      "end": "2018-12-31",
+      "bookings": [{
+        "bookingId": "6ca861c5-e33a-4ab4-b0e3-b76723c19c2b",
+        "executionDate": "2018-12-17",
+        "executed": false
+      }]
+    }, {
+      "start": "2019-01-01",
+      "end": "2019-01-31",
+      "bookings": [{
+        "bookingId": "6ca861c5-e33a-4ab4-b0e3-b76723c19c2b",
+        "executionDate": "2019-01-23",
+        "executed": false
+      }]
+    }, {
+      "start": "2019-02-01",
+      "end": "2019-02-28",
+      "bookings": [{
+        "bookingId": "6ca861c5-e33a-4ab4-b0e3-b76723c19c2b",
+        "executionDate": "2019-02-20",
+        "executed": false
+      }]
+    }, {
+      "start": "2019-03-01",
+      "end": "2019-03-31",
+      "bookings": [{
+        "bookingId": "6ca861c5-e33a-4ab4-b0e3-b76723c19c2b",
+        "executionDate": "2019-03-21",
+        "executed": false
+      }]
+    }, {
+      "start": "2019-04-01",
+      "end": "2019-04-30",
+      "bookings": [{
+        "bookingId": "6ca861c5-e33a-4ab4-b0e3-b76723c19c2b",
+        "executionDate": "2019-04-18",
+        "executed": false
+      }]
+    }],
+    "contract": {
+      "homepage": "www.eon.de",
+      "hotline": "08 71-95 38 62 00",
+      "mandateReference": "20852hw0832804",
+      "interval": "MONTHLY"
+    }
+  }, {
+    "type": "RECURRENT_NONSEPA",
+    "mainCategory": "FINANZEN",
+    "subCategory": "KREDITE",
+    "specification": "DARLEHEN",
+    "otherAccount": "IBAN DE92760905000172257793",
+    "amount": -195.42,
+    "bookingPeriods": [{
+      "start": "2018-03-01",
+      "end": "2018-03-31",
+      "amount": -390.84,
+      "bookings": [{
+        "bookingId": "ec6fd5bb-2363-4609-9afb-11ef075e8f04",
+        "executed": true
+      }, {
+        "bookingId": "fa7ca569-fd15-4361-a945-e1000528c423",
+        "executed": true
+      }]
+    }, {
+      "start": "2018-04-01",
+      "end": "2018-04-30",
+      "amount": -195.42,
+      "bookings": [{
+        "bookingId": "76aca6c2-d3cf-4bc3-8574-5ef4aa95c8dc",
+        "executed": true
+      }]
+    }, {
+      "start": "2018-05-01",
+      "end": "2018-05-31",
+      "bookings": [{
+        "bookingId": "ec6fd5bb-2363-4609-9afb-11ef075e8f04",
+        "executionDate": "2018-05-30",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-06-01",
+      "end": "2018-06-30",
+      "bookings": [{
+        "bookingId": "ec6fd5bb-2363-4609-9afb-11ef075e8f04",
+        "executionDate": "2018-06-29",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-07-01",
+      "end": "2018-07-31",
+      "bookings": [{
+        "bookingId": "ec6fd5bb-2363-4609-9afb-11ef075e8f04",
+        "executionDate": "2018-07-31",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-08-01",
+      "end": "2018-08-31",
+      "bookings": [{
+        "bookingId": "ec6fd5bb-2363-4609-9afb-11ef075e8f04",
+        "executionDate": "2018-08-31",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-09-01",
+      "end": "2018-09-30",
+      "bookings": [{
+        "bookingId": "ec6fd5bb-2363-4609-9afb-11ef075e8f04",
+        "executionDate": "2018-09-28",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-10-01",
+      "end": "2018-10-31",
+      "bookings": [{
+        "bookingId": "ec6fd5bb-2363-4609-9afb-11ef075e8f04",
+        "executionDate": "2018-10-31",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-11-01",
+      "end": "2018-11-30",
+      "bookings": [{
+        "bookingId": "ec6fd5bb-2363-4609-9afb-11ef075e8f04",
+        "executionDate": "2018-11-30",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-12-01",
+      "end": "2018-12-31",
+      "bookings": [{
+        "bookingId": "ec6fd5bb-2363-4609-9afb-11ef075e8f04",
+        "executionDate": "2018-12-28",
+        "executed": false
+      }]
+    }, {
+      "start": "2019-01-01",
+      "end": "2019-01-31",
+      "bookings": [{
+        "bookingId": "ec6fd5bb-2363-4609-9afb-11ef075e8f04",
+        "executionDate": "2019-01-31",
+        "executed": false
+      }]
+    }, {
+      "start": "2019-02-01",
+      "end": "2019-02-28",
+      "bookings": [{
+        "bookingId": "ec6fd5bb-2363-4609-9afb-11ef075e8f04",
+        "executionDate": "2019-02-28",
+        "executed": false
+      }]
+    }, {
+      "start": "2019-03-01",
+      "end": "2019-03-31",
+      "bookings": [{
+        "bookingId": "ec6fd5bb-2363-4609-9afb-11ef075e8f04",
+        "executionDate": "2019-03-29",
+        "executed": false
+      }]
+    }],
+    "contract": {
+      "interval": "MONTHLY"
+    }
+  }, {
+    "type": "CUSTOM",
+    "name": "KREDITKARTE",
+    "otherAccount": "",
+    "amount": -220,
+    "bookingPeriods": [{
+      "start": "2018-03-01",
+      "end": "2018-03-31",
+      "amount": -37.79,
+      "bookings": [{
+        "bookingId": "4c74f0e8-21d6-43ff-b922-1161adfceab7",
+        "executed": true
+      }]
+    }, {
+      "start": "2018-04-01",
+      "end": "2018-04-30",
+      "amount": -403.55,
+      "bookings": [{
+        "bookingId": "b12908bf-2b3b-4998-ba4c-4d6017e53894",
+        "executed": true
+      }]
+    }],
+    "contract": {}
+  }, {
+    "type": "STANDING_ORDER",
+    "mainCategory": "FINANZEN",
+    "subCategory": "SONSTIGES",
+    "specification": "UNTERHALT",
+    "otherAccount": "MELINA GEIST",
+    "amount": -250.0,
+    "bookingPeriods": [{
+      "start": "2018-03-01",
+      "end": "2018-03-31",
+      "amount": -500.0,
+      "bookings": [{
+        "bookingId": "753de62d-9fab-46f0-92c1-42ac2056548e",
+        "executed": true
+      }, {
+        "bookingId": "fe5b5b40-b5d0-46f9-a5df-52b879c2a147",
+        "executed": true
+      }]
+    }, {
+      "start": "2018-04-01",
+      "end": "2018-04-30",
+      "amount": -250.0,
+      "bookings": [{
+        "bookingId": "63b8a735-a1e3-4979-a54b-07fb50e0fd1d",
+        "executed": true
+      }]
+    }, {
+      "start": "2018-05-01",
+      "end": "2018-05-31",
+      "bookings": [{
+        "bookingId": "753de62d-9fab-46f0-92c1-42ac2056548e",
+        "executionDate": "2018-05-29",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-06-01",
+      "end": "2018-06-30",
+      "bookings": [{
+        "bookingId": "753de62d-9fab-46f0-92c1-42ac2056548e",
+        "executionDate": "2018-06-29",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-07-01",
+      "end": "2018-07-31",
+      "bookings": [{
+        "bookingId": "753de62d-9fab-46f0-92c1-42ac2056548e",
+        "executionDate": "2018-07-30",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-08-01",
+      "end": "2018-08-31",
+      "bookings": [{
+        "bookingId": "753de62d-9fab-46f0-92c1-42ac2056548e",
+        "executionDate": "2018-08-29",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-09-01",
+      "end": "2018-09-30",
+      "bookings": [{
+        "bookingId": "753de62d-9fab-46f0-92c1-42ac2056548e",
+        "executionDate": "2018-09-28",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-10-01",
+      "end": "2018-10-31",
+      "bookings": [{
+        "bookingId": "753de62d-9fab-46f0-92c1-42ac2056548e",
+        "executionDate": "2018-10-29",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-11-01",
+      "end": "2018-11-30",
+      "bookings": [{
+        "bookingId": "753de62d-9fab-46f0-92c1-42ac2056548e",
+        "executionDate": "2018-11-28",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-12-01",
+      "end": "2018-12-31",
+      "bookings": [{
+        "bookingId": "753de62d-9fab-46f0-92c1-42ac2056548e",
+        "executionDate": "2018-12-28",
+        "executed": false
+      }]
+    }, {
+      "start": "2019-01-01",
+      "end": "2019-01-31",
+      "bookings": [{
+        "bookingId": "753de62d-9fab-46f0-92c1-42ac2056548e",
+        "executionDate": "2019-01-28",
+        "executed": false
+      }]
+    }, {
+      "start": "2019-02-01",
+      "end": "2019-02-28",
+      "bookings": [{
+        "bookingId": "753de62d-9fab-46f0-92c1-42ac2056548e",
+        "executionDate": "2019-02-28",
+        "executed": false
+      }]
+    }, {
+      "start": "2019-03-01",
+      "end": "2019-03-31",
+      "bookings": [{
+        "bookingId": "753de62d-9fab-46f0-92c1-42ac2056548e",
+        "executionDate": "2019-03-28",
+        "executed": false
+      }]
+    }, {
+      "start": "2019-04-01",
+      "end": "2019-04-30",
+      "bookings": [{
+        "bookingId": "753de62d-9fab-46f0-92c1-42ac2056548e",
+        "executionDate": "2019-04-29",
+        "executed": false
+      }]
+    }],
+    "contract": {
+      "interval": "MONTHLY"
+    }
+  }, {
+    "type": "RECURRENT_NONSEPA",
+    "mainCategory": "FINANZEN",
+    "subCategory": "SONSTIGES",
+    "specification": "UNTERHALT",
+    "otherAccount": "MELINA GEIST",
+    "amount": -450.0,
+    "bookingPeriods": [{
+      "start": "2018-03-01",
+      "end": "2018-03-31",
+      "amount": -900.0,
+      "bookings": [{
+        "bookingId": "5312877c-bfe3-4646-bd1b-a1bedc0a89cd",
+        "executed": true
+      }, {
+        "bookingId": "71ad3671-9140-48d1-aa63-23d9a6bf5d97",
+        "executed": true
+      }]
+    }],
+    "contract": {
+      "interval": "MONTHLY"
+    }
+  }, {
+    "type": "STANDING_ORDER",
+    "mainCategory": "FINANZEN",
+    "subCategory": "SONSTIGES",
+    "otherAccount": "MELINA GEIST",
+    "amount": -350.0,
+    "bookingPeriods": [{
+      "start": "2018-03-01",
+      "end": "2018-03-31",
+      "amount": -350.0,
+      "bookings": [{
+        "bookingId": "30efb799-077a-4bcb-b1d7-e697335d0b7c",
+        "executed": true
+      }]
+    }, {
+      "start": "2018-04-01",
+      "end": "2018-04-30",
+      "amount": -350.0,
+      "bookings": [{
+        "bookingId": "36dc9311-381b-4361-a13a-988e6d1f0b5a",
+        "executed": true
+      }]
+    }, {
+      "start": "2018-05-01",
+      "end": "2018-05-31",
+      "amount": -350.0,
+      "bookings": [{
+        "bookingId": "2449426c-47b1-417b-b298-b2b654d838e1",
+        "executed": true
+      }]
+    }, {
+      "start": "2018-06-01",
+      "end": "2018-06-30",
+      "bookings": [{
+        "bookingId": "30efb799-077a-4bcb-b1d7-e697335d0b7c",
+        "executionDate": "2018-06-01",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-07-01",
+      "end": "2018-07-31",
+      "bookings": [{
+        "bookingId": "30efb799-077a-4bcb-b1d7-e697335d0b7c",
+        "executionDate": "2018-07-02",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-08-01",
+      "end": "2018-08-31",
+      "bookings": [{
+        "bookingId": "30efb799-077a-4bcb-b1d7-e697335d0b7c",
+        "executionDate": "2018-08-01",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-09-01",
+      "end": "2018-09-30",
+      "bookings": [{
+        "bookingId": "30efb799-077a-4bcb-b1d7-e697335d0b7c",
+        "executionDate": "2018-09-03",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-10-01",
+      "end": "2018-10-31",
+      "bookings": [{
+        "bookingId": "30efb799-077a-4bcb-b1d7-e697335d0b7c",
+        "executionDate": "2018-10-01",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-11-01",
+      "end": "2018-11-30",
+      "bookings": [{
+        "bookingId": "30efb799-077a-4bcb-b1d7-e697335d0b7c",
+        "executionDate": "2018-11-01",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-12-01",
+      "end": "2018-12-31",
+      "bookings": [{
+        "bookingId": "30efb799-077a-4bcb-b1d7-e697335d0b7c",
+        "executionDate": "2018-12-03",
+        "executed": false
+      }]
+    }, {
+      "start": "2019-01-01",
+      "end": "2019-01-31",
+      "bookings": [{
+        "bookingId": "30efb799-077a-4bcb-b1d7-e697335d0b7c",
+        "executionDate": "2019-01-02",
+        "executed": false
+      }]
+    }, {
+      "start": "2019-02-01",
+      "end": "2019-02-28",
+      "bookings": [{
+        "bookingId": "30efb799-077a-4bcb-b1d7-e697335d0b7c",
+        "executionDate": "2019-02-01",
+        "executed": false
+      }]
+    }, {
+      "start": "2019-03-01",
+      "end": "2019-03-31",
+      "bookings": [{
+        "bookingId": "30efb799-077a-4bcb-b1d7-e697335d0b7c",
+        "executionDate": "2019-03-01",
+        "executed": false
+      }]
+    }, {
+      "start": "2019-04-01",
+      "end": "2019-04-30",
+      "bookings": [{
+        "bookingId": "30efb799-077a-4bcb-b1d7-e697335d0b7c",
+        "executionDate": "2019-04-01",
+        "executed": false
+      }]
+    }],
+    "contract": {
+      "interval": "MONTHLY"
+    }
+  }, {
+    "type": "CUSTOM",
+    "name": "LEBENSMITTEL",
+    "otherAccount": "",
+    "amount": -251.5,
+    "bookingPeriods": [{
+      "start": "2018-03-01",
+      "end": "2018-03-31",
+      "amount": -168.41,
+      "bookings": [{
+        "bookingId": "d1d14a3d-310e-4d02-a2a4-39f1dc12674a",
+        "executed": true
+      }, {
+        "bookingId": "ea1f80b8-46d9-4ce7-83be-760cd1fccd6c",
+        "executed": true
+      }, {
+        "bookingId": "8c3ef7b8-c675-45aa-bca6-edcaf7958066",
+        "executed": true
+      }, {
+        "bookingId": "f148406a-a661-42f6-8620-a61af578afd7",
+        "executed": true
+      }, {
+        "bookingId": "49e72d57-98e0-43a6-bc3c-a094b087aa9a",
+        "executed": true
+      }, {
+        "bookingId": "4fff2da4-02b3-4c2e-8097-d9611989c9c1",
+        "executed": true
+      }, {
+        "bookingId": "41270fbc-0f20-478b-8c69-8dec5a045b4d",
+        "executed": true
+      }]
+    }, {
+      "start": "2018-04-01",
+      "end": "2018-04-30",
+      "amount": -343.33,
+      "bookings": [{
+        "bookingId": "c104dec1-6cfe-4c51-909c-3c981b32eed8",
+        "executed": true
+      }, {
+        "bookingId": "8091bf47-3e34-4b1b-a42d-20e7239397fe",
+        "executed": true
+      }, {
+        "bookingId": "96e49789-dddd-4c95-b48f-3c8f2fc22552",
+        "executed": true
+      }, {
+        "bookingId": "3e5cdcd2-8c18-400a-a011-7d4bf78b25fe",
+        "executed": true
+      }, {
+        "bookingId": "0d3dcf50-dcad-49ed-b8c0-72b23c893330",
+        "executed": true
+      }, {
+        "bookingId": "07fb9a60-d85d-40ad-9a3b-41c0ac4509c0",
+        "executed": true
+      }, {
+        "bookingId": "4c215434-53a3-43ca-9ebc-30d11dacada7",
+        "executed": true
+      }, {
+        "bookingId": "013419ed-aa61-40bd-80df-28fcfa01e79d",
+        "executed": true
+      }, {
+        "bookingId": "55a29a22-06dd-49ab-8c2f-c3650f045a9c",
+        "executed": true
+      }, {
+        "bookingId": "7e808758-d73b-4bf7-bb61-6c15e73cecad",
+        "executed": true
+      }, {
+        "bookingId": "3247a904-0443-49c1-a952-9b786d382176",
+        "executed": true
+      }, {
+        "bookingId": "fa05929e-5347-4f85-9303-97da7e9ff317",
+        "executed": true
+      }]
+    }, {
+      "start": "2018-05-01",
+      "end": "2018-05-31",
+      "amount": -168.43,
+      "bookings": [{
+        "bookingId": "60dc115e-6bdd-417c-a7f7-387e1d97f723",
+        "executed": true
+      }, {
+        "bookingId": "88353df3-19be-49a6-9df6-744a0a7015a1",
+        "executed": true
+      }, {
+        "bookingId": "3e784986-f070-4d09-8c28-87fbd1255971",
+        "executed": true
+      }, {
+        "bookingId": "8f9967be-2709-44fa-b611-54d82db5b230",
+        "executed": true
+      }, {
+        "bookingId": "3c0c8461-5dc1-4851-bf77-a51154f63cd3",
+        "executed": true
+      }, {
+        "bookingId": "919c24d0-00ca-42c7-adcb-af8fed2c95e8",
+        "executed": true
+      }, {
+        "bookingId": "240f753a-8064-4941-855b-32c80c80b572",
+        "executed": true
+      }, {
+        "bookingId": "6e7d50ca-25ab-4727-ba35-58ed825662ef",
+        "executed": true
+      }]
+    }],
+    "contract": {}
+  }, {
+    "type": "RECURRENT_INCOME",
+    "mainCategory": "EINKUENFTE",
+    "subCategory": "EINKOMMEN",
+    "specification": "GEHALT",
+    "otherAccount": "adorsys GmbH   Co. KG",
+    "amount": 3544.0,
+    "bookingPeriods": [{
+      "start": "2018-03-01",
+      "end": "2018-03-31",
+      "amount": 3561.25,
+      "bookings": [{
+        "bookingId": "6e13bb77-4846-49d9-ae37-8e301f14f3e1",
+        "executed": true
+      }]
+    }, {
+      "start": "2018-04-01",
+      "end": "2018-04-30",
+      "amount": 3525.25,
+      "bookings": [{
+        "bookingId": "a5ed96ec-9b26-4140-bea9-37929039bdba",
+        "executed": true
+      }]
+    }, {
+      "start": "2018-05-01",
+      "end": "2018-05-31",
+      "bookings": [{
+        "bookingId": "6e13bb77-4846-49d9-ae37-8e301f14f3e1",
+        "executionDate": "2018-05-30",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-06-01",
+      "end": "2018-06-30",
+      "bookings": [{
+        "bookingId": "6e13bb77-4846-49d9-ae37-8e301f14f3e1",
+        "executionDate": "2018-06-27",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-07-01",
+      "end": "2018-07-31",
+      "bookings": [{
+        "bookingId": "6e13bb77-4846-49d9-ae37-8e301f14f3e1",
+        "executionDate": "2018-07-26",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-08-01",
+      "end": "2018-08-31",
+      "bookings": [{
+        "bookingId": "6e13bb77-4846-49d9-ae37-8e301f14f3e1",
+        "executionDate": "2018-08-27",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-09-01",
+      "end": "2018-09-30",
+      "bookings": [{
+        "bookingId": "6e13bb77-4846-49d9-ae37-8e301f14f3e1",
+        "executionDate": "2018-09-27",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-10-01",
+      "end": "2018-10-31",
+      "bookings": [{
+        "bookingId": "6e13bb77-4846-49d9-ae37-8e301f14f3e1",
+        "executionDate": "2018-10-26",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-11-01",
+      "end": "2018-11-30",
+      "bookings": [{
+        "bookingId": "6e13bb77-4846-49d9-ae37-8e301f14f3e1",
+        "executionDate": "2018-11-27",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-12-01",
+      "end": "2018-12-31",
+      "bookings": [{
+        "bookingId": "6e13bb77-4846-49d9-ae37-8e301f14f3e1",
+        "executionDate": "2018-12-28",
+        "executed": false
+      }]
+    }, {
+      "start": "2019-01-01",
+      "end": "2019-01-31",
+      "bookings": [{
+        "bookingId": "6e13bb77-4846-49d9-ae37-8e301f14f3e1",
+        "executionDate": "2019-01-25",
+        "executed": false
+      }]
+    }, {
+      "start": "2019-02-01",
+      "end": "2019-02-28",
+      "bookings": [{
+        "bookingId": "6e13bb77-4846-49d9-ae37-8e301f14f3e1",
+        "executionDate": "2019-02-25",
+        "executed": false
+      }]
+    }, {
+      "start": "2019-03-01",
+      "end": "2019-03-31",
+      "bookings": [{
+        "bookingId": "6e13bb77-4846-49d9-ae37-8e301f14f3e1",
+        "executionDate": "2019-03-25",
+        "executed": false
+      }]
+    }, {
+      "start": "2019-04-01",
+      "end": "2019-04-30",
+      "bookings": [{
+        "bookingId": "6e13bb77-4846-49d9-ae37-8e301f14f3e1",
+        "executionDate": "2019-04-25",
+        "executed": false
+      }]
+    }],
+    "contract": {
+      "interval": "MONTHLY"
+    }
+  }, {
+    "type": "STANDING_ORDER",
+    "mainCategory": "FINANZEN",
+    "subCategory": "KREDITE",
+    "specification": "DARLEHEN",
+    "otherAccount": "KARIN REHM",
+    "amount": -250.0,
+    "bookingPeriods": [{
+      "start": "2018-03-01",
+      "end": "2018-03-31",
+      "amount": -250.0,
+      "bookings": [{
+        "bookingId": "08dbc5f1-24d8-4b85-aeed-9cf56339c114",
+        "executed": true
+      }]
+    }, {
+      "start": "2018-04-01",
+      "end": "2018-04-30",
+      "amount": -250.0,
+      "bookings": [{
+        "bookingId": "c77ec52e-b57c-46b7-9928-f1daa41aae9e",
+        "executed": true
+      }]
+    }, {
+      "start": "2018-05-01",
+      "end": "2018-05-31",
+      "amount": -250.0,
+      "bookings": [{
+        "bookingId": "51242eb2-29aa-4bb8-af74-bf090841aca0",
+        "executed": true
+      }]
+    }, {
+      "start": "2018-06-01",
+      "end": "2018-06-30",
+      "bookings": [{
+        "bookingId": "08dbc5f1-24d8-4b85-aeed-9cf56339c114",
+        "executionDate": "2018-06-01",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-07-01",
+      "end": "2018-07-31",
+      "bookings": [{
+        "bookingId": "08dbc5f1-24d8-4b85-aeed-9cf56339c114",
+        "executionDate": "2018-07-02",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-08-01",
+      "end": "2018-08-31",
+      "bookings": [{
+        "bookingId": "08dbc5f1-24d8-4b85-aeed-9cf56339c114",
+        "executionDate": "2018-08-01",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-09-01",
+      "end": "2018-09-30",
+      "bookings": [{
+        "bookingId": "08dbc5f1-24d8-4b85-aeed-9cf56339c114",
+        "executionDate": "2018-09-03",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-10-01",
+      "end": "2018-10-31",
+      "bookings": [{
+        "bookingId": "08dbc5f1-24d8-4b85-aeed-9cf56339c114",
+        "executionDate": "2018-10-01",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-11-01",
+      "end": "2018-11-30",
+      "bookings": [{
+        "bookingId": "08dbc5f1-24d8-4b85-aeed-9cf56339c114",
+        "executionDate": "2018-11-01",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-12-01",
+      "end": "2018-12-31",
+      "bookings": [{
+        "bookingId": "08dbc5f1-24d8-4b85-aeed-9cf56339c114",
+        "executionDate": "2018-12-03",
+        "executed": false
+      }]
+    }, {
+      "start": "2019-01-01",
+      "end": "2019-01-31",
+      "bookings": [{
+        "bookingId": "08dbc5f1-24d8-4b85-aeed-9cf56339c114",
+        "executionDate": "2019-01-02",
+        "executed": false
+      }]
+    }, {
+      "start": "2019-02-01",
+      "end": "2019-02-28",
+      "bookings": [{
+        "bookingId": "08dbc5f1-24d8-4b85-aeed-9cf56339c114",
+        "executionDate": "2019-02-01",
+        "executed": false
+      }]
+    }, {
+      "start": "2019-03-01",
+      "end": "2019-03-31",
+      "bookings": [{
+        "bookingId": "08dbc5f1-24d8-4b85-aeed-9cf56339c114",
+        "executionDate": "2019-03-01",
+        "executed": false
+      }]
+    }, {
+      "start": "2019-04-01",
+      "end": "2019-04-30",
+      "bookings": [{
+        "bookingId": "08dbc5f1-24d8-4b85-aeed-9cf56339c114",
+        "executionDate": "2019-04-01",
+        "executed": false
+      }]
+    }],
+    "contract": {
+      "interval": "MONTHLY"
+    }
+  }, {
+    "type": "RECURRENT_SEPA",
+    "mainCategory": "WOHNEN",
+    "subCategory": "NEBENKOSTEN",
+    "specification": "ENERGIE",
+    "otherAccount": "Extraenergie",
+    "amount": -70.0,
+    "bookingPeriods": [{
+      "start": "2018-03-01",
+      "end": "2018-03-31",
+      "amount": -70.0,
+      "bookings": [{
+        "bookingId": "8f3de9cd-3226-4633-bf81-813bf60d6450",
+        "executed": true
+      }]
+    }, {
+      "start": "2018-04-01",
+      "end": "2018-04-30",
+      "amount": -70.0,
+      "bookings": [{
+        "bookingId": "27cb8555-cc91-49ba-ad9b-b0a1a6db4b2c",
+        "executed": true
+      }]
+    }, {
+      "start": "2018-05-01",
+      "end": "2018-05-31",
+      "amount": -70.0,
+      "bookings": [{
+        "bookingId": "61e6bf26-0ef3-4253-8803-b97d267b2d40",
+        "executed": true
+      }]
+    }, {
+      "start": "2018-06-01",
+      "end": "2018-06-30",
+      "bookings": [{
+        "bookingId": "8f3de9cd-3226-4633-bf81-813bf60d6450",
+        "executionDate": "2018-06-01",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-07-01",
+      "end": "2018-07-31",
+      "bookings": [{
+        "bookingId": "8f3de9cd-3226-4633-bf81-813bf60d6450",
+        "executionDate": "2018-07-02",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-08-01",
+      "end": "2018-08-31",
+      "bookings": [{
+        "bookingId": "8f3de9cd-3226-4633-bf81-813bf60d6450",
+        "executionDate": "2018-08-01",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-09-01",
+      "end": "2018-09-30",
+      "bookings": [{
+        "bookingId": "8f3de9cd-3226-4633-bf81-813bf60d6450",
+        "executionDate": "2018-09-03",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-10-01",
+      "end": "2018-10-31",
+      "bookings": [{
+        "bookingId": "8f3de9cd-3226-4633-bf81-813bf60d6450",
+        "executionDate": "2018-10-01",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-11-01",
+      "end": "2018-11-30",
+      "bookings": [{
+        "bookingId": "8f3de9cd-3226-4633-bf81-813bf60d6450",
+        "executionDate": "2018-11-01",
+        "executed": false
+      }]
+    }, {
+      "start": "2018-12-01",
+      "end": "2018-12-31",
+      "bookings": [{
+        "bookingId": "8f3de9cd-3226-4633-bf81-813bf60d6450",
+        "executionDate": "2018-12-03",
+        "executed": false
+      }]
+    }, {
+      "start": "2019-01-01",
+      "end": "2019-01-31",
+      "bookings": [{
+        "bookingId": "8f3de9cd-3226-4633-bf81-813bf60d6450",
+        "executionDate": "2019-01-02",
+        "executed": false
+      }]
+    }, {
+      "start": "2019-02-01",
+      "end": "2019-02-28",
+      "bookings": [{
+        "bookingId": "8f3de9cd-3226-4633-bf81-813bf60d6450",
+        "executionDate": "2019-02-01",
+        "executed": false
+      }]
+    }, {
+      "start": "2019-03-01",
+      "end": "2019-03-31",
+      "bookings": [{
+        "bookingId": "8f3de9cd-3226-4633-bf81-813bf60d6450",
+        "executionDate": "2019-03-01",
+        "executed": false
+      }]
+    }, {
+      "start": "2019-04-01",
+      "end": "2019-04-30",
+      "bookings": [{
+        "bookingId": "8f3de9cd-3226-4633-bf81-813bf60d6450",
+        "executionDate": "2019-04-01",
+        "executed": false
+      }]
+    }],
+    "contract": {
+      "mandateReference": "K52535536-3743357",
+      "interval": "MONTHLY"
+    }
+  }, {
+    "type": "OTHER_INCOME",
+    "name": "OTHER_INCOME",
+    "otherAccount": "",
+    "amount": 0,
+    "bookingPeriods": [{
+      "start": "2018-03-01",
+      "end": "2018-03-31",
+      "amount": 42.79,
+      "bookings": [{
+        "bookingId": "b217f0d0-c905-4840-bf00-619d8bf73a04",
+        "executed": true
+      }]
+    }, {
+      "start": "2018-05-01",
+      "end": "2018-05-31",
+      "amount": 116.59,
+      "bookings": [{
+        "bookingId": "50e4360a-4501-49a9-8ce1-9e7c59aad302",
+        "executed": true
+      }, {
+        "bookingId": "1382de71-2302-4faa-bd7f-ecfae0f859aa",
+        "executed": true
+      }]
+    }],
+    "contract": {}
+  }, {
+    "type": "OTHER_EXPENSES",
+    "name": "OTHER_EXPENSES",
+    "otherAccount": "",
+    "amount": -1515,
+    "bookingPeriods": [{
+      "start": "2018-03-01",
+      "end": "2018-03-31",
+      "amount": -781.15,
+      "bookings": [{
+        "bookingId": "67cf89ee-b59e-4544-a8df-9c8330242f2e",
+        "executed": true
+      }, {
+        "bookingId": "17311113-cacf-4b56-b780-7d5e234a1ae0",
+        "executed": true
+      }, {
+        "bookingId": "e8f979c9-0670-48e4-80af-f3cf66fc0c80",
+        "executed": true
+      }, {
+        "bookingId": "fe989a29-18f2-47d9-9237-73798a8d8353",
+        "executed": true
+      }, {
+        "bookingId": "5c003b3b-60f7-4bb8-89f1-a9c7e499d819",
+        "executed": true
+      }]
+    }, {
+      "start": "2018-04-01",
+      "end": "2018-04-30",
+      "amount": -2253.32,
+      "bookings": [{
+        "bookingId": "1fd68d01-542b-4e53-a427-13027381b2f7",
+        "executed": true
+      }, {
+        "bookingId": "322ea46b-b69d-4b32-a428-d7b2d824eed4",
+        "executed": true
+      }, {
+        "bookingId": "496d810a-ec62-42a3-9dbb-dcd686111d60",
+        "executed": true
+      }, {
+        "bookingId": "b01702ea-cf07-419e-a0d7-92c49f5356c3",
+        "executed": true
+      }, {
+        "bookingId": "0e3a410d-2c21-4c43-8137-5b9e96f027d5",
+        "executed": true
+      }, {
+        "bookingId": "2cee6c47-00d2-4dc6-a488-cfae85e328b5",
+        "executed": true
+      }, {
+        "bookingId": "756af04a-a1ea-4c02-a43e-7d3eb860a40b",
+        "executed": true
+      }, {
+        "bookingId": "2d83da63-1630-465f-b8ce-b74dfc92f5b9",
+        "executed": true
+      }, {
+        "bookingId": "e1c09905-daab-4eaf-8783-4fec86e21dc4",
+        "executed": true
+      }]
+    }, {
+      "start": "2018-05-01",
+      "end": "2018-05-31",
+      "amount": -505.72,
+      "bookings": [{
+        "bookingId": "3b11b08a-cd92-4250-ad1d-43375ce6f3f0",
+        "executed": true
+      }, {
+        "bookingId": "6bb84b69-3667-4c3f-b79d-d471e875d536",
+        "executed": true
+      }, {
+        "bookingId": "2cfbf148-0da3-4745-a6db-028aae46fc3a",
+        "executed": true
+      }, {
+        "bookingId": "c29195d5-9a83-4bd4-8ceb-9395d2e685ab",
+        "executed": true
+      }, {
+        "bookingId": "b111c15e-78d7-427c-b13a-07c56f168570",
+        "executed": true
+      }, {
+        "bookingId": "ce84cab2-72a1-413d-9e39-4379a65d061e",
+        "executed": true
+      }, {
+        "bookingId": "c8efbdef-ed36-459c-801a-e4e23559efbc",
+        "executed": true
+      }]
+    }],
+    "contract": {}
+  }]
+}

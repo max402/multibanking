@@ -19,13 +19,14 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import de.adorsys.multibanking.auth.UserObjectPersistenceService;
 import de.adorsys.multibanking.domain.BankAccessEntity;
 import de.adorsys.multibanking.domain.BankAccountEntity;
 import de.adorsys.multibanking.domain.PaymentEntity;
-import de.adorsys.multibanking.service.BankAccountService;
+import de.adorsys.multibanking.service.BankDataService;
+import de.adorsys.multibanking.service.BankService;
 import de.adorsys.multibanking.service.BookingService;
 import de.adorsys.multibanking.service.PaymentService;
-import de.adorsys.multibanking.service.UserDataService;
 import de.adorsys.multibanking.service.producer.OnlineBankingServiceProducer;
 import domain.BankApi;
 import domain.Payment;
@@ -39,20 +40,20 @@ import figo.FigoBanking;
 @ActiveProfiles({"InMemory"})
 @Ignore
 public class FigoPaymentTest {
-
-    @Autowired
-    private BookingService bookingService;
     
     @Autowired
-    private BankAccountService bankAccountService;
-
-    @Autowired
     private PaymentService paymentService;
-    @Autowired
-    private UserDataService uds;
 
     @MockBean
+    private UserObjectPersistenceService uos;
+    @MockBean
+    private BankDataService uds;
+    @MockBean
+    private BankService bankService;
+    @MockBean
     private OnlineBankingServiceProducer bankingServiceProducer;
+    @MockBean
+    private BookingService bookingService;
 
     @BeforeClass
     public static void beforeClass() {

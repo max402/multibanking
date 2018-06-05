@@ -4,14 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.adorsys.docusafe.business.DocumentSafeService;
 import org.adorsys.docusafe.business.types.complex.DSDocument;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
+import de.adorsys.multibanking.auth.UserObjectPersistenceService;
 import de.adorsys.multibanking.domain.RuleEntity;
-import de.adorsys.multibanking.service.base.CacheBasedService;
 import de.adorsys.multibanking.service.base.ListUtils;
 
 /**
@@ -22,14 +20,11 @@ import de.adorsys.multibanking.service.base.ListUtils;
  *
  */
 public abstract class BookingRuleServiceTemplate<T extends RuleEntity>{
-	protected abstract CacheBasedService cbs();
+	protected abstract UserObjectPersistenceService cbs();
 	protected abstract TypeReference<List<T>> listType();
 	
-    @Autowired
-    private DocumentSafeService documentSafeService;
-	
     public DSDocument getBookingRules() {
-        return documentSafeService.readDocument(cbs().auth(), RuleUtils.bookingRulesFQN);
+        return cbs().readDocument(RuleUtils.bookingRulesFQN, listType());
     }
 
 	public void createOrUpdateRule(T ruleEntity) {

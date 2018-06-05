@@ -13,9 +13,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import de.adorsys.multibanking.domain.UserData;
 import de.adorsys.multibanking.exception.InvalidBankAccessException;
+import de.adorsys.multibanking.exception.UserNotFoundException;
 import de.adorsys.multibanking.exception.domain.ErrorConstants;
 import de.adorsys.multibanking.exception.domain.MultibankingError;
-import de.adorsys.multibanking.service.UserDataService;
+import de.adorsys.multibanking.service.BankDataService;
 import de.adorsys.multibanking.web.annotation.UserResource;
 import de.adorsys.multibanking.web.common.BankAccessBasedController;
 import de.adorsys.multibanking.web.common.BaseController;
@@ -36,7 +37,7 @@ public class UserDataController extends BankAccessBasedController {
 	public static final String BASE_PATH = BaseController.BASE_PATH;
 	
 	@Autowired
-	private UserDataService uds;
+	private BankDataService uds;
     
 	/**
 	 * Returns a document containing the last stored and flushed version of user data.
@@ -51,7 +52,9 @@ public class UserDataController extends BankAccessBasedController {
     		@ApiResponse(code = HttpServletResponse.SC_FORBIDDEN, message = InvalidBankAccessException.MESSAGE_DOC, response = MultibankingError.class),
     		@ApiResponse(code = HttpServletResponse.SC_BAD_REQUEST, message = ErrorConstants.ERR_HTTP_CODE_BAD_REQUEST_DOC, response = MultibankingError.class)})
     public @ResponseBody ResponseEntity<ByteArrayResource> loadUserData() {
-    	return loadBytesForWeb(uds.loadDocument());
+        if(uds.exists())
+            return loadBytesForWeb(uds.loadDocument());
+        throw new UserNotFoundException("Requested user not found");
     }
     
 }

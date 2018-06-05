@@ -2,14 +2,15 @@ package de.adorsys.multibanking.service.analytics;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.adorsys.docusafe.business.DocumentSafeService;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.adorsys.multibanking.auth.UserContext;
+import de.adorsys.multibanking.auth.UserObjectPersistenceService;
 import de.adorsys.multibanking.domain.CustomCategoryEntity;
-import de.adorsys.multibanking.service.base.UserObjectService;
-import de.adorsys.multibanking.service.base.CacheBasedService;
 import de.adorsys.multibanking.service.helper.BookingCategoryServiceTemplate;
 
 /**
@@ -20,15 +21,17 @@ import de.adorsys.multibanking.service.helper.BookingCategoryServiceTemplate;
  */
 @Service
 public class CustomBookingCategoryService extends BookingCategoryServiceTemplate<CustomCategoryEntity>{
-	@Autowired
-	private UserObjectService uos;
+    private UserObjectPersistenceService uos;
+	public CustomBookingCategoryService(UserContext userContext, ObjectMapper objectMapper, DocumentSafeService documentSafeService) {
+        this.uos = new UserObjectPersistenceService(userContext, objectMapper, documentSafeService);
+    }
+	@Override
+	protected UserObjectPersistenceService cbs() {
+	    return uos;
+	}
 
-	protected TypeReference<List<CustomCategoryEntity>> listType(){
+    protected TypeReference<List<CustomCategoryEntity>> listType(){
 		return new TypeReference<List<CustomCategoryEntity>>() {};
 	}
 
-	@Override
-	protected CacheBasedService cbs() {
-		return uos;
-	}
 }

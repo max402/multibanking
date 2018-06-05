@@ -8,158 +8,195 @@ import static org.mockito.Mockito.when;
 import static org.springframework.util.Assert.isInstanceOf;
 
 import java.util.Arrays;
+import java.util.Optional;
 
-import org.junit.After;
+import org.adorsys.docusafe.business.DocumentSafeService;
+import org.adorsys.docusafe.business.types.UserID;
+import org.adorsys.docusafe.business.types.complex.DocumentFQN;
+import org.adorsys.docusafe.business.types.complex.UserIDAuth;
+import org.adorsys.encobject.domain.ReadKeyPassword;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import de.adorsys.multibanking.config.service.BaseServiceTest;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import de.adorsys.multibanking.auth.UserContext;
+import de.adorsys.multibanking.auth.UserObjectPersistenceService;
 import de.adorsys.multibanking.domain.BankAccessData;
 import de.adorsys.multibanking.domain.BankAccessEntity;
-import de.adorsys.multibanking.domain.BankAccountData;
 import de.adorsys.multibanking.domain.BankAccountEntity;
+import de.adorsys.multibanking.domain.BankEntity;
+import de.adorsys.multibanking.domain.UserData;
 import de.adorsys.multibanking.exception.InvalidBankAccessException;
 import de.adorsys.multibanking.exception.InvalidPinException;
 import de.adorsys.multibanking.exception.ResourceNotFoundException;
-import de.adorsys.multibanking.service.base.SystemObjectService;
-import de.adorsys.multibanking.service.base.UserObjectService;
-import de.adorsys.multibanking.service.old.TestConstants;
+import de.adorsys.multibanking.exception.UserNotFoundException;
 import de.adorsys.multibanking.service.old.TestUtil;
 import de.adorsys.multibanking.service.producer.OnlineBankingServiceProducer;
+import de.adorsys.multibanking.utils.FQNUtils;
+import de.adorsys.multibanking.utils.Ids;
 import de.adorsys.onlinebanking.mock.MockBanking;
-import figo.FigoBanking;
+import domain.BankApi;
 
 @RunWith(SpringRunner.class)
-public class BankAccessServiceBlankTest extends BaseServiceTest {
-
+//@ActiveProfiles({"InMemory"})
+public class BankAccessServiceBlankTest {
+    
+    private BankDataService bds;
+    
     @MockBean
-    protected FigoBanking figoBanking;
+    private BankService bankService;
     @MockBean
-    protected MockBanking mockBanking;
+    private BankAccessCredentialService credentialService; 
     @MockBean
-    protected OnlineBankingServiceProducer bankingServiceProducer;
-    @Autowired
-    private BankAccessService bankAccessService;
-    @Autowired
-    private UserDataService uds;
-	@Autowired
-	private UserObjectService uos;
-	@Autowired
-	private SystemObjectService sos;
+    private OnlineBankingServiceProducer bankingServiceProducer;
+    @MockBean
+    private SynchBankAccountsService synchBankAccountService;
+    
+    @MockBean
+    protected MockBanking mockBanking;    
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
-    @BeforeClass
-    public static void beforeClass() {
-    	TestConstants.setup();
-    }
 
+    private ObjectMapper objectMapper = new ObjectMapper();
+
+    @MockBean
+    private DocumentSafeService documentSafeService;
+
+    @MockBean
+    private UserContext userContext;
+    
+//    private UserObjectPersistenceService uos;
+    
     @Before
-    public void beforeTest() throws Exception {
-    	MockitoAnnotations.initMocks(this);
-    	sos.enableCaching();
-    	uos.enableCaching();
+    public void before(){
+        bds = new BankDataService(userContext, bankService, credentialService, bankingServiceProducer, synchBankAccountService, objectMapper , documentSafeService);
+        when(bankingServiceProducer.getBankingService(any(BankApi.class))).thenReturn(mockBanking);
         when(bankingServiceProducer.getBankingService(anyString())).thenReturn(mockBanking);
-    	randomAuthAndUser();
-    	importBanks();
+//        uos = new UserObjectPersistenceService(userContext,objectMapper,documentSafeService);
     }
     
-    @After
-    public void after() throws Exception{
-    	sos.flush();
-    	uos.flush();
-
-    	if(userContext!=null)
-    		rcMap.put(userContext.getAuth().getUserID().getValue()+ ":"+testName.getMethodName(), userContext.getRequestCounter());
-    	if(systemContext!=null)
-    		rcMap.put(systemContext.getUser().getAuth().getUserID().getValue()+ ":"+testName.getMethodName(), systemContext.getUser().getRequestCounter());
+    private void mockUserContext(String userId){
+        UserContext uc = new UserContext();
+        UserIDAuth userIDAuth = new UserIDAuth(new UserID(userId), new ReadKeyPassword("readKeyPassword"));
+        when(userContext.getAuth()).thenReturn(userIDAuth);
+        when(userContext.getCache()).thenReturn(uc.getCache());
+        when(userContext.getDeletedDirCache()).thenReturn(uc.getDeletedDirCache());
+        when(userContext.getRequestCounter()).thenReturn(uc.getRequestCounter());
     }
     
-
     /**
      * Creates a bank access with a non existing bank code.
      * 
      */
+    @SuppressWarnings("unchecked")
     @Test
     public void create_bank_access_not_supported() {
         when(mockBanking.bankSupported(anyString())).thenReturn(false);
         thrown.expect(InvalidBankAccessException.class);
         
-        BankAccessEntity bankAccessEntity = TestUtil.getBankAccessEntity(userId(), 
-        		randomAccessId(), "unsupported", "0000");
+        String userId = Ids.uuid();
+        mockUserContext(userId);
+        String accessId = Ids.uuid();
+        when(bankService.findByBankCode(anyString())).thenReturn(null);
+        BankAccessEntity bankAccessEntity = TestUtil.getBankAccessEntity(userId, accessId, "unsupported", "0000");
         bankAccessEntity.setBankCode("unsupported");
-        // "testUserId", 
-        bankAccessService.createBankAccess(bankAccessEntity);
+        
+        UserData userData = bds.createUser(null);
+//        when(uos.load(any(DocumentFQN.class), any(TypeReference.class))).thenReturn(Optional.of(userData));
+        when(synchBankAccountService.synchBankAccounts(any(), any(), any())).thenThrow(InvalidBankAccessException.class);
+        bds.createBankAccess(bankAccessEntity);
     }
 
-    @Test
-    public void create_bank_access_no_accounts() {
-        when(mockBanking.bankSupported(anyString())).thenReturn(true);
-        thrown.expect(InvalidBankAccessException.class);
-
-        BankAccessEntity bankAccessEntity = TestUtil.getBankAccessEntity(userId(), randomAccessId(), "29999999", "0000");
-        // "testUserId", 
-        bankAccessService.createBankAccess(bankAccessEntity);
-    }
-
+    @SuppressWarnings("unchecked")
     @Test
     public void create_bank_access_invalid_pin() {
-    	
     	// Mock bank access
-        BankAccessEntity bankAccessEntity = TestUtil.getBankAccessEntity(userId(), randomAccessId(), "29999999", "0000");
-
+        BankAccessEntity bankAccessEntity = TestUtil.getBankAccessEntity(Ids.uuid(), Ids.uuid(), "29999999", "0000");
         when(mockBanking.bankSupported(anyString())).thenReturn(true);
         when(mockBanking.loadBankAccounts(any(), any(), anyString(), anyString(), anyBoolean()))
                 .thenThrow(new InvalidPinException(bankAccessEntity.getId()));
         thrown.expect(InvalidPinException.class);
-
-        // "testUserId", 
-        bankAccessService.createBankAccess(bankAccessEntity);
+        
+        bds = new BankDataService(userContext, bankService, credentialService, bankingServiceProducer,new SynchBankAccountsService(), objectMapper , documentSafeService);
+        
+        mockUserContext(Ids.uuid());
+//        UserData userData = new UserData();
+        UserData userData = bds.createUser(null);        
+        BankEntity bankEntity = new BankEntity();
+        bankEntity.setBlzHbci("29999999");
+        when(bankService.findByBankCode("29999999")).thenReturn(Optional.of(bankEntity));
+//        when(uos.load(any(DocumentFQN.class), any(TypeReference.class))).thenReturn(Optional.of(userData));
+        // Prevent user creation
+//        when(uos.documentExists(any(DocumentFQN.class), any(TypeReference.class))).thenReturn(true);
+        bds.createBankAccess(bankAccessEntity);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void create_bank_access_ok() {
 
-        BankAccessEntity bankAccessEntity = TestUtil.getBankAccessEntity(userId(), randomAccessId(), "29999999", "0000");
-        BankAccountEntity bankAccountEntity = TestUtil.getBankAccountEntity(bankAccessEntity, randomAccountId());
+        BankAccessEntity bankAccessEntity = TestUtil.getBankAccessEntity(Ids.uuid(), Ids.uuid(), "29999999", "0000");
+        BankAccountEntity bankAccountEntity = TestUtil.getBankAccountEntity(bankAccessEntity, Ids.uuid());
         
         when(mockBanking.bankSupported(anyString())).thenReturn(true);
         when(mockBanking.loadBankAccounts(any(), any(), anyString(), anyString(), anyBoolean()))
                 .thenReturn(Arrays.asList(bankAccountEntity));
-
-        bankAccessService.createBankAccess(bankAccessEntity);
-        isInstanceOf(BankAccessData.class, uds.load().bankAccessDataOrException(bankAccessEntity.getId()));
-        isInstanceOf(BankAccountData.class, uds.load().bankAccountDataOrException(bankAccessEntity.getId(), bankAccountEntity.getId()));
+        
+        mockUserContext(Ids.uuid());
+        UserData userData = bds.createUser(null);        
+        BankEntity bankEntity = new BankEntity();
+        bankEntity.setBlzHbci("29999999");
+        when(bankService.findByBankCode("29999999")).thenReturn(Optional.of(bankEntity));
+//        when(uos.load(any(DocumentFQN.class), any(TypeReference.class))).thenReturn(Optional.of(userData));
+        
+//        when(uos.documentExists(any(DocumentFQN.class), any(TypeReference.class))).thenReturn(true);
+        bds.createBankAccess(bankAccessEntity);
+        isInstanceOf(BankAccessData.class, bds.load().bankAccessDataOrException(bankAccessEntity.getId()));
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void when_delete_bankAcces_user_exist_should_return_false() {
-        // userId, 
-        boolean deleteBankAccess = bankAccessService.deleteBankAccess("access");
-        assertThat(deleteBankAccess).isEqualTo(false);
+//        UserData userData = new UserData();
+//        when(uos.load(any(DocumentFQN.class), any(TypeReference.class))).thenReturn(Optional.of(userData));
+        mockUserContext(Ids.uuid());
+        thrown.expect(UserNotFoundException.class);
+        boolean deleteBankAccess = bds.deleteBankAccess("access");
+//        assertThat(deleteBankAccess).isEqualTo(false);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void when_delete_bankAcces_user_exist_should_return_true() {
-        BankAccessEntity bankAccessEntity = TestUtil.getBankAccessEntity(userId(), randomAccessId(), "29999999", "0000");
-        BankAccountEntity bankAccountEntity = TestUtil.getBankAccountEntity(bankAccessEntity, randomAccountId());
+        BankAccessEntity bankAccessEntity = TestUtil.getBankAccessEntity(Ids.uuid(), Ids.uuid(), "29999999", "0000");
+        BankAccountEntity bankAccountEntity = TestUtil.getBankAccountEntity(bankAccessEntity, Ids.uuid());
         
         when(mockBanking.bankSupported(anyString())).thenReturn(true);
         when(mockBanking.loadBankAccounts(any(), any(), anyString(), anyString(), anyBoolean()))
                 .thenReturn(Arrays.asList(bankAccountEntity));
 
-    	bankAccessService.createBankAccess(bankAccessEntity);
-        boolean deleteBankAccess = bankAccessService.deleteBankAccess(bankAccessEntity.getId());
+        String userId = Ids.uuid();
+        mockUserContext(userId);
+
+//        bds.createBankAccess(bankAccessEntity);
+        UserData userData = bds.createUser(null);        
+//        UserData userData = new UserData();
+        BankAccessData bankAccessData = new BankAccessData();
+        bankAccessData.setBankAccess(bankAccessEntity);
+        userData.getBankAccesses().add(bankAccessData);
+//        when(uos.load(any(DocumentFQN.class), any(TypeReference.class))).thenReturn(Optional.of(userData));
+        
+        boolean deleteBankAccess = bds.deleteBankAccess(bankAccessEntity.getId());
         assertThat(deleteBankAccess).isEqualTo(true);
         thrown.expect(ResourceNotFoundException.class);
-        isInstanceOf(BankAccessData.class, uds.load().bankAccessDataOrException(bankAccessEntity.getId()));
+        isInstanceOf(BankAccessData.class, bds.load().bankAccessDataOrException(bankAccessEntity.getId()));
     }
 }

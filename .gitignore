@@ -12,6 +12,7 @@ multibanking-app/.history
 **/*.log
 *.log.gz
 *.log
+.DS_Store
 
 pom.xml.versionsBackup
 multibanking-app/.sourcemaps

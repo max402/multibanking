@@ -17,10 +17,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import de.adorsys.multibanking.config.web.ControllerUnitTestConfig;
 import de.adorsys.multibanking.config.web.WebMvcUnitTest;
-import de.adorsys.multibanking.domain.BankAccountEntity;
 import de.adorsys.multibanking.domain.BankAccountData;
-import de.adorsys.multibanking.service.BankAccessService;
-import de.adorsys.multibanking.service.BankAccountService;
+import de.adorsys.multibanking.domain.BankAccountEntity;
+import de.adorsys.multibanking.service.BankDataService;
 import de.adorsys.multibanking.service.BookingService;
 import de.adorsys.multibanking.web.account.BankAccountController;
 import de.adorsys.multibanking.web.base.BaseControllerUnitTest;
@@ -33,9 +32,7 @@ public class BankAccountControllerTest extends BaseControllerUnitTest {
     @InjectMocks
     private BankAccountController bankAccountController;
     @MockBean
-    private BankAccountService bankAccountService;
-    @MockBean
-    private BankAccessService bankAccessService;
+    private BankDataService bds;
     @MockBean
     private BookingService bookingService;
 
@@ -50,7 +47,7 @@ public class BankAccountControllerTest extends BaseControllerUnitTest {
 
 	@Test
 	public void testSyncBookings404BadBankAccount() throws Exception {
-		BDDMockito.when(bankAccessService.exists(bankAccessId)).thenReturn(true);
+		BDDMockito.when(bds.accessExists(bankAccessId)).thenReturn(true);
         mockMvc.perform(MockMvcRequestBuilders.put(idPath().path("/sync").build().toString(), bankAccessId, accountId)
         		.contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON_VALUE))
@@ -59,13 +56,13 @@ public class BankAccountControllerTest extends BaseControllerUnitTest {
 	
 	@Test
 	public void testSyncBookings102OngoingSynch() throws Exception {
-		BDDMockito.when(bankAccessService.exists(bankAccessId)).thenReturn(true);
-		BDDMockito.when(bankAccountService.exists(bankAccessId, accountId)).thenReturn(true);
+		BDDMockito.when(bds.accessExists(bankAccessId)).thenReturn(true);
+		BDDMockito.when(bds.accountExists(bankAccessId, accountId)).thenReturn(true);
 		BankAccountData bankAccountData = new BankAccountData();
 		bankAccountData.setSyncStatusTime(LocalDateTime.now());
 		bankAccountData.setBankAccount(new BankAccountEntity());
 		bankAccountData.getBankAccount().setSyncStatus(SyncStatus.SYNC);
-		BDDMockito.when(bankAccountService.loadBankAccount(bankAccessId, accountId)).thenReturn(bankAccountData);
+		BDDMockito.when(bds.loadBankAccount(bankAccessId, accountId)).thenReturn(bankAccountData);
         mockMvc.perform(MockMvcRequestBuilders.put(idPath().path("/sync").build().toString(), bankAccessId, accountId)
         		.contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON_VALUE))
@@ -74,13 +71,13 @@ public class BankAccountControllerTest extends BaseControllerUnitTest {
 	
 	@Test
 	public void testSyncBookings200() throws Exception {
-		BDDMockito.when(bankAccessService.exists(bankAccessId)).thenReturn(true);
-		BDDMockito.when(bankAccountService.exists(bankAccessId, accountId)).thenReturn(true);
+		BDDMockito.when(bds.accessExists(bankAccessId)).thenReturn(true);
+		BDDMockito.when(bds.accountExists(bankAccessId, accountId)).thenReturn(true);
 		BankAccountData bankAccountData = new BankAccountData();
 		bankAccountData.setSyncStatusTime(LocalDateTime.now());
 		bankAccountData.setBankAccount(new BankAccountEntity());
 		bankAccountData.getBankAccount().setSyncStatus(SyncStatus.READY);
-		BDDMockito.when(bankAccountService.loadBankAccount(bankAccessId, accountId)).thenReturn(bankAccountData);
+		BDDMockito.when(bds.loadBankAccount(bankAccessId, accountId)).thenReturn(bankAccountData);
         mockMvc.perform(MockMvcRequestBuilders.put(idPath().path("/sync").build().toString(), bankAccessId, accountId)
         		.contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON_VALUE))

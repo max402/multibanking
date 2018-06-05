@@ -1,15 +1,17 @@
 package de.adorsys.multibanking.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.adorsys.docusafe.business.DocumentSafeService;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.jwk.JWK;
 
+import de.adorsys.multibanking.auth.UserContext;
+import de.adorsys.multibanking.auth.UserObjectPersistenceService;
 import de.adorsys.multibanking.domain.UserAgentCredentials;
 import de.adorsys.multibanking.domain.UserData;
-import de.adorsys.multibanking.service.base.UserObjectService;
 import de.adorsys.multibanking.service.crypto.KeyGen;
 import de.adorsys.multibanking.utils.FQNUtils;
 import de.adorsys.multibanking.utils.Ids;
@@ -26,12 +28,15 @@ import de.adorsys.multibanking.utils.Ids;
  */
 @Service
 public class UserAgentCredentialsService {
-	@Autowired
-	private UserObjectService uos;
+    private final UserObjectPersistenceService uos;
 
-	public UserAgentCredentials load(String userAgentId){
+	public UserAgentCredentialsService(UserContext userContext, ObjectMapper objectMapper, DocumentSafeService documentSafeService) {
+        this.uos = new UserObjectPersistenceService(userContext, objectMapper, documentSafeService);
+    }
+
+    public UserAgentCredentials load(String userAgentId){
 		return uos.load(FQNUtils.userAgentCredentialFQN(userAgentId), valueType())
-				.orElseThrow(() -> uos.resourceNotFound(UserData.class, uos.auth().getUserID().getValue()));
+				.orElseThrow(() -> uos.resourceNotFound(UserData.class, uos.userId()));
 	}
 	
 	public boolean exists(String userAgentId){

@@ -22,8 +22,7 @@ import de.adorsys.multibanking.config.web.WebMvcUnitTest;
 import de.adorsys.multibanking.domain.BankAccountData;
 import de.adorsys.multibanking.domain.BankAccountEntity;
 import de.adorsys.multibanking.mock.inmemory.SimpleMockBanking;
-import de.adorsys.multibanking.service.BankAccessService;
-import de.adorsys.multibanking.service.BankAccountService;
+import de.adorsys.multibanking.service.BankDataService;
 import de.adorsys.multibanking.service.BookingService;
 import de.adorsys.multibanking.utils.FQNUtils;
 import de.adorsys.multibanking.web.account.BookingController;
@@ -39,9 +38,7 @@ public class BookingControllerTest extends BaseControllerUnitTest {
     @InjectMocks
     private BookingController bookingController;
     @MockBean
-    private BankAccountService bankAccountService;
-    @MockBean
-    private BankAccessService bankAccessService;
+    private BankDataService bds;
     @MockBean
     private BookingService bookingService;
 
@@ -78,13 +75,13 @@ public class BookingControllerTest extends BaseControllerUnitTest {
 	
 	@Test
 	public void testGetBookings200() throws Exception {
-		BDDMockito.when(bankAccessService.exists(bankAccessId)).thenReturn(true);
-		BDDMockito.when(bankAccountService.exists(bankAccessId, accountId)).thenReturn(true);
+		BDDMockito.when(bds.accessExists(bankAccessId)).thenReturn(true);
+		BDDMockito.when(bds.accountExists(bankAccessId, accountId)).thenReturn(true);
 		BankAccountData bankAccountData = new BankAccountData();
 		bankAccountData.setSyncStatusTime(LocalDateTime.now());
 		bankAccountData.setBankAccount(new BankAccountEntity());
 		bankAccountData.getBankAccount().setSyncStatus(SyncStatus.READY);
-		BDDMockito.when(bankAccountService.loadBankAccount(bankAccessId, accountId)).thenReturn(bankAccountData);
+		BDDMockito.when(bds.loadBankAccount(bankAccessId, accountId)).thenReturn(bankAccountData);
 		BDDMockito.when(bookingService.getBookings(bankAccessId, accountId, period)).thenReturn(dsDocument);
 
         mockMvc.perform(MockMvcRequestBuilders.get(query, bankAccessId, accountId)
@@ -96,7 +93,7 @@ public class BookingControllerTest extends BaseControllerUnitTest {
 
 	@Test
 	public void testGetBookings404BankAccess() throws Exception {
-		BDDMockito.when(bankAccessService.exists(bankAccessId)).thenReturn(false);
+		BDDMockito.when(bds.accessExists(bankAccessId)).thenReturn(false);
 
         mockMvc.perform(MockMvcRequestBuilders.get(query, bankAccessId, accountId)
         		.contentType(MediaType.APPLICATION_JSON)
@@ -105,8 +102,8 @@ public class BookingControllerTest extends BaseControllerUnitTest {
 
 	@Test
 	public void testGetBookings404BankAccount() throws Exception {
-		BDDMockito.when(bankAccessService.exists(bankAccessId)).thenReturn(true);
-		BDDMockito.when(bankAccountService.exists(bankAccessId, accountId)).thenReturn(false);
+		BDDMockito.when(bds.accessExists(bankAccessId)).thenReturn(true);
+		BDDMockito.when(bds.accountExists(bankAccessId, accountId)).thenReturn(false);
 
         mockMvc.perform(MockMvcRequestBuilders.get(query, bankAccessId, accountId)
         		.contentType(MediaType.APPLICATION_JSON)
@@ -115,13 +112,13 @@ public class BookingControllerTest extends BaseControllerUnitTest {
 
 	@Test
 	public void testGetBookings102OngoingSynch() throws Exception {
-		BDDMockito.when(bankAccessService.exists(bankAccessId)).thenReturn(true);
-		BDDMockito.when(bankAccountService.exists(bankAccessId, accountId)).thenReturn(true);
+		BDDMockito.when(bds.accessExists(bankAccessId)).thenReturn(true);
+		BDDMockito.when(bds.accountExists(bankAccessId, accountId)).thenReturn(true);
 		BankAccountData bankAccountData = new BankAccountData();
 		bankAccountData.setSyncStatusTime(LocalDateTime.now());
 		bankAccountData.setBankAccount(new BankAccountEntity());
 		bankAccountData.getBankAccount().setSyncStatus(SyncStatus.SYNC);
-		BDDMockito.when(bankAccountService.loadBankAccount(bankAccessId, accountId)).thenReturn(bankAccountData);
+		BDDMockito.when(bds.loadBankAccount(bankAccessId, accountId)).thenReturn(bankAccountData);
         mockMvc.perform(MockMvcRequestBuilders.get(query, bankAccessId, accountId)
         		.contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON_VALUE)).andExpect(MockMvcResultMatchers.status().isProcessing());

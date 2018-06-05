@@ -56,7 +56,7 @@ public class BankAccessController extends BankAccessBasedController {
     public HttpEntity<Void> createBankaccess(@ApiParam(name = "bankAccess",  required=true,
     	value = "The bank access data containing (Bank Code, Bank name, Bank login, PIN") 
     	@RequestBody(required = true) BankAccessEntity bankAccess) {
-		bankAccessService.createBankAccess(bankAccess);
+		bds.createBankAccess(bankAccess);
 		// Trigger Perform Services operations.
 		LOGGER.debug("Bank access created for " + userId());
 		return new ResponseEntity<>(userDataLocationHeader(), HttpStatus.CREATED);
@@ -78,7 +78,7 @@ public class BankAccessController extends BankAccessBasedController {
     		@ApiParam(name = "accessId",  required=true,
         	value = "The identifier of the bank access to delete.", example="3c149076-13c4-4190-ace3-e30bf8f61526")
     		@PathVariable String accessId) {
-        if (bankAccessService.deleteBankAccess(accessId)) {
+        if (bds.deleteBankAccess(accessId)) {
         	LOGGER.debug("Bank Access [{}] deleted.", accessId);
         	return new ResponseEntity<Void>(userDataLocationHeader(), HttpStatus.NO_CONTENT);
         } else {

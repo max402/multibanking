@@ -1,7 +1,6 @@
 package de.adorsys.mbs.service.example.config;
 
 import org.adorsys.docusafe.business.DocumentSafeService;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -25,11 +24,6 @@ import de.adorsys.sts.token.authentication.EnableTokenAuthentication;
 @EnableDecryption
 @EnableKeyRotation
 public class STSConfiguration {
-
-	@Value("${docusafe.system.user.name}")
-	String docusafeSystemUserName;
-	@Value("${docusafe.system.user.password}")
-	String docusafeSystemUserPassword;
 
 	@Bean
 	KeyStoreRepository keyStoreRepository(ObjectMapper objectMapper, DocumentSafeService documentSafeService,

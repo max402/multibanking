@@ -8,8 +8,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 
 import de.adorsys.multibanking.exception.ResourceNotFoundException;
-import de.adorsys.multibanking.domain.BankAccessData;
-import de.adorsys.multibanking.domain.BankAccountData;
 import lombok.Data;
 
 /**
@@ -21,7 +19,6 @@ import lombok.Data;
 public class UserData {
     private UserEntity userEntity;
     private List<BankAccessData> bankAccesses = new ArrayList<>();
-
     private AccountSynchPref accountSynchPref;
 
     public Optional<BankAccessData> getBankAccess(String accessId) {

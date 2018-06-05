@@ -2,14 +2,15 @@ package de.adorsys.multibanking.service.analytics;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.adorsys.docusafe.business.DocumentSafeService;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.adorsys.multibanking.auth.SystemContext;
+import de.adorsys.multibanking.auth.UserObjectPersistenceService;
 import de.adorsys.multibanking.domain.CategoryEntity;
-import de.adorsys.multibanking.service.base.SystemObjectService;
-import de.adorsys.multibanking.service.base.CacheBasedService;
 import de.adorsys.multibanking.service.helper.BookingCategoryServiceTemplate;
 
 /**
@@ -20,11 +21,13 @@ import de.adorsys.multibanking.service.helper.BookingCategoryServiceTemplate;
  */
 @Service
 public class SystemBookingCategoryService extends BookingCategoryServiceTemplate<CategoryEntity>{
-	@Autowired
-	private SystemObjectService sos;
+	private UserObjectPersistenceService sos;
+	public SystemBookingCategoryService(ObjectMapper objectMapper, SystemContext systemContext, DocumentSafeService documentSafeService) {
+        this.sos = new UserObjectPersistenceService(systemContext.getUser(), objectMapper, documentSafeService);
+    }
 
-	@Override
-	protected CacheBasedService cbs() {
+    @Override
+	protected UserObjectPersistenceService cbs() {
 		return sos;
 	}
 

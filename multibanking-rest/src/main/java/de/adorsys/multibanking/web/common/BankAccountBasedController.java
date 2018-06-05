@@ -1,24 +1,20 @@
 package de.adorsys.multibanking.web.common;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import de.adorsys.multibanking.domain.BankAccountData;
 import de.adorsys.multibanking.domain.BankAccountEntity;
 import de.adorsys.multibanking.exception.ResourceNotFoundException;
-import de.adorsys.multibanking.service.BankAccountService;
-import domain.BankAccount;
+import de.adorsys.multibanking.service.BankDataService;
 
 public abstract class BankAccountBasedController extends BankAccessBasedController {
-    private final static Logger LOGGER = LoggerFactory.getLogger(BankAccountBasedController.class);
 
     @Autowired
-    protected BankAccountService bankAccountService;
+    protected BankDataService bsd;
 
     protected void checkBankAccountExists(String accessId, String accountId){
     	checkBankAccessExists(accessId);
-        if (!bankAccountService.exists(accessId, accountId)) 
+        if (!bsd.accountExists(accessId, accountId)) 
             throw new ResourceNotFoundException(BankAccountEntity.class, accessId + ":" +accountId);
     }
     
@@ -41,7 +37,7 @@ public abstract class BankAccountBasedController extends BankAccessBasedControll
      * @param accountId
      */
     protected void checkSynch(String accessId, String accountId){
-    	BankAccountData accountData = bankAccountService.loadBankAccount(accessId, accountId);
+    	BankAccountData accountData = bsd.loadBankAccount(accessId, accountId);
     	SynchChecker.checkSynch(accountData);
     }
 }

@@ -17,8 +17,11 @@ public class ResourceNotFoundException extends ParametrizedMessageException {
 	public static final String RENDERED_MESSAGE_KEY = "Resource [{0}] with id [{1}] not found.";
 	public static final String MESSAGE_DOC = MESSAGE_KEY + ": Resource with provided id does not exist";
 	public ResourceNotFoundException(Class<?> resourceClazz, String businessKey) {
-        super(String.format(RENDERED_MESSAGE_KEY, resourceClazz.getSimpleName(), businessKey));
-        this.addParam("0_ressource", resourceClazz.getSimpleName());
+	    this(resourceClazz.getSimpleName(), businessKey);
+    }
+    public ResourceNotFoundException(String typeName, String businessKey) {
+        super(String.format(RENDERED_MESSAGE_KEY, typeName, businessKey));
+        this.addParam("0_ressource", typeName);
         this.addParam("1_businessKey", businessKey);
     }
 }

@@ -3,10 +3,12 @@ package de.adorsys.multibanking.service.analytics;
 import org.adorsys.docusafe.business.DocumentSafeService;
 import org.adorsys.docusafe.business.types.complex.DSDocument;
 import org.adorsys.docusafe.service.types.DocumentContent;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import de.adorsys.multibanking.service.base.UserObjectService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import de.adorsys.multibanking.auth.UserContext;
+import de.adorsys.multibanking.auth.UserObjectPersistenceService;
 import de.adorsys.multibanking.utils.FQNUtils;
 
 /**
@@ -17,12 +19,14 @@ import de.adorsys.multibanking.utils.FQNUtils;
  */
 @Service
 public class CustomImageService {
-	@Autowired
-	private UserObjectService uos;
-    @Autowired
-    private DocumentSafeService documentSafeService;
+    private UserObjectPersistenceService uos;
+    
 	
-	/**
+	public CustomImageService(UserContext userContext, ObjectMapper objectMapper, DocumentSafeService documentSafeService) {
+        this.uos = new UserObjectPersistenceService(userContext, objectMapper, documentSafeService);
+    }
+
+    /**
 	 * Check if the user has his own copy of this image.
 	 * 
 	 * @param imageName
@@ -39,7 +43,7 @@ public class CustomImageService {
 	 * @return
 	 */
 	public DSDocument loadUserImage(String imageName){
-        return documentSafeService.readDocument(uos.auth(), FQNUtils.imageFQN(imageName));
+        return uos.readDocument(FQNUtils.imageFQN(imageName), null);
 	}
 	
 	/**
@@ -49,8 +53,6 @@ public class CustomImageService {
 	 * @param data
 	 */
 	public void storeUserImage(String imageName, byte[] data){
-        DocumentContent documentContent = new DocumentContent(data);
-        DSDocument dsDocument = new DSDocument(FQNUtils.imageFQN(imageName), documentContent, null);
-        documentSafeService.storeDocument(uos.auth(), dsDocument);
+        uos.store(FQNUtils.imageFQN(imageName), null, data);
 	}
 }

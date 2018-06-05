@@ -2,6 +2,9 @@ package de.adorsys.multibanking.auth;
 
 import java.util.Optional;
 
+import org.adorsys.cryptoutils.storeconnectionfactory.ExtendedStoreConnectionFactory;
+import org.adorsys.docusafe.business.DocumentSafeService;
+import org.adorsys.docusafe.business.impl.DocumentSafeServiceImpl;
 import org.adorsys.docusafe.business.types.complex.DocumentDirectoryFQN;
 import org.adorsys.docusafe.business.types.complex.DocumentFQN;
 import org.junit.Assert;
@@ -9,28 +12,19 @@ import org.junit.Assume;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class UserContextCacheTest {
-
+    
+    
 	@Test
 	public void cacheHit_stores_and_returns_true_on_cache_enabled() {
 		UserContext userContext = enabledUserContext();
-		UserContextCache cache = new UserContextCache(userContext);
+		UserObjectPersistenceService cache = newUserObjectPersistenceService(userContext);
 		DocumentFQN documentFQN = new DocumentFQN("/dir/cachedObject.aes");
 		CachedObject cachedObject = new CachedObject();
 		boolean cacheHit = cache.cacheHit(documentFQN, cachedObjectTypeRef, Optional.of(cachedObject), true);
 		Assert.assertTrue(cacheHit);
-	}
-
-	@Test
-	public void cacheHit_returns_false_on_cache_disabled() {
-		UserContext userContext = new UserContext();
-		userContext.setCacheEnabled(false);
-		UserContextCache cache = new UserContextCache(userContext);
-		DocumentFQN documentFQN = new DocumentFQN("/dir/cachedObject.aes");
-		CachedObject cachedObject = new CachedObject();
-		boolean cacheHit = cache.cacheHit(documentFQN, cachedObjectTypeRef, Optional.of(cachedObject), true);
-		Assert.assertFalse(cacheHit);
 	}
 
 	@Test
@@ -45,7 +39,7 @@ public class UserContextCacheTest {
 		UserContext userContext = enabledUserContext();
 		cacheObjectCache(userContext, "/dir/cachedObject.aes");		
 		DocumentFQN documentFQN2 = new DocumentFQN("/dir/cachedObject2.aes");
-		boolean cached = new UserContextCache(userContext).isCached(documentFQN2, cachedObjectTypeRef);
+		boolean cached = newUserObjectPersistenceService(userContext).isCached(documentFQN2, cachedObjectTypeRef);
 		Assert.assertFalse(cached);
 	}
 
@@ -54,14 +48,14 @@ public class UserContextCacheTest {
 		UserContext userContext = enabledUserContext();
 		cacheObjectCache(userContext, "/dir/cachedObject.aes");		
 		DocumentFQN documentFQN2 = new DocumentFQN("/dir/cachedObject2.aes");
-		boolean cached = new UserContextCache(userContext).isCached(documentFQN2, simpleObjectTypeRef);
+		boolean cached = newUserObjectPersistenceService(userContext).isCached(documentFQN2, simpleObjectTypeRef);
 		Assert.assertFalse(cached);
 	}
 	
 	@Test
 	public void cacheHit_returns_object_if_in_cache() {
 		UserContext userContext = enabledUserContext();
-		UserContextCache cache = new UserContextCache(userContext);
+		UserObjectPersistenceService cache = newUserObjectPersistenceService(userContext);
 		DocumentFQN documentFQN = new DocumentFQN("/dir/cachedObject.aes");
 		CachedObject cachedObject = new CachedObject();
 		boolean cacheHit = cache.cacheHit(documentFQN, cachedObjectTypeRef, Optional.of(cachedObject), true);
@@ -78,7 +72,7 @@ public class UserContextCacheTest {
 		UserContext userContext = enabledUserContext();
 		cacheObjectCache(userContext, "/dir/cachedObject.aes");		
 		DocumentFQN documentFQN2 = new DocumentFQN("/dir/cachedObject2.aes");
-		Optional<CacheEntry<CachedObject>> cacheResult = new UserContextCache(userContext).cacheHit(documentFQN2, cachedObjectTypeRef);
+		Optional<CacheEntry<CachedObject>> cacheResult = newUserObjectPersistenceService(userContext).cacheHit(documentFQN2, cachedObjectTypeRef);
 		Assert.assertFalse(cacheResult.isPresent());
 	}
 	
@@ -88,7 +82,7 @@ public class UserContextCacheTest {
 		cacheObjectCache(userContext, "/dir/cachedObject.aes");
 		cacheObjectCache(userContext, "/dir/cachedObject2.aes");
 		DocumentFQN documentFQN2 = new DocumentFQN("/dir/cachedObject2.aes");
-		UserContextCache cache = new UserContextCache(userContext);
+		UserObjectPersistenceService cache = newUserObjectPersistenceService(userContext);
 		Optional<CacheEntry<SimpleObject>> cacheResult = cache.cacheHit(documentFQN2, simpleObjectTypeRef);
 		Assert.assertFalse(cacheResult.isPresent());
 	}
@@ -103,7 +97,7 @@ public class UserContextCacheTest {
 		cacheObjectCache(userContext, "/dir/subdir/subdir2/cachedObject.aes");
 		cacheObjectCache(userContext, "/dir/subdir/subdir2/cachedObject2.aes");
 		cacheObjectCache(userContext, "cachedObject.aes");
-		UserContextCache cache = new UserContextCache(userContext);
+		UserObjectPersistenceService cache = newUserObjectPersistenceService(userContext);
 		cache.clearCached(new DocumentDirectoryFQN("/dir/subdir"));
 		Assert.assertTrue(isCacheObjectInCache(userContext, "/dir/cachedObject.aes"));
 		Assert.assertTrue(isCacheObjectInCache(userContext, "/dir/cachedObject2.aes"));
@@ -118,11 +112,10 @@ public class UserContextCacheTest {
 
 	private static UserContext enabledUserContext(){
 		UserContext userContext = new UserContext();
-		userContext.setCacheEnabled(true);
 		return userContext;
 	}
 	private static CachedObject cacheObjectCache(UserContext userContext, String path){
-		UserContextCache cache = new UserContextCache(userContext);
+		UserObjectPersistenceService cache = newUserObjectPersistenceService(userContext);
 		DocumentFQN documentFQN = new DocumentFQN(path);
 		CachedObject cachedObject = new CachedObject();
 		boolean cacheHit = cache.cacheHit(documentFQN, cachedObjectTypeRef, Optional.of(cachedObject), true);
@@ -130,12 +123,12 @@ public class UserContextCacheTest {
 		return cachedObject;
 	}
 	private static boolean isCacheObjectInCache(UserContext userContext, String path){
-		UserContextCache cache = new UserContextCache(userContext);
+		UserObjectPersistenceService cache = newUserObjectPersistenceService(userContext);
 		DocumentFQN documentFQN = new DocumentFQN(path);
 		return cache.isCached(documentFQN, cachedObjectTypeRef);
 	}
 	private boolean isNotCacheObjectInCacheOrIsDirty(UserContext userContext, String path) {
-		UserContextCache cache = new UserContextCache(userContext);
+		UserObjectPersistenceService cache = newUserObjectPersistenceService(userContext);
 		DocumentFQN documentFQN = new DocumentFQN(path);
 		return !cache.isCached(documentFQN, cachedObjectTypeRef) || cache.isDirty(documentFQN, cachedObjectTypeRef);
 	}
@@ -146,4 +139,9 @@ public class UserContextCacheTest {
 	static final TypeReference<SimpleObject> simpleObjectTypeRef = new TypeReference<SimpleObject>() {};
 	static class SimpleObject{}
 	
+	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+	private static final DocumentSafeService DOCUMENT_SAFE_SERVICE = new DocumentSafeServiceImpl(ExtendedStoreConnectionFactory.get());
+	private static UserObjectPersistenceService newUserObjectPersistenceService(UserContext userContext){
+	    return new UserObjectPersistenceService(userContext, OBJECT_MAPPER, DOCUMENT_SAFE_SERVICE);
+	}
 }

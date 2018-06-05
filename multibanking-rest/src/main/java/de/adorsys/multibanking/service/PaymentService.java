@@ -5,20 +5,23 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import org.adorsys.docusafe.business.DocumentSafeService;
 import org.adorsys.docusafe.business.types.complex.DocumentFQN;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.adorsys.multibanking.auth.UserContext;
+import de.adorsys.multibanking.auth.UserObjectPersistenceService;
 import de.adorsys.multibanking.domain.BankAccessEntity;
 import de.adorsys.multibanking.domain.BankAccountEntity;
 import de.adorsys.multibanking.domain.BankEntity;
 import de.adorsys.multibanking.domain.PaymentEntity;
+import de.adorsys.multibanking.domain.UserData;
 import de.adorsys.multibanking.exception.MissingPinException;
 import de.adorsys.multibanking.exception.ResourceNotFoundException;
-import de.adorsys.multibanking.service.base.UserObjectService;
 import de.adorsys.multibanking.service.base.ListUtils;
 import de.adorsys.multibanking.service.producer.OnlineBankingServiceProducer;
 import de.adorsys.multibanking.utils.FQNUtils;
@@ -35,19 +38,24 @@ import spi.OnlineBankingService;
 @Service
 public class PaymentService {
 
-	@Autowired
-	private UserObjectService uos;
-    @Autowired
-    private OnlineBankingServiceProducer bankingServiceProducer;
-    @Autowired
-    private UserDataService uds;
-    @Autowired
-    private BankService bankService;
+	private final UserObjectPersistenceService uos;
+	private final OnlineBankingServiceProducer bankingServiceProducer;
+	private final BankDataService uds;
+	private final BankService bankService;
+
+    public PaymentService(OnlineBankingServiceProducer bankingServiceProducer, BankDataService uds,
+            BankService bankService,UserContext userContext, ObjectMapper objectMapper, DocumentSafeService documentSafeService) {
+        this.uos = new UserObjectPersistenceService(userContext, objectMapper, documentSafeService);
+        this.bankingServiceProducer = bankingServiceProducer;
+        this.uds = uds;
+        this.bankService = bankService;
+    }
 
     public PaymentEntity createPayment(BankAccessEntity bankAccess, BankAccountEntity bankAccount, String pin, Payment payment) {
         OnlineBankingService bankingService = bankingServiceProducer.getBankingService(bankAccess.getBankCode());
 
-        BankApiUser bankApiUser = uds.checkApiRegistration(bankingService.bankApi(), bankAccess.getBankCode());
+        UserData userData = uds.load();
+        BankApiUser bankApiUser = bankingServiceProducer.checkApiRegistration(bankingService.bankApi(), bankAccess.getBankCode(),userData);
 
         pin = pin == null ? bankAccess.getPin() : pin;
         if (pin == null) {

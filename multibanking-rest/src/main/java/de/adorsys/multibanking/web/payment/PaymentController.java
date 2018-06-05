@@ -20,9 +20,8 @@ import de.adorsys.multibanking.domain.BankAccountEntity;
 import de.adorsys.multibanking.domain.PaymentEntity;
 import de.adorsys.multibanking.domain.UserData;
 import de.adorsys.multibanking.exception.ResourceNotFoundException;
-import de.adorsys.multibanking.service.BankAccountService;
+import de.adorsys.multibanking.service.BankDataService;
 import de.adorsys.multibanking.service.PaymentService;
-import de.adorsys.multibanking.service.UserDataService;
 import de.adorsys.multibanking.web.annotation.UserResource;
 import de.adorsys.multibanking.web.common.BaseController;
 import domain.Payment;
@@ -42,11 +41,9 @@ public class PaymentController extends BaseController {
 	public static final String BASE_PATH = BaseController.BASE_PATH + "/bankaccesses/{accessId}/accounts/{accountId}/payments"; 
 
     @Autowired
-    private BankAccountService bankAccountService;
-    @Autowired
     private PaymentService paymentService;
     @Autowired
-    private UserDataService uds;
+    private BankDataService bds;
 
     @RequestMapping(value = "/{paymentId}", method = RequestMethod.GET)
     public Resource<PaymentEntity> getPayment(@PathVariable String accessId, @PathVariable String accountId, @PathVariable String paymentId) {
@@ -58,14 +55,10 @@ public class PaymentController extends BaseController {
     @RequestMapping(method = RequestMethod.POST)
     public HttpEntity<Void> createPayment(@PathVariable String accessId, @PathVariable String accountId, @RequestBody CreatePaymentRequest paymentRequest) {
 
-    	UserData userData = uds.load();
+    	UserData userData = bds.load();
     	BankAccessEntity bankAccessEntity = userData.bankAccessDataOrException(accessId).getBankAccess();
-//    	BankAccessEntity bankAccessEntity= bankAccessService.loadbankAccess(accessId)
-//    			.orElseThrow(() -> new ResourceNotFoundException(BankAccessEntity.class, accessId));
     	
     	BankAccountEntity bankAccountEntity = userData.bankAccountDataOrException(accessId, accountId).getBankAccount();
-//    	BankAccountEntity bankAccountEntity = bankAccountService.loadBankAccount(accessId, accountId)
-//				.orElseThrow(() -> new ResourceNotFoundException(BankAccountEntity.class, accountId));
 
         PaymentEntity payment = paymentService.createPayment(bankAccessEntity, bankAccountEntity, paymentRequest.getPin(), paymentRequest.getPayment());
 
@@ -77,16 +70,13 @@ public class PaymentController extends BaseController {
     @RequestMapping(value = "/{paymentId}/submit", method = RequestMethod.POST)
     public HttpEntity<Void> submitPayment(@PathVariable String accessId, @PathVariable String accountId, @PathVariable String paymentId, @RequestBody SubmitPaymentRequest paymentRequest) {
         
-//    	BankAccessEntity bankAccessEntity= bankAccessService.loadbankAccess(accessId)
-//    			.orElseThrow(() -> new ResourceNotFoundException(BankAccessEntity.class, accessId));
-
-        if (!bankAccountService.exists(accessId, accountId)) {
+        if (!bds.accountExists(accessId, accountId)) {
             throw new ResourceNotFoundException(BankAccountEntity.class, accountId);
         }
 
         PaymentEntity paymentEntity = paymentService.findPayment(accessId, accountId, paymentId)
                 .orElseThrow(() -> new ResourceNotFoundException(PaymentEntity.class, paymentId));
-        String bankCode = uds.load().bankAccessDataOrException(accessId).getBankAccess().getBankCode();
+        String bankCode = bds.load().bankAccessDataOrException(accessId).getBankAccess().getBankCode();
         paymentService.submitPayment(paymentEntity, bankCode, paymentRequest.getTan());
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);

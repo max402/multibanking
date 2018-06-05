@@ -115,7 +115,7 @@ public class MB_004_BankAccessTest extends MB_BaseTest {
 
     @Test
     public void user_data_not_null_on_create_bank_access() {
-        UserDataStructure userDataStructure = loadUserDataStructure(this, MB_004_BankAccessTest.createBankAccess(this, theBeckerTuple));
+        UserDataStructure userDataStructure = loadUserDataStructure(this, createBankAccess(this, theBeckerTuple));
         Assert.assertNotNull(userDataStructure);
     }
     
@@ -136,7 +136,7 @@ public class MB_004_BankAccessTest extends MB_BaseTest {
      */
     @Test
     public void bank_account_synch_status_null_on_create_bank_access() {
-        UserDataStructure userDataStructure = loadUserDataStructure(this, MB_004_BankAccessTest.createBankAccess(this, theBeckerTuple));
+        UserDataStructure userDataStructure = loadUserDataStructure(this, createBankAccess(this, theBeckerTuple));
         Assume.assumeNotNull(userDataStructure);
         userDataStructure.getBankAccessIDs().forEach(bankAccessID -> {
             userDataStructure.getBankAccountIDs(bankAccessID).forEach(bankAccountID -> {
@@ -150,7 +150,7 @@ public class MB_004_BankAccessTest extends MB_BaseTest {
      */
     @Test
     public void bank_account_last_synch_null_on_create_bank_access() {
-        UserDataStructure userDataStructure = loadUserDataStructure(this, MB_004_BankAccessTest.createBankAccess(this, theBeckerTuple));
+        UserDataStructure userDataStructure = loadUserDataStructure(this, createBankAccess(this, theBeckerTuple));
         Assume.assumeNotNull(userDataStructure);
         userDataStructure.getBankAccessIDs().forEach(bankAccessID -> {
             userDataStructure.getBankAccountIDs(bankAccessID).forEach(bankAccountID -> {

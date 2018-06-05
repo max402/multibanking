@@ -20,11 +20,13 @@ import org.adorsys.docusafe.business.types.complex.DocumentFQN;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.adorsys.multibanking.auth.UserContext;
+import de.adorsys.multibanking.auth.UserObjectPersistenceService;
 import de.adorsys.multibanking.domain.AccountSynchPref;
 import de.adorsys.multibanking.domain.AnonymizedBookingEntity;
 import de.adorsys.multibanking.domain.BankAccessData;
@@ -42,7 +44,6 @@ import de.adorsys.multibanking.service.analytics.AnonymizationService;
 import de.adorsys.multibanking.service.analytics.CategoriesProvider;
 import de.adorsys.multibanking.service.analytics.SmartAnalyticsService;
 import de.adorsys.multibanking.service.analytics.SmartanalyticsMapper;
-import de.adorsys.multibanking.service.base.UserObjectService;
 import de.adorsys.multibanking.service.helper.BookingHelper;
 import de.adorsys.multibanking.service.producer.OnlineBankingServiceProducer;
 import de.adorsys.multibanking.utils.FQNUtils;
@@ -67,31 +68,31 @@ import utils.Utils;
 public class BookingService {
     private final static Logger LOGGER = LoggerFactory.getLogger(BookingService.class);
 
-	@Autowired
-	private UserObjectService uos;
-
-	@Autowired
-    private UserDataService uds;
-    @Autowired
-    private BankAccessService bankAccessService;
-    @Autowired
-    private BankAccountService bankAccountService;
-	@Autowired
+    private UserObjectPersistenceService uos;
+    private BankDataService uds;
 	private BankAccessCredentialService credentialService;
-    @Autowired
     private SmartAnalyticsService smartAnalyticsService;
-    @Autowired
     private AnalyticsService analyticsService;
-    @Autowired
     private BankService bankService;
-    @Autowired
     private OnlineBankingServiceProducer bankingServiceProducer;
-    @Autowired
     private AnonymizationService anonymizationService;
-    @Autowired
     private CategoriesProvider categoriesProvider;
-    @Autowired
-    private DocumentSafeService documentSafeService;
+    
+    public BookingService(UserContext userContext, BankDataService uds, BankAccessCredentialService credentialService,
+            SmartAnalyticsService smartAnalyticsService, AnalyticsService analyticsService, BankService bankService,
+            OnlineBankingServiceProducer bankingServiceProducer, AnonymizationService anonymizationService,
+            CategoriesProvider categoriesProvider, ObjectMapper objectMapper, DocumentSafeService documentSafeService) {
+        this.uos = new UserObjectPersistenceService(userContext, objectMapper, documentSafeService);
+        this.uds = uds;
+        this.credentialService = credentialService;
+        this.smartAnalyticsService = smartAnalyticsService;
+        this.analyticsService = analyticsService;
+        this.bankService = bankService;
+        this.bankingServiceProducer = bankingServiceProducer;
+        this.anonymizationService = anonymizationService;
+        this.categoriesProvider = categoriesProvider;
+    }
+
     /**
      * Read and returns the booking file for a given period. Single bookings are not deserialized in
      * the memory of this JVM.
@@ -106,7 +107,7 @@ public class BookingService {
     	DocumentFQN bookingFQN = FQNUtils.bookingFQN(accessId,accountId,period);
     	if(!bankAccountData.containsBookingFileOfPeriod(period))
     		throw new UnexistentBookingFileException(bookingFQN.getValue());
-        return documentSafeService.readDocument(uos.auth(), bookingFQN);
+        return uos.readDocument(bookingFQN, listType());
     }
     
     public List<BookingEntity> getAllBookingsAlList(String accessId, String accountId){
@@ -127,22 +128,22 @@ public class BookingService {
     	BankAccountData bankAccountData = userData.bankAccountDataOrException(accessId, accountId);
     	// Set the synch status and flush
     	bankAccountData.updateSyncStatus(BankAccount.SyncStatus.SYNC);
-        uos.flush();
+//        uos.flush();
 
         // Reload
         BankAccessEntity bankAccess = userData.bankAccessDataOrException(accessId).getBankAccess();
         BankAccountEntity bankAccount = bankAccountData.getBankAccount();
-        LoadBookingsResponse response = loadBookingsOnline(bankApi, bankAccess, bankAccount, pin);
+        LoadBookingsResponse response = loadBookingsOnline(bankApi, bankAccess, bankAccount, pin, userData);
 
         bankAccount.setBankAccountBalance(response.getBankAccountBalance());
         if (bankAccess.isStoreBookings()) {
             bankAccount.setLastSync(LocalDateTime.now());
-            bankAccountService.saveBankAccount(bankAccount);
+            uds.saveBankAccount(bankAccount);
         }
 
         if (!bankAccess.isTemporary()) {
             //update bankaccess, passportstate changed
-            bankAccessService.updateBankAccess(bankAccess);
+            uds.updateBankAccess(bankAccess);
         }
 
         processBookings(userData, bankAccess, bankAccount, response);
@@ -151,7 +152,7 @@ public class BookingService {
     private void processBookings(UserData userData, BankAccessEntity bankAccess,
     		BankAccountEntity bankAccount, LoadBookingsResponse response) {
 
-    	AccountSynchPref accountSynchPref = bankAccountService.findAccountSynchPref(bankAccess.getId(), bankAccount.getId());
+    	AccountSynchPref accountSynchPref = uds.findAccountSynchPref(bankAccess.getId(), bankAccount.getId());
 
     	// Booking downloaded from the online banking system
         Map<String, List<BookingEntity>> bookings = BookingHelper.mapBookings(bankAccount, accountSynchPref, response.getBookings());
@@ -162,9 +163,9 @@ public class BookingService {
         BankAccountData bankAccountData = userData.bankAccountDataOrException(bankAccess.getId(), bankAccount.getId());
         Map<String, List<BookingEntity>> processBookingPeriods = storeBookings(bankAccountData, response.getStandingOrders(), bankAccess.isStoreBookings(), bookings);
         
-        bankAccountService.saveStandingOrders(bankAccount, response.getStandingOrders());
+        uds.saveStandingOrders(bankAccount, response.getStandingOrders());
         bankAccountData.updateSyncStatus(BankAccount.SyncStatus.READY);
-        uos.flush();
+//        uos.flush();
         
         if (bankAccess.isCategorizeBookings() || bankAccess.isStoreAnalytics()) {
             bankAccountData = userData.bankAccountDataOrException(bankAccess.getId(), bankAccount.getId());
@@ -213,8 +214,8 @@ public class BookingService {
         return result;
 	}
 
-	private LoadBookingsResponse loadBookingsOnline(BankApi bankApi, BankAccessEntity bankAccess, BankAccountEntity bankAccount, String pin) {
-        BankApiUser bankApiUser = uds.checkApiRegistration(bankApi, bankAccess.getBankCode());
+	private LoadBookingsResponse loadBookingsOnline(BankApi bankApi, BankAccessEntity bankAccess, BankAccountEntity bankAccount, String pin, UserData userData) {
+        BankApiUser bankApiUser = bankingServiceProducer.checkApiRegistration(bankApi, bankAccess.getBankCode(), userData);
 
         OnlineBankingService onlineBankingService = checkAndGetOnlineBankingService(bankAccess, bankAccount, pin, bankApiUser);
 

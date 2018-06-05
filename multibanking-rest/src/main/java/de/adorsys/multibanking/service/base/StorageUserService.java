@@ -5,7 +5,6 @@ import org.adorsys.docusafe.business.types.UserID;
 import org.adorsys.docusafe.business.types.complex.UserIDAuth;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.nimbusds.jose.jwk.JWK;
@@ -20,10 +19,13 @@ import com.nimbusds.jose.jwk.JWK;
 public class StorageUserService {
 	private final static Logger LOGGER = LoggerFactory.getLogger(StorageUserService.class);
 
-	@Autowired
 	private DocumentSafeService documentSafeService;
+	
+	public StorageUserService(DocumentSafeService documentSafeService) {
+        this.documentSafeService = documentSafeService;
+    }
 
-	/**
+    /**
 	 * Check existence of the user with the given user id.
 	 * 
 	 * @return

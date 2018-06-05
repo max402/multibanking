@@ -2,8 +2,11 @@ package de.adorsys.multibanking.auth;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
+import org.adorsys.docusafe.business.types.complex.DocumentDirectoryFQN;
 import org.adorsys.docusafe.business.types.complex.DocumentFQN;
 import org.adorsys.docusafe.business.types.complex.UserIDAuth;
 
@@ -23,6 +26,5 @@ public class UserContext {
 	private RequestCounter requestCounter = new RequestCounter();
 
 	Map<Type, Map<DocumentFQN, CacheEntry<?>>> cache = new HashMap<>();
-	
-	boolean cacheEnabled = false;
+	Set<DocumentDirectoryFQN> deletedDirCache = new HashSet<>(); 
 }

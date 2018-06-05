@@ -35,10 +35,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.adorsys.multibanking.auth.SystemContext;
 import de.adorsys.multibanking.auth.UserContext;
+import de.adorsys.multibanking.auth.UserObjectPersistenceService;
 import de.adorsys.multibanking.service.base.StorageUserService;
-import de.adorsys.multibanking.service.base.SystemObjectService;
-import de.adorsys.multibanking.service.base.UserObjectService;
 import de.adorsys.multibanking.service.crypto.SecretClaimDecryptionService;
+import de.adorsys.multibanking.usercontext.CacheInRequestContext;
 import de.adorsys.sts.filter.JWTAuthenticationFilter;
 import de.adorsys.sts.token.authentication.TokenAuthenticationService;
 import de.adorsys.sts.tokenauth.BearerToken;
@@ -58,11 +58,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     
     @Autowired
     private StorageUserService storageUserService;
-    @Autowired
-    private DocumentSafeService documentSafeService;
     
     @Autowired
-	private ObjectMapper objectMapper;
+    private ObjectMapper objectMapper;
+    
+    @Autowired
+    private DocumentSafeService documentSafeService;
+
+    @Autowired
+    private BearerTokenValidator bearerTokenValidator;
 
 
     @Override
@@ -91,10 +95,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
        http
                 .addFilterBefore(new JWTAuthenticationFilter(tokenAuthenticationService), BasicAuthenticationFilter.class);
     }
-
-    @Autowired
-    private BearerTokenValidator bearerTokenValidator;
-
+    
     /**
      * The user context object is used to hold everything associated with the current user request.
      *
@@ -106,39 +107,53 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     @Primary
     @Scope(scopeName = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
-    public UserContext getUserContext(HttpServletRequest request){
-        LOGGER.debug("************************************** Enter getUserContext");
-    	UserContext userContext = new UserContext();
-
-    	String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+    public UserContext getUserContext(HttpServletRequest request, SystemContext systemContext){
+        StringBuffer requestURL = request.getRequestURL();
+        LOGGER.debug("************************************** Enter getUserContext: " + requestURL);
+        
+        // Retrieve credentials
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
         String userSecret = secretClaimDecryptionService.decryptSecretClaim();
-        UserIDAuth userIDAuth = new UserIDAuth(new UserID(userId), new ReadKeyPassword(userSecret));
-        userContext.setAuth(userIDAuth);
-
-        String token = request.getHeader(BearerTokenValidator.HEADER_KEY);
-        BearerToken bearerToken = bearerTokenValidator.extract(token);
-        userContext.setBearerToken(bearerToken);
-        if(StringUtils.isNotBlank(userSecret)){
-	        if(!storageUserService.userExists(userContext.getAuth().getUserID())){
-	        	storageUserService.createUser(userContext.getAuth());
-	        }
+        
+        UserContext userContext = null;
+        // If the user is system, then return the system context.
+        if(sameUserAndPSecret(systemContext.getUser().getAuth(), userId, userSecret)){
+            // return existing user.
+            userContext = systemContext.getUser();
+        } else {
+            userContext = new UserContext();
+            UserIDAuth userIDAuth = new UserIDAuth(new UserID(userId), new ReadKeyPassword(userSecret));
+            userContext.setAuth(userIDAuth);
+            
+            String token = request.getHeader(BearerTokenValidator.HEADER_KEY);
+            BearerToken bearerToken = bearerTokenValidator.extract(token);
+            userContext.setBearerToken(bearerToken);
+            if(StringUtils.isNotBlank(userSecret)){
+                if(!storageUserService.userExists(userContext.getAuth().getUserID())){
+                    storageUserService.createUser(userContext.getAuth());
+                }
+            }
         }
-
+        activateCache(request, userContext);
         LOGGER.debug("userContext ist " + userContext.getAuth().getUserID().getValue());
-        LOGGER.debug("************************************** Exit getUserContext");
+        LOGGER.debug("************************************** Exit getUserContext " + requestURL);
 
         return userContext;
     }
     
-    @Bean
-    @Scope(scopeName = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
-    UserObjectService userObjectService(UserContext userContext){
-    	return new UserObjectService(objectMapper, userContext, documentSafeService);
+    private void activateCache(HttpServletRequest request, UserContext userContext) {
+        LOGGER.debug("Activiation cache for request:  " + request.getRequestURL());
+        UserObjectPersistenceService userContextCache = new UserObjectPersistenceService(userContext, objectMapper, documentSafeService);
+        CacheInRequestContext cacheInRequestContext = new CacheInRequestContext(request);
+        cacheInRequestContext.activateCache(userContextCache);
     }
 
-    @Bean
-    SystemObjectService systemObjectService(SystemContext systemContext){
-    	return new SystemObjectService(objectMapper, systemContext,documentSafeService);
+    private boolean sameUserAndPSecret(UserIDAuth auth, String userId, String userSecret) {
+        return auth!=null 
+                && auth.getUserID()!=null 
+                && auth.getUserID().equals(userId) 
+                && auth.getReadKeyPassword()!=null 
+                && auth.getReadKeyPassword().equals(userSecret);
     }
 
     @Bean

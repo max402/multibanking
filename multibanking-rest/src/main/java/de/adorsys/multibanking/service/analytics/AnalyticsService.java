@@ -6,21 +6,22 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import de.adorsys.multibanking.domain.AccountAnalyticsEntity;
 import de.adorsys.multibanking.domain.BankAccountEntity;
 import de.adorsys.multibanking.domain.ContractEntity;
-import de.adorsys.multibanking.service.BankAccountService;
+import de.adorsys.multibanking.service.BankDataService;
 import de.adorsys.smartanalytics.api.AnalyticsResult;
 import de.adorsys.smartanalytics.api.BookingGroup;
 
 @Service
 public class AnalyticsService {
-	@Autowired
-	private BankAccountService bankAccountService;
-
+	private final BankDataService bankDataService;
+	
+    public AnalyticsService(BankDataService bankDataService) {
+        this.bankDataService = bankDataService;
+    }
     public void saveAccountAnalytics(BankAccountEntity bankAccountEntity, AnalyticsResult categoryResult, LocalDate referenceDate) {
         AccountAnalyticsEntity accountAnalyticsEntity = new AccountAnalyticsEntity();
         accountAnalyticsEntity.setUserId(bankAccountEntity.getUserId());
@@ -31,7 +32,7 @@ public class AnalyticsService {
         	accountAnalyticsEntity.setBalanceCalculated(
                 bankAccountEntity.getBankAccountBalance().getReadyHbciBalance()
                         .add(accountAnalyticsEntity.getIncomeNext()).add(accountAnalyticsEntity.getExpensesNext()));
-        bankAccountService.saveAccountAnalytics(bankAccountEntity.getId(), accountAnalyticsEntity);
+        bankDataService.saveAccountAnalytics(bankAccountEntity.getId(), accountAnalyticsEntity);
     }
 
     public void identifyAndStoreContracts(String userId, String accountId, AnalyticsResult categoryResult) {
@@ -41,7 +42,7 @@ public class AnalyticsService {
 	                .filter(BookingGroup::isContract)
 	                .map(category -> toContract(userId, accountId, category))
 	                .collect(Collectors.toList());
-	        bankAccountService.saveContracts(accountId, contractEntities);
+	        bankDataService.saveContracts(accountId, contractEntities);
     	}
     }
 }

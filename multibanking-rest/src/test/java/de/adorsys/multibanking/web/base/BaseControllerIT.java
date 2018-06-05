@@ -1,8 +1,10 @@
 package de.adorsys.multibanking.web.base;
 
-import de.adorsys.multibanking.config.service.Tp;
-import de.adorsys.multibanking.service.old.TestConstants;
-import de.adorsys.multibanking.web.base.entity.UserPasswordTuple;
+import java.io.IOException;
+import java.security.Security;
+import java.util.Collections;
+
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -20,9 +22,13 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.io.IOException;
-import java.net.URI;
-import java.util.Collections;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import de.adorsys.multibanking.auth.UserContext;
+import de.adorsys.multibanking.config.service.Tp;
+import de.adorsys.multibanking.web.base.entity.UserPasswordTuple;
+import de.adorsys.sts.token.api.TokenResponse;
+import de.adorsys.sts.token.passwordgrant.PasswordGrantService;
 
 @RunWith(SpringRunner.class)
 @ActiveProfiles({"InMemory", "IntegrationTest"})
@@ -37,11 +43,15 @@ public abstract class BaseControllerIT {
     public int port = 8080;
 
     @Autowired
+    private PasswordGrantService passwordGrantService;
+    ObjectMapper objectMapper = new ObjectMapper();
+    
+    @Autowired
     public TestRestTemplate testRestTemplate;
 
     @BeforeClass
     public static void beforeClass() {
-        TestConstants.setup();
+        Security.addProvider(new BouncyCastleProvider());
     }
 
     /**
@@ -61,33 +71,20 @@ public abstract class BaseControllerIT {
         LOGGER.debug("== Test Port ist " + port + "==");
         return "http://localhost:" + port;
     }
+    
+    protected TokenResponse auth(UserPasswordTuple userPasswordTuple) {
+        TokenResponse resp = passwordGrantService.passwordGrant("password", null, null, getBaseUri(), null,
+                userPasswordTuple.getUser(), userPasswordTuple.getPassword());
 
-    protected PasswordGrantResponse auth(UserPasswordTuple userPasswordTuple) {
-        URI uri = authPath()
-        .queryParam("grant_type", "password")
-        .queryParam("username", userPasswordTuple.getUser())
-        .queryParam("password", userPasswordTuple.getPassword())
-        .queryParam("audience", "multibanking")
-        .build().toUri();
-
-        PasswordGrantResponse resp = testRestTemplate.getForObject(uri, PasswordGrantResponse.class);
-
-        final String accessTokenValue = resp.getAccessToken();
-
-        testRestTemplate.getRestTemplate().setInterceptors(
-        Collections.singletonList((request, body, execution) -> {
-            String authHeader = "Bearer " + accessTokenValue;
+        testRestTemplate.getRestTemplate().setInterceptors(Collections.singletonList((request, body, execution) -> {
+            String authHeader = "Bearer " + resp.getAccess_token();
             request.getHeaders().add("Authorization", authHeader);
             return execution.execute(request, body);
         }));
 
         return resp;
     }
-
-    protected final UriComponentsBuilder authPath() {
-        return path("/token/password-grant");
-    }
-
+    
     public final UriComponentsBuilder path(String path) {
         return UriComponentsBuilder.fromUriString(getBaseUri()).path(path);
     }

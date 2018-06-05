@@ -22,7 +22,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import de.adorsys.multibanking.domain.BankAccessEntity;
 import de.adorsys.multibanking.domain.BankAccountEntity;
 import de.adorsys.multibanking.service.BookingService;
-import de.adorsys.multibanking.service.UserDataService;
+import de.adorsys.multibanking.service.BankDataService;
 import de.adorsys.multibanking.service.producer.OnlineBankingServiceProducer;
 import de.adorsys.onlinebanking.mock.MockBanking;
 import domain.BankApi;
@@ -42,7 +42,7 @@ public class MockBankingTest {
 //    @Autowired
 //    private AnalyticsService2 analyticsService;
     @Autowired
-    private UserDataService uds;
+    private BankDataService uds;
     @MockBean
     private OnlineBankingServiceProducer bankingServiceProducer;
 

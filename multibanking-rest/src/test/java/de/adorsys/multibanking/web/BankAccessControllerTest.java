@@ -18,7 +18,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import de.adorsys.multibanking.config.web.WebMvcUnitTest;
 import de.adorsys.multibanking.domain.BankAccessEntity;
 import de.adorsys.multibanking.exception.BankAccessAlreadyExistException;
-import de.adorsys.multibanking.service.BankAccessService;
+import de.adorsys.multibanking.service.BankDataService;
 import de.adorsys.multibanking.utils.Ids;
 import de.adorsys.multibanking.web.account.BankAccessController;
 import de.adorsys.multibanking.web.base.BaseControllerUnitTest;
@@ -30,7 +30,7 @@ public class BankAccessControllerTest extends BaseControllerUnitTest {
     private BankAccessController bankAccessController;
 
     @MockBean
-    private BankAccessService bankAccessService;
+    private BankDataService bds;
         
 	@Before
 	public void setUp() throws Exception {
@@ -43,7 +43,7 @@ public class BankAccessControllerTest extends BaseControllerUnitTest {
     	BankAccessEntity newBankAccess = newBankAccess();
         newBankAccess.setId(Ids.uuid());
 
-        BDDMockito.when(bankAccessService.createBankAccess(newBankAccess)).thenReturn(newBankAccess);
+        BDDMockito.when(bds.createBankAccess(newBankAccess)).thenReturn(newBankAccess);
         String uuid = Ids.uuid();
         // Set user context.
         auth(uuid, Ids.uuid());
@@ -65,7 +65,7 @@ public class BankAccessControllerTest extends BaseControllerUnitTest {
     	BankAccessEntity newBankAccess = newBankAccess();
         newBankAccess.setId(Ids.uuid());
 
-        BDDMockito.when(bankAccessService.createBankAccess(newBankAccess)).thenThrow(new BankAccessAlreadyExistException(newBankAccess.getId()));
+        BDDMockito.when(bds.createBankAccess(newBankAccess)).thenThrow(new BankAccessAlreadyExistException(newBankAccess.getId()));
         String newBankAccessJson = mapper.writeValueAsString(newBankAccess);
 
 		mockMvc.perform(MockMvcRequestBuilders.post(basePath().build().toString()).contentType(MediaType.APPLICATION_JSON).content(newBankAccessJson)
@@ -76,7 +76,7 @@ public class BankAccessControllerTest extends BaseControllerUnitTest {
 	@Test
 	public void testDeleteBankAccess204() throws Exception {
         String accessId = Ids.uuid();
-		BDDMockito.when(bankAccessService.deleteBankAccess(accessId)).thenReturn(true);
+		BDDMockito.when(bds.deleteBankAccess(accessId)).thenReturn(true);
 		mockMvc.perform(MockMvcRequestBuilders.delete(idPath().build(accessId).toString())
                 .accept(MediaType.APPLICATION_JSON_VALUE))
 				.andExpect(MockMvcResultMatchers.status().isNoContent());
@@ -85,7 +85,7 @@ public class BankAccessControllerTest extends BaseControllerUnitTest {
 	@Test
 	public void testDeleteBankAccess410() throws Exception {
         String accessId = Ids.uuid();
-		BDDMockito.when(bankAccessService.deleteBankAccess(accessId)).thenReturn(false);
+		BDDMockito.when(bds.deleteBankAccess(accessId)).thenReturn(false);
 		mockMvc.perform(MockMvcRequestBuilders.delete(idPath().build(accessId).toString())
                 .accept(MediaType.APPLICATION_JSON_VALUE))
 				.andExpect(MockMvcResultMatchers.status().isGone());

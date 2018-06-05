@@ -2,14 +2,16 @@ package de.adorsys.multibanking.service;
 
 import java.util.Date;
 
+import org.adorsys.docusafe.business.DocumentSafeService;
 import org.adorsys.docusafe.business.types.complex.DocumentFQN;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.adorsys.multibanking.auth.UserContext;
+import de.adorsys.multibanking.auth.UserObjectPersistenceService;
 import de.adorsys.multibanking.domain.BankAccessCredentials;
-import de.adorsys.multibanking.service.base.UserObjectService;
 import de.adorsys.multibanking.utils.FQNUtils;
 
 /**
@@ -21,8 +23,10 @@ import de.adorsys.multibanking.utils.FQNUtils;
 @Service
 public class BankAccessCredentialService  {
 
-	@Autowired
-	private UserObjectService uos;
+	private UserObjectPersistenceService uos;
+    public BankAccessCredentialService(UserContext userContext, ObjectMapper objectMapper, DocumentSafeService documentSafeService) {
+        this.uos = new UserObjectPersistenceService(userContext, objectMapper, documentSafeService);
+    }
 
     public void store(BankAccessCredentials credentials) {
         uos.store(FQNUtils.credentialFQN(credentials.getAccessId()), credentialsType(), credentials);

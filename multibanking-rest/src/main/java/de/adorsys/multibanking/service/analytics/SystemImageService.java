@@ -3,10 +3,12 @@ package de.adorsys.multibanking.service.analytics;
 import org.adorsys.docusafe.business.DocumentSafeService;
 import org.adorsys.docusafe.business.types.complex.DSDocument;
 import org.adorsys.docusafe.service.types.DocumentContent;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import de.adorsys.multibanking.service.base.SystemObjectService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import de.adorsys.multibanking.auth.SystemContext;
+import de.adorsys.multibanking.auth.UserObjectPersistenceService;
 import de.adorsys.multibanking.utils.FQNUtils;
 
 /**
@@ -17,13 +19,13 @@ import de.adorsys.multibanking.utils.FQNUtils;
  */
 @Service
 public class SystemImageService {
-	@Autowired
-	private SystemObjectService sos;
-    @Autowired
-    private DocumentSafeService documentSafeService;
+    private UserObjectPersistenceService uos;
+    public SystemImageService(ObjectMapper objectMapper, SystemContext systemContext, DocumentSafeService documentSafeService) {
+        this.uos = new UserObjectPersistenceService(systemContext.getUser(), objectMapper, documentSafeService);
+    }
 
 	public boolean hasImage(String imageName){
-		return sos.documentExists(FQNUtils.imageFQN(imageName), null);
+		return uos.documentExists(FQNUtils.imageFQN(imageName), null);
 	}
 
 	/**
@@ -33,7 +35,7 @@ public class SystemImageService {
 	 * @return
 	 */
 	public DSDocument loadStaticImage(String imageName){
-        return documentSafeService.readDocument(sos.auth(), FQNUtils.imageFQN(imageName));
+        return uos.readDocument(FQNUtils.imageFQN(imageName), null);
 	}
 	
 	/**
@@ -43,8 +45,6 @@ public class SystemImageService {
 	 * @param data
 	 */
 	public void storeStaticImage(String imageName, byte[] data){
-        DocumentContent documentContent = new DocumentContent(data);
-        DSDocument dsDocument = new DSDocument(FQNUtils.imageFQN(imageName), documentContent, null);
-        documentSafeService.storeDocument(sos.auth(), dsDocument);
+	    uos.store(FQNUtils.imageFQN(imageName), null, data);
 	}
 }

@@ -1,0 +1,139 @@
+{
+  "userEntity" : {
+    "id" : "peter",
+    "expireUser" : null,
+    "apiUser" : [ ]
+  },
+  "bankAccesses" : [ {
+    "bankAccess" : {
+      "bankName" : null,
+      "bankLogin" : "m.becker",
+      "bankLogin2" : null,
+      "bankCode" : "19999999",
+      "tanTransportTypes" : { },
+      "hbciPassportState" : null,
+      "externalIdMap" : { },
+      "id" : "676270a8-0176-42be-a0e1-5686d58993d4",
+      "userId" : "peter",
+      "pin" : null,
+      "pin2" : null,
+      "temporary" : false,
+      "storePin" : false,
+      "storeBookings" : true,
+      "categorizeBookings" : true,
+      "storeAnalytics" : true,
+      "storeAnonymizedBookings" : false
+    },
+    "bankAccounts" : [ {
+      "bankAccount" : {
+        "externalIdMap" : {
+          "MOCK" : "543"
+        },
+        "balances" : {
+          "readyHbciBalance" : {
+            "date" : null,
+            "amount" : 3296.29,
+            "currency" : null
+          },
+          "unreadyHbciBalance" : {
+            "date" : null,
+            "amount" : 3296.29,
+            "currency" : null
+          },
+          "creditHbciBalance" : {
+            "date" : null,
+            "amount" : 3296.29,
+            "currency" : null
+          },
+          "availableHbciBalance" : {
+            "date" : null,
+            "amount" : 3296.29,
+            "currency" : null
+          },
+          "usedHbciBalance" : {
+            "date" : null,
+            "amount" : 0,
+            "currency" : null
+          }
+        },
+        "owner" : "Matthias Becker",
+        "country" : "DE",
+        "blz" : "19999999",
+        "bankName" : "Mock Demo Bank1",
+        "accountNumber" : "3528307800",
+        "type" : "GIRO",
+        "currency" : "EUR",
+        "name" : null,
+        "bic" : "MOCKADDE001",
+        "iban" : "DE81199999993528307800",
+        "syncStatus" : null,
+        "lastSync" : null,
+        "id" : "DE81199999993528307800",
+        "bankAccessId" : "676270a8-0176-42be-a0e1-5686d58993d4",
+        "userId" : "peter"
+      },
+      "bookingFiles" : [ ],
+      "accountSynchPref" : null,
+      "standingOrders" : null,
+      "contracts" : [ ],
+      "analytic" : null,
+      "syncStatusTime" : null
+    }, {
+      "bankAccount" : {
+        "externalIdMap" : {
+          "MOCK" : "97"
+        },
+        "balances" : {
+          "readyHbciBalance" : {
+            "date" : null,
+            "amount" : 10701.87,
+            "currency" : null
+          },
+          "unreadyHbciBalance" : {
+            "date" : null,
+            "amount" : 10701.87,
+            "currency" : null
+          },
+          "creditHbciBalance" : {
+            "date" : null,
+            "amount" : 10701.87,
+            "currency" : null
+          },
+          "availableHbciBalance" : {
+            "date" : null,
+            "amount" : 10701.87,
+            "currency" : null
+          },
+          "usedHbciBalance" : {
+            "date" : null,
+            "amount" : 0,
+            "currency" : null
+          }
+        },
+        "owner" : "Familie Becker",
+        "country" : "DE",
+        "blz" : "19999999",
+        "bankName" : "Mock Demo Bank1",
+        "accountNumber" : "4076397393",
+        "type" : "GIRO",
+        "currency" : "EUR",
+        "name" : null,
+        "bic" : "MOCKADDE001",
+        "iban" : "DE12199999994076397393",
+        "syncStatus" : null,
+        "lastSync" : null,
+        "id" : "DE12199999994076397393",
+        "bankAccessId" : "676270a8-0176-42be-a0e1-5686d58993d4",
+        "userId" : "peter"
+      },
+      "bookingFiles" : [ ],
+      "accountSynchPref" : null,
+      "standingOrders" : null,
+      "contracts" : [ ],
+      "analytic" : null,
+      "syncStatusTime" : null
+    } ],
+    "accountSynchPref" : null
+  } ],
+  "accountSynchPref" : null
+}

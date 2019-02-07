@@ -1,7 +1,5 @@
 package org.adorsys.multibanking.onlinebanking.facade.mock;
 
-import de.adorsys.multibanking.auth.UserContext;
-import de.adorsys.multibanking.mock.inmemory.SimpleMockBanking;
 import de.adorsys.onlinebanking.mock.MockBanking;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,7 +20,7 @@ public class MockBankingConfig {
     }
 
     @Bean
-    public MockBanking mockBanking(UserContext userContext) {
+    public MockBanking mockBanking() {
         return simpleMockBanking;
     }
 }

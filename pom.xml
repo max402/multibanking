@@ -62,6 +62,7 @@
         <module>onlinebanking-mock</module>
         <module>multibanking-pers-spi</module>
         <module>onlinebanking-xls-loader</module>
+        <module>onlinebanking-mapper</module>
     </modules>
 
     <dependencyManagement>

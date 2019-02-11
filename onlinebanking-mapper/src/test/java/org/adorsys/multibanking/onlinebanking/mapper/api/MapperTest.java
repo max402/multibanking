@@ -44,33 +44,38 @@ public class MapperTest {
 
     @Test
     public void testLoadAccounts() {
-        String user = "p.spiessbach";
-        String pin = "11111";
+        try {
+            String user = "p.spiessbach";
+            String pin = "11111";
 
-        LoadAccountInformationResponse response;
-        SimpleMockBanking simpleMockBanking = new SimpleMockBanking(null, null);
-        BankAccess bankAccess = new BankAccess();
-        bankAccess.setBankLogin(user);
+            LoadAccountInformationResponse response;
+            SimpleMockBanking simpleMockBanking = new SimpleMockBanking(null, null);
+            BankAccess bankAccess = new BankAccess();
+            bankAccess.setBankLogin(user);
 
-        response = simpleMockBanking.loadBankAccounts(
-                null,
-                LoadAccountInformationRequest.builder()
-                        .bankApiUser(null)
-                        .bankAccess(bankAccess)
-                        .bankCode(null)
-                        .pin(pin)
-                        .storePin(false)
-                        .updateTanTransportTypes(true)
-                        .build()
-        );
+            response = simpleMockBanking.loadBankAccounts(
+                    null,
+                    LoadAccountInformationRequest.builder()
+                            .bankApiUser(null)
+                            .bankAccess(bankAccess)
+                            .bankCode(null)
+                            .pin(pin)
+                            .storePin(false)
+                            .updateTanTransportTypes(true)
+                            .build()
+            );
 
-        UserData userData = new UserData();
-        LOGGER.debug("userData before call:" + userData);
+            UserData userData = new UserData();
+            ObjectMapper om = new ObjectMapper();
+            LOGGER.debug("userData before call:" + om.writerWithDefaultPrettyPrinter().writeValueAsString(userData));
 
-        Mapper mapper = new Mapper();
-        userData = mapper.merge(userData, response);
+            Mapper mapper = new Mapper();
+            userData = mapper.merge(userData, response);
 
-        LOGGER.debug("userData after call:" + userData);
+            LOGGER.debug("userData after call:" + om.writerWithDefaultPrettyPrinter().writeValueAsString(userData));
+        } catch (Exception e) {
+            throw BaseExceptionHandler.handle(e);
+        }
 
     }
 

@@ -13,6 +13,7 @@ import domain.BankAccount;
 import domain.Booking;
 import domain.StandingOrder;
 import domain.request.LoadAccountInformationRequest;
+import domain.request.LoadBalanceRequest;
 import domain.request.LoadBookingsRequest;
 import domain.response.LoadAccountInformationResponse;
 import domain.response.LoadBookingsResponse;
@@ -43,7 +44,13 @@ public class SimpleMockBanking extends MockBanking {
 
     @Override
     public LoadAccountInformationResponse loadBankAccounts(String bankingUrl, LoadAccountInformationRequest loadAccountInformationRequest) {
-        List<BankAccount> bankAccounts = data.loadBankAccounts(loadAccountInformationRequest.getBankAccess(), loadAccountInformationRequest.getBankCode(), loadAccountInformationRequest.getPin());
+        List<BankAccount> bankAccounts = loadBalances(null,
+                LoadBalanceRequest.builder()
+                .bankApiUser(null)
+                .bankAccess(loadAccountInformationRequest.getBankAccess())
+                .bankCode(null)
+                .pin(loadAccountInformationRequest.getPin())
+                .build());
         return LoadAccountInformationResponse.builder()
                 .bankAccounts(bankAccounts)
                 .build();
@@ -59,6 +66,11 @@ public class SimpleMockBanking extends MockBanking {
         List<Booking> bookings = accountData.bookings();
         List<StandingOrder> standingOrders = new ArrayList<>(accountData.standingOrders().values());
         return LoadBookingsResponse.builder().bookings(bookings).standingOrders(standingOrders).build();
+    }
+
+    @Override
+    public List<BankAccount> loadBalances(String bankingUrl, LoadBalanceRequest loadBalanceRequest) {
+        return data.loadBankAccounts(loadBalanceRequest.getBankAccess(), loadBalanceRequest.getBankCode(), loadBalanceRequest.getPin());
     }
 
     private void load(InputStream banksStream, InputStream bookingsStream) throws IOException {

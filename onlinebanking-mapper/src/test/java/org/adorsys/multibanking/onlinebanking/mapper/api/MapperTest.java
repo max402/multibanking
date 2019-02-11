@@ -2,7 +2,11 @@ package org.adorsys.multibanking.onlinebanking.mapper.api;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import domain.BankAccess;
+import domain.request.LoadAccountInformationRequest;
+import domain.response.LoadAccountInformationResponse;
 import org.adorsys.cryptoutils.exceptions.BaseExceptionHandler;
+import org.adorsys.multibanking.onlinebanking.facade.mock.SimpleMockBanking;
 import org.adorsys.multibanking.onlinebanking.mapper.api.domain.UserData;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -18,12 +22,13 @@ public class MapperTest {
     private final static Logger LOGGER = LoggerFactory.getLogger(MapperTest.class);
 
     @Test
-    public void a() {
+    public void testPlainReadWrite() {
         try {
             String content = readFile("structure.example.json");
             LOGGER.debug(" before:" + content);
 
-            TypeReference<UserData> rootType = new TypeReference<UserData>() {};
+            TypeReference<UserData> rootType = new TypeReference<UserData>() {
+            };
             ObjectMapper om = new ObjectMapper();
             UserData userData = om.readValue(content, rootType);
             String reloadedContent = om.writerWithDefaultPrettyPrinter().writeValueAsString(userData);
@@ -34,6 +39,38 @@ public class MapperTest {
         } catch (Exception e) {
             throw BaseExceptionHandler.handle(e);
         }
+
+    }
+
+    @Test
+    public void testLoadAccounts() {
+        String user = "p.spiessbach";
+        String pin = "11111";
+
+        LoadAccountInformationResponse response;
+        SimpleMockBanking simpleMockBanking = new SimpleMockBanking(null, null);
+        BankAccess bankAccess = new BankAccess();
+        bankAccess.setBankLogin(user);
+
+        response = simpleMockBanking.loadBankAccounts(
+                null,
+                LoadAccountInformationRequest.builder()
+                        .bankApiUser(null)
+                        .bankAccess(bankAccess)
+                        .bankCode(null)
+                        .pin(pin)
+                        .storePin(false)
+                        .updateTanTransportTypes(true)
+                        .build()
+        );
+
+        UserData userData = new UserData();
+        LOGGER.debug("userData before call:" + userData);
+
+        Mapper mapper = new Mapper();
+        userData = mapper.merge(userData, response);
+
+        LOGGER.debug("userData after call:" + userData);
 
     }
 

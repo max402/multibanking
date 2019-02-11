@@ -53,6 +53,7 @@ public class SimpleMockBanking extends MockBanking {
                 .build());
         return LoadAccountInformationResponse.builder()
                 .bankAccounts(bankAccounts)
+                .bankAccess(loadAccountInformationRequest.getBankAccess())
                 .build();
     }
 

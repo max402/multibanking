@@ -65,12 +65,13 @@ public class MapperTest {
                             .build()
             );
 
-            UserData userData = new UserData();
+            BackendUserData userData = new BackendUserData();
+            userData.setSomeBackendInfo("someBackend info unknown2");
             ObjectMapper om = new ObjectMapper();
             LOGGER.debug("userData before call:" + om.writerWithDefaultPrettyPrinter().writeValueAsString(userData));
 
             Mapper mapper = new Mapper();
-            userData = mapper.merge(userData, response);
+            userData = (BackendUserData) mapper.merge(userData, response);
 
             LOGGER.debug("userData after call:" + om.writerWithDefaultPrettyPrinter().writeValueAsString(userData));
         } catch (Exception e) {

@@ -37,7 +37,7 @@ public class ReflectionTest {
             if (isInterface(field.getType())) {
                 if (field.getGenericType() instanceof ParameterizedType) {
                     printline(1, path + " " + field.getName(), field.getGenericType().getTypeName());
-                    showParameterizedType((ParameterizedType) field.getGenericType(), field.getName() + "<>", path);
+                    showParameterizedType((ParameterizedType) field.getGenericType(), field.getName(), path);
                 } else {
                     printline(2, path + " " + field.getName(), ((Class) field.getGenericType()).getName());
                     printMembers(path, ((Class) field.getGenericType()).getName(), (Class) field.getGenericType());
@@ -58,7 +58,7 @@ public class ReflectionTest {
             Type type = parameterizedType.getActualTypeArguments()[param];
             if (type instanceof Class) {
                 Class<?> paramClazz = (Class<?>) parameterizedType.getActualTypeArguments()[param];
-                showField(paramClazz.getName(), paramClazz, path);
+                showField("<" + paramClazz.getName() + ">", paramClazz, path);
             } else {
                 if (isInterface(type)) {
                     throw new BaseException(path + " " + name + " " + type.getTypeName() + " could not continue with interface type");

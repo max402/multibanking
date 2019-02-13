@@ -4,6 +4,7 @@ import lombok.Data;
 import org.adorsys.multibanking.onlinebanking.mapper.api.exception.ResourceNotFoundException;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
  * @author fpo 2018-04-02 03:55
  */
 @Data
+@XmlType(namespace = "http://org.adorsys.multibanking.onlinebanking.mapper.api.domain/UserData")
 public class UserData {
     private UserEntity userEntity;
     private List<BankAccessData> bankAccesses = new ArrayList<>();

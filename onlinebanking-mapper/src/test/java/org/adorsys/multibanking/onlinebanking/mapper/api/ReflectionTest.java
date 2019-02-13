@@ -4,6 +4,7 @@ import domain.response.LoadAccountInformationResponse;
 import domain.response.LoadBookingsResponse;
 import org.adorsys.cryptoutils.exceptions.BaseException;
 import org.adorsys.cryptoutils.exceptions.BaseExceptionHandler;
+import org.adorsys.multibanking.onlinebanking.mapper.api.domain.UserData;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,13 @@ public class ReflectionTest {
     public void printMembersLoadBookingsResponse() {
         printMembers("", "LoadBookingsResponse", LoadBookingsResponse.class);
     }
+
+    @Test
+    public void printMembersUserData() {
+        printMembers("", "UserData", UserData.class);
+    }
+
+
 
 
     private void printMembers(String path, String name, Class<?> clazzOfName) {

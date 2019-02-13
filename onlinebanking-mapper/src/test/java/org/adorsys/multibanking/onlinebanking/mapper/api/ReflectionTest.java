@@ -20,46 +20,51 @@ public class ReflectionTest {
 
     @Test
     public void printMembersOfLoadAccountInformationResponse() {
-        printMembers("", LoadAccountInformationResponse.class);
+        printMembers("", "LoadAccountInformationResponse",  LoadAccountInformationResponse.class);
     }
 
     @Test
     public void printMembersLoadBookingsResponse() {
-        printMembers("", LoadBookingsResponse.class);
+        printMembers("", "LoadBookingsResponse", LoadBookingsResponse.class);
     }
 
 
-    private void printMembers(String indent, Class<?> clazz) {
-        String space = indent + " " + clazz.getName() + " ";
-        for (Field field : clazz.getDeclaredFields()) {
+    private void printMembers(String path, String name, Class<?> clazzOfName) {
+        if (name.length() > 0) {
+            path = path + " " + name;
+        }
+        for (Field field : clazzOfName.getDeclaredFields()) {
             if (isInterface(field.getType())) {
-                LOGGER.info(1 + space + field.getName() + " (" + field.getGenericType() + ")");
+                LOGGER.info(1 + path + " " + field.getName() + " (" + field.getGenericType() + ")");
                 if (field.getGenericType() instanceof ParameterizedType) {
-                    showParameterizedType((ParameterizedType) field.getGenericType(), field, space);
+                    showParameterizedType((ParameterizedType) field.getGenericType(), field.getName() + "<>", path);
                 } else {
-                    LOGGER.info("1b " + ((Class) field.getGenericType()).getName());
-                    printMembers(indent + " " + field.getGenericType(), (Class) field.getGenericType());
+                    LOGGER.info(2 + path + " " + field.getName() + " " + ((Class) field.getGenericType()).getName());
+                    printMembers(path, ((Class) field.getGenericType()).getName(), (Class) field.getGenericType());
                 }
             } else {
-                showField(field.getName(), field.getType(), space);
+                showField(field.getName(), field.getType(), path);
             }
         }
     }
 
 
-    private void showParameterizedType(ParameterizedType parameterizedType, Field field, String space) {
+    private void showParameterizedType(ParameterizedType parameterizedType, String name, String path) {
+        if (name.length() > 0) {
+            path = path + " " + name;
+        }
         int numberOfTemplateParams = parameterizedType.getActualTypeArguments().length;
         for (int param = 0; param < numberOfTemplateParams; param++) {
             Type type = parameterizedType.getActualTypeArguments()[param];
             if (type instanceof Class) {
                 Class<?> paramClazz = (Class<?>) parameterizedType.getActualTypeArguments()[param];
-                showField(paramClazz.getName(), paramClazz, space);
+                showField(paramClazz.getName(), paramClazz, path);
             } else {
                 if (isInterface(type)) {
-                    throw new BaseException(4.5 + space + field.getName() + " " + type.getTypeName() + " could not continue with interface type");
+                    throw new BaseException(path + " " + name + " " + type.getTypeName() + " could not continue with interface type");
                 } else {
                     if (type instanceof ParameterizedType) {
-                        showParameterizedType((ParameterizedType) type, field, space + " " + type.getTypeName());
+                        showParameterizedType((ParameterizedType) type, name, path + " " + type.getTypeName());
 
                     }
                 }
@@ -68,16 +73,19 @@ public class ReflectionTest {
 
     }
 
-    private void showField(String name, Class<?> clazz, String  space) {
-        LOGGER.info(5 + space + name + " (" + clazz.getName() + ")");
+    private void showField(String name, Class<?> clazz, String  path) {
+        if (name.length() > 0) {
+            path = path + " " + name;
+        }
 
         if (clazz.isEnum()) {
-            LOGGER.info(6 + space + clazz.getName() + " (enum)");
+            LOGGER.info(3 + path + " (enum)");
         } else {
+            LOGGER.info(4 + path + " (" + clazz.getName() + ")");
             if (clazz.getPackage() == null || clazz.getPackage().getName().startsWith("java")) {
                 // ist java class or native
             } else {
-                printMembers(space, clazz);
+                printMembers(path, "", clazz);
             }
         }
 

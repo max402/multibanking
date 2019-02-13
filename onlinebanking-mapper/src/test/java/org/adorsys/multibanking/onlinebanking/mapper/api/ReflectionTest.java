@@ -32,7 +32,7 @@ public class ReflectionTest {
     private void printMembers(String indent, Class<?> clazz) {
         String space = indent + " " + clazz.getName() + " ";
         for (Field field : clazz.getDeclaredFields()) {
-            if (("" + field.getType()).contains("interface")) {
+            if (isInterface(field.getType())) {
                 LOGGER.info(1 + space + field.getName() + " (" + field.getGenericType() + ")");
                 if (field.getGenericType() instanceof ParameterizedType) {
                     showParameterizedType((ParameterizedType) field.getGenericType(), field, space);
@@ -41,21 +41,7 @@ public class ReflectionTest {
                     printMembers(indent + " " + field.getGenericType(), (Class) field.getGenericType());
                 }
             } else {
-
-                LOGGER.info(5 + space + field.getName() + " (" + field.getType().getName() + ")");
-
-                if (field.getType().isEnum()) {
-                    LOGGER.info(6 + space + field.getType().getName() + " (enum)");
-                } else {
-                    if (field == null) {
-                        throw new BaseException("affe");
-                    }
-                    if (field.getType().getPackage() == null || field.getType().getPackage().getName().startsWith("java")) {
-                        // ist java class or native
-                    } else {
-                        printMembers(space, field.getType());
-                    }
-                }
+                showField(field.getName(), field.getType(), space);
             }
         }
     }
@@ -67,19 +53,10 @@ public class ReflectionTest {
             Type type = parameterizedType.getActualTypeArguments()[param];
             if (type instanceof Class) {
                 Class<?> paramClazz = (Class<?>) parameterizedType.getActualTypeArguments()[param];
-                if (paramClazz.isEnum()) {
-                    LOGGER.info(2 + space + paramClazz.getName() + " (enum)");
-                } else {
-                    String packaage = paramClazz.getPackage().getName();
-                    if (!packaage.startsWith("java")) {
-                        printMembers(space, paramClazz);
-                    } else {
-                        LOGGER.info(3 + space + paramClazz.getName() + " is java lang");
-                    }
-                }
+                showField(paramClazz.getName(), paramClazz, space);
             } else {
-                if (("" + type).contains("interface")) {
-                    LOGGER.info(4.5 + space + field.getName() + " " + type.getTypeName() + " could continue with interface type");
+                if (isInterface(type)) {
+                    throw new BaseException(4.5 + space + field.getName() + " " + type.getTypeName() + " could not continue with interface type");
                 } else {
                     if (type instanceof ParameterizedType) {
                         showParameterizedType((ParameterizedType) type, field, space + " " + type.getTypeName());
@@ -89,6 +66,27 @@ public class ReflectionTest {
             }
         }
 
+    }
+
+    private void showField(String name, Class<?> clazz, String  space) {
+        LOGGER.info(5 + space + name + " (" + clazz.getName() + ")");
+
+        if (clazz.isEnum()) {
+            LOGGER.info(6 + space + clazz.getName() + " (enum)");
+        } else {
+            if (clazz.getPackage() == null || clazz.getPackage().getName().startsWith("java")) {
+                // ist java class or native
+            } else {
+                printMembers(space, clazz);
+            }
+        }
+
+    }
+    private boolean isInterface(Class<?> clazz) {
+        return ("" + clazz).contains("interface");
+    }
+    private boolean isInterface(Type type) {
+        return ("" + type).contains("interface");
     }
 
 }

@@ -35,11 +35,11 @@ public class ReflectionTest {
         }
         for (Field field : clazzOfName.getDeclaredFields()) {
             if (isInterface(field.getType())) {
-                LOGGER.info(1 + path + " " + field.getName() + " (" + field.getGenericType() + ")");
                 if (field.getGenericType() instanceof ParameterizedType) {
+                    printline(1, path + " " + field.getName(), field.getGenericType().getTypeName());
                     showParameterizedType((ParameterizedType) field.getGenericType(), field.getName() + "<>", path);
                 } else {
-                    LOGGER.info(2 + path + " " + field.getName() + " " + ((Class) field.getGenericType()).getName());
+                    printline(2, path + " " + field.getName(), ((Class) field.getGenericType()).getName());
                     printMembers(path, ((Class) field.getGenericType()).getName(), (Class) field.getGenericType());
                 }
             } else {
@@ -64,7 +64,7 @@ public class ReflectionTest {
                     throw new BaseException(path + " " + name + " " + type.getTypeName() + " could not continue with interface type");
                 } else {
                     if (type instanceof ParameterizedType) {
-                        showParameterizedType((ParameterizedType) type, name, path + " " + type.getTypeName());
+                        showParameterizedType((ParameterizedType) type, "", path + " " + type.getTypeName());
 
                     }
                 }
@@ -79,16 +79,19 @@ public class ReflectionTest {
         }
 
         if (clazz.isEnum()) {
-            LOGGER.info(3 + path + " (enum)");
+            printline(3, path,  "enum");
         } else {
-            LOGGER.info(4 + path + " (" + clazz.getName() + ")");
+            printline(4, path,  clazz.getTypeName());
             if (clazz.getPackage() == null || clazz.getPackage().getName().startsWith("java")) {
                 // ist java class or native
             } else {
                 printMembers(path, "", clazz);
             }
         }
+    }
 
+    private void printline(int id, String path, String type) {
+        LOGGER.info(id + " - " + path + " - " + "(" + type + ")");
     }
     private boolean isInterface(Class<?> clazz) {
         return ("" + clazz).contains("interface");

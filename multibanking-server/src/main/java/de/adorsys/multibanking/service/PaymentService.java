@@ -1,15 +1,24 @@
 package de.adorsys.multibanking.service;
 
-import de.adorsys.multibanking.domain.*;
+import de.adorsys.multibanking.domain.BankAccessEntity;
+import de.adorsys.multibanking.domain.BankApiUser;
+import de.adorsys.multibanking.domain.BankEntity;
+import de.adorsys.multibanking.domain.BulkPaymentEntity;
+import de.adorsys.multibanking.domain.Credentials;
+import de.adorsys.multibanking.domain.RawSepaTransactionEntity;
+import de.adorsys.multibanking.domain.SinglePaymentEntity;
 import de.adorsys.multibanking.domain.exception.MultibankingException;
 import de.adorsys.multibanking.domain.request.TransactionRequest;
 import de.adorsys.multibanking.domain.request.TransactionRequestFactory;
+import de.adorsys.multibanking.domain.request.UpdatePsuAuthenticationRequest;
 import de.adorsys.multibanking.domain.response.AbstractResponse;
+import de.adorsys.multibanking.domain.response.UpdateAuthResponse;
 import de.adorsys.multibanking.domain.spi.OnlineBankingService;
 import de.adorsys.multibanking.domain.transaction.BulkPayment;
 import de.adorsys.multibanking.domain.transaction.RawSepaPayment;
 import de.adorsys.multibanking.domain.transaction.SinglePayment;
 import de.adorsys.multibanking.exception.domain.MissingPinException;
+import de.adorsys.multibanking.hbci.model.HbciConsent;
 import de.adorsys.multibanking.pers.spi.repository.BulkPaymentRepositoryIf;
 import de.adorsys.multibanking.pers.spi.repository.RawSepaTransactionRepositoryIf;
 import de.adorsys.multibanking.pers.spi.repository.SinglePaymentRepositoryIf;
@@ -76,8 +85,25 @@ public class PaymentService {
         BankEntity bankEntity = bankService.findBank(bankAccess.getBankCode());
 
         try {
+            HbciConsent consent = new HbciConsent();
+            consent.setHbciProduct(null);
+            consent.setCredentials(Credentials.builder()
+                .userId(credentials.getUserId())
+                .pin(credentials.getPin())
+                .build());
+
+            UpdatePsuAuthenticationRequest updateRequest = new UpdatePsuAuthenticationRequest();
+            updateRequest.setCredentials(credentials);
+            updateRequest.setBankApiConsentData(consent);
+            updateRequest.setBank(bankEntity);
+
+            UpdateAuthResponse updateResponse =
+                bankingService.getStrongCustomerAuthorisation().updatePsuAuthentication(updateRequest);
+
+            consent = (HbciConsent) updateResponse.getBankApiConsentData();
+
             TransactionRequest<SinglePayment> request =
-                TransactionRequestFactory.create(payment, bankApiUser, bankAccess, bankEntity, null);
+                TransactionRequestFactory.create(payment, bankApiUser, bankAccess, bankEntity, consent);
 
             AbstractResponse response = bankingService.executePayment(request);
 

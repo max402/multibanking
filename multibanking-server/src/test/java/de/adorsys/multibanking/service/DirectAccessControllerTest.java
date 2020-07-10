@@ -15,12 +15,14 @@ import de.adorsys.multibanking.domain.response.TransactionsResponse;
 import de.adorsys.multibanking.domain.response.UpdateAuthResponse;
 import de.adorsys.multibanking.domain.spi.OnlineBankingService;
 import de.adorsys.multibanking.domain.spi.StrongCustomerAuthorisable;
+import de.adorsys.multibanking.domain.transaction.SinglePayment;
 import de.adorsys.multibanking.exception.domain.Messages;
 import de.adorsys.multibanking.hbci.HbciBanking;
 import de.adorsys.multibanking.hbci.model.HbciConsent;
 import de.adorsys.multibanking.ing.IngAdapter;
 import de.adorsys.multibanking.pers.spi.repository.BankRepositoryIf;
 import de.adorsys.multibanking.pers.spi.repository.ConsentRepositoryIf;
+import de.adorsys.multibanking.pers.spi.repository.UserRepositoryIf;
 import de.adorsys.multibanking.web.DirectAccessControllerV2;
 import de.adorsys.multibanking.web.model.*;
 import io.restassured.RestAssured;
@@ -49,6 +51,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -73,6 +76,14 @@ import static org.mockito.internal.util.MockUtil.isMock;
 @EnableAutoConfiguration
 public class DirectAccessControllerTest {
 
+    private static final String LOGIN = "";
+    private static final String PIN = "";
+    public static final String BANK_URL = "";
+    public static final String BLZ = "";
+    public static final String IBAN = "";
+    public static final String RECEIVER_IBAN = "";
+    public static final String BIC = "";
+
     @Autowired
     private BankRepositoryIf bankRepository;
     @MockBean
@@ -81,6 +92,11 @@ public class DirectAccessControllerTest {
     private BankingGatewayAdapter bankingGatewayAdapterMock;
     @SpyBean
     private ConsentRepositoryIf consentRepository;
+    @Autowired
+    private PaymentService paymentService;
+    @MockBean
+    private UserRepositoryIf userRepositoryIfMock;
+
     @LocalServerPort
     private int port;
 
@@ -246,7 +262,6 @@ public class DirectAccessControllerTest {
         consent_authorisation(consentTO, createBankAccess(), credentials);
     }
 
-    @Ignore("uses real data - please setup ENV")
     @Test
     public void consent_authorisation_hbci() {
         HbciBanking hbci4JavaBanking = new HbciBanking(null, 0, 0);
@@ -254,10 +269,13 @@ public class DirectAccessControllerTest {
         ConsentTO consentTO = createConsentTO();
         prepareBank(hbci4JavaBanking, consentTO.getPsuAccountIban(), false);
 
+        String bankCode = Iban.valueOf(consentTO.getPsuAccountIban()).getBankCode();
+        HBCIUtils.getBankInfo(bankCode).setPinTanAddress(BANK_URL);
+
         CredentialsTO credentials = CredentialsTO.builder()
-            .customerId(System.getProperty("login", "login"))
-            .userId(System.getProperty("login2", null))
-            .pin(System.getProperty("pin", "pin"))
+            .customerId(LOGIN)
+            .userId("")
+            .pin(PIN)
             .build();
 
         consent_authorisation(consentTO, createBankAccess(), credentials);
@@ -385,6 +403,17 @@ public class DirectAccessControllerTest {
         if (ScaApproachTO.valueOf(jsonPath.getString("scaApproach")) == ScaApproachTO.DECOUPLED) {
             return jsonPath;
         }
+
+        //4. load accounts
+        DirectAccessControllerV2.LoadAccountsRequest loadAccountsRequest =
+            new DirectAccessControllerV2.LoadAccountsRequest();
+        loadAccountsRequest.setBankAccess(bankAccess);
+        DirectAccessControllerV2.LoadBankAccountsResponse loadBankAccountsResponse = request
+            .body(loadAccountsRequest)
+            .post(getRemoteMultibankingUrl() + "/api/v2/direct/accounts")
+            .then().assertThat().statusCode(HttpStatus.OK.value())
+            .extract().body().as(DirectAccessControllerV2.LoadBankAccountsResponse.class);
+        assertThat(loadBankAccountsResponse.getBankAccounts()).isNotEmpty();
 
         String transactionAuthorisationLink = jsonPath.getString("_links" + ".transactionAuthorisation.href");
         //5. bookings challenge for hbci (Optional)
@@ -606,9 +635,9 @@ public class DirectAccessControllerTest {
         BankEntity test_bank = bankRepository.findByBankCode(bankCode).orElseGet(() -> {
             BankEntity bankEntity = TestUtil.getBankEntity("Test Bank", bankCode, onlineBankingService.bankApi());
             bankEntity.setName("UNITTEST BANK");
-            bankEntity.setBankingUrl(System.getProperty("bankUrl"));
+            bankEntity.setBankingUrl(BANK_URL);
             bankEntity.setRedirectPreferred(redirectPreferred);
-            bankEntity.setBic(System.getProperty("bic"));
+            bankEntity.setBic(BIC);
             bankRepository.save(bankEntity);
             return bankEntity;
         });
@@ -616,16 +645,16 @@ public class DirectAccessControllerTest {
         if (onlineBankingService instanceof HbciBanking && HBCIUtils.getBankInfo(bankCode) == null) {
             BankInfo bankInfo = new BankInfo();
             bankInfo.setBlz(test_bank.getBankCode());
-            bankInfo.setPinTanAddress(System.getProperty("bankUrl"));
+            bankInfo.setPinTanAddress(BANK_URL);
             bankInfo.setPinTanVersion(HBCI_300);
-            bankInfo.setBic(System.getProperty("bic"));
+            bankInfo.setBlz(BLZ);
             HBCIUtils.addBankInfo(bankInfo);
         }
     }
 
     private ConsentTO createConsentTO() {
         // String iban = System.getProperty("iban", "DE60900000020000000001");
-        String iban = System.getProperty("iban", "DE16900010021234567890");
+        String iban = IBAN;
 
         ConsentTO consentTO = new ConsentTO();
         consentTO.setAccounts(Collections.singletonList(new AccountReferenceTO(iban, null)));
@@ -651,4 +680,49 @@ public class DirectAccessControllerTest {
 //        return "http://localhost:8081";
 //        return "https://dev-bankinggateway-multibanking-multibankingservice.cloud.adorsys.de";
     }
+
+    @Test
+    public void testSinglePayment() {
+        when(userRepositoryIfMock.findById(any())).thenReturn(Optional.of(TestUtil.getUserEntity("test-user-id")));
+
+        HbciBanking hbci4JavaBanking = new HbciBanking(null, 0, 0);
+
+        ConsentTO consentTO = createConsentTO();
+        prepareBank(hbci4JavaBanking, consentTO.getPsuAccountIban(), false);
+
+        BankAccessEntity bankAccessEntity = TestUtil.getBankAccessEntity("test-user-id", "test-access-id", BLZ);
+        bankAccessEntity.setCategorizeBookings(false);
+        bankAccessEntity.setStoreAnalytics(true);
+
+        BankInfo bankInfo = new BankInfo();
+        bankInfo.setPinTanAddress(BANK_URL);
+        bankInfo.setPinTanVersion(HBCI_300);
+        bankInfo.setBlz(BLZ);
+        HBCIUtils.addBankInfo(bankInfo);
+
+        BankAccountEntity bankAccountEntitity = new BankAccountEntity();
+        bankAccountEntitity.setIban(IBAN);
+        bankAccountEntitity.setCurrency("EUR");
+        bankAccountEntitity.setBic(BIC);
+        bankAccountEntitity.setBlz(BLZ);
+        bankAccountEntitity.setId("test-account-id");
+        bankAccountEntitity.setBankAccessId("");
+
+        SinglePayment payment = new SinglePayment();
+        payment.setReceiverIban(RECEIVER_IBAN);
+        payment.setReceiver("Max");
+        payment.setAmount(new BigDecimal(1.00));
+        payment.setPurpose("test130");
+        payment.setPsuAccount(bankAccountEntitity);
+
+        Credentials credentials = Credentials.builder()
+            .customerId(LOGIN)
+            .userId("")
+            .pin(PIN)
+            .build();
+
+        SinglePaymentEntity paymentEntity = paymentService.createSinglePayment(bankAccessEntity, credentials, payment);
+        paymentService.submitSinglePayment(paymentEntity, bankAccessEntity, credentials, "");
+    }
+
 }

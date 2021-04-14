@@ -3,7 +3,7 @@ package de.adorsys.multibanking.config;
 import de.adorsys.multibanking.bg.BankingGatewayAdapter;
 import de.adorsys.multibanking.domain.BankApi;
 import de.adorsys.multibanking.figo.FigoBanking;
-import de.adorsys.multibanking.finapi.FinapiBanking;
+//import de.adorsys.multibanking.finapi.FinapiBanking;
 import de.adorsys.multibanking.hbci.HbciBanking;
 import de.adorsys.multibanking.ing.IngAdapter;
 import lombok.extern.slf4j.Slf4j;
@@ -47,7 +47,7 @@ public class AdapterConfig {
     private HbciBanking hbci4JavaBanking;
     private FigoBanking figoBanking = new FigoBanking(BankApi.FIGO);
     private FigoBanking figoBankingAlternative = new FigoBanking(BankApi.FIGO_ALTERNATIVE);
-    private FinapiBanking finapiBanking = new FinapiBanking();
+//    private FinapiBanking finapiBanking = new FinapiBanking();
 
     @PostConstruct
     public void postConstruct() {
@@ -89,8 +89,8 @@ public class AdapterConfig {
         return figoBankingAlternative;
     }
 
-    @Bean
-    public FinapiBanking finapiBanking() {
-        return finapiBanking;
-    }
+//    @Bean
+//    public FinapiBanking finapiBanking() {
+//        return finapiBanking;
+//    }
 }

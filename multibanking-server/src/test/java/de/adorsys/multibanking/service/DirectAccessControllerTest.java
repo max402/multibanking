@@ -1,5 +1,8 @@
 package de.adorsys.multibanking.service;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import de.adorsys.multibanking.Application;
 import de.adorsys.multibanking.bg.BankingGatewayAdapter;
 import de.adorsys.multibanking.conf.FongoConfig;
@@ -28,8 +31,13 @@ import io.restassured.filter.log.ErrorLoggingFilter;
 import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
 import io.restassured.specification.RequestSpecification;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import lombok.var;
 import org.apache.commons.lang3.StringUtils;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
 import org.iban4j.Iban;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -47,8 +55,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -68,10 +80,29 @@ import static org.mockito.internal.util.MockUtil.isMock;
 
 @Slf4j
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {Application.class, FongoConfig.class, MongoMapKeyDotReplacementConfiguration.class, MapperConfig.class}, webEnvironment =
+@SpringBootTest(classes = {Application.class, DirectAccessControllerTest.LoggingAspect.class, FongoConfig.class, MongoMapKeyDotReplacementConfiguration.class, MapperConfig.class}, webEnvironment =
     SpringBootTest.WebEnvironment.RANDOM_PORT)
 @EnableAutoConfiguration
 public class DirectAccessControllerTest {
+
+    @Aspect
+    @Component
+    public static class LoggingAspect {
+        @Around(value = "execution(public * de.adorsys.multibanking.hbci.HbciBanking.*(..))")
+        @SneakyThrows
+        public Object log(ProceedingJoinPoint joinPoint) {
+            log.info(joinPoint.toLongString());
+            return joinPoint.proceed();
+        }
+    }
+
+    private static final String LOGIN = "login";
+    private static final String PIN = "pin";
+    public static final String BANK_URL = "";
+    public static final String BLZ = "";
+    public static final String IBAN = "iban";
+    public static final String RECEIVER_IBAN = "";
+    public static final String BIC = "bic";
 
     @Autowired
     private BankRepositoryIf bankRepository;
@@ -116,7 +147,7 @@ public class DirectAccessControllerTest {
     @Test
     public void createConsent_should_return_a_authorisationStatus_link_hbci() {
         ConsentTO consentTO = createConsentTO();
-        prepareBank(new HbciBanking(null, 0, 0), consentTO.getPsuAccountIban(), false);
+        prepareBank(getHbci4JavaBanking(), consentTO.getPsuAccountIban(), false);
 
         JsonPath jsonPath = request.body(consentTO)
             .post(getRemoteMultibankingUrl() + "/api/v1/consents")
@@ -246,21 +277,63 @@ public class DirectAccessControllerTest {
         consent_authorisation(consentTO, createBankAccess(), credentials);
     }
 
-    @Ignore("uses real data - please setup ENV")
     @Test
     public void consent_authorisation_hbci() {
-        HbciBanking hbci4JavaBanking = new HbciBanking(null, 0, 0);
+        OnlineBankingService hbci4JavaBanking = getHbci4JavaBanking();
 
         ConsentTO consentTO = createConsentTO();
         prepareBank(hbci4JavaBanking, consentTO.getPsuAccountIban(), false);
 
+//        String bankCode = Iban.valueOf(consentTO.getPsuAccountIban()).getBankCode();
+//        HBCIUtils.getBankInfo(bankCode).setPinTanAddress(BANK_URL);
+
         CredentialsTO credentials = CredentialsTO.builder()
-            .customerId(System.getProperty("login", "login"))
-            .userId(System.getProperty("login2", null))
-            .pin(System.getProperty("pin", "pin"))
+            .customerId(LOGIN)
+            .userId("")
+            .pin(PIN)
             .build();
 
         consent_authorisation(consentTO, createBankAccess(), credentials);
+    }
+
+    private OnlineBankingService getHbci4JavaBanking() {
+        HbciBanking hbciBanking = new HbciBanking(null, 0, 0);
+        return (OnlineBankingService) Proxy.newProxyInstance(
+            LoggingAspect.class.getClassLoader(),
+            new Class[] { OnlineBankingService.class },
+            new LoggingDynamicInvocationHandler(hbciBanking)
+        );
+    }
+
+    @Slf4j
+    public static class LoggingDynamicInvocationHandler implements InvocationHandler {
+        private final Map<String, Method> methods = new HashMap<>();
+        private final Object target;
+        public LoggingDynamicInvocationHandler(Object target) {
+            this.target = target;
+            for(Method method: target.getClass().getDeclaredMethods()) {
+                this.methods.put(method.getName(), method);
+            }
+        }
+        @Override
+        public Object invoke(Object proxy, Method method, Object[] args)
+            throws Throwable {
+            Object result = methods.get(method.getName()).invoke(target, args);
+            var mapper = new ObjectMapper().disable(SerializationFeature.FAIL_ON_EMPTY_BEANS).findAndRegisterModules().setSerializationInclusion(JsonInclude.Include.NON_NULL);
+            Map<String, Object> value = new HashMap<>();
+            value.put("method", method.getName());
+            value.put("return", result);
+            value.put("args", args);
+            log.info("OBS.SCA: {}", mapper.writeValueAsString(value));
+            if (method.getName().equals("getStrongCustomerAuthorisation")) {
+                return Proxy.newProxyInstance(
+                    LoggingAspect.class.getClassLoader(),
+                    new Class[] { StrongCustomerAuthorisable.class },
+                    new LoggingDynamicInvocationHandler(result)
+                );
+            }
+            return result;
+        }
     }
 
     @Ignore
@@ -268,7 +341,7 @@ public class DirectAccessControllerTest {
     public void consent_authorisation_hbci_mock() {
         ConsentTO consentTO = createConsentTO();
 
-        HbciBanking hbci4JavaBanking = spy(new HbciBanking(null, 0, 0));
+        OnlineBankingService hbci4JavaBanking = spy(getHbci4JavaBanking());
         prepareBank(hbci4JavaBanking, consentTO.getPsuAccountIban(), false);
 
         //mock hbci authenticate "authenticatePsu" that's why we need to use an answer to manipulate the consent
@@ -384,6 +457,18 @@ public class DirectAccessControllerTest {
         if (ScaApproachTO.valueOf(jsonPath.getString("scaApproach")) == ScaApproachTO.DECOUPLED) {
             return jsonPath;
         }
+
+        //4. load accounts
+        DirectAccessControllerV2.LoadAccountsRequest loadAccountsRequest =
+            new DirectAccessControllerV2.LoadAccountsRequest();
+        loadAccountsRequest.setBankAccess(bankAccess);
+        DirectAccessControllerV2.LoadBankAccountsResponse loadBankAccountsResponse = request
+            .body(loadAccountsRequest)
+            .post(getRemoteMultibankingUrl() + "/api/v2/direct/accounts")
+            .then().assertThat().statusCode(HttpStatus.OK.value())
+            .extract().body().as(DirectAccessControllerV2.LoadBankAccountsResponse.class);
+        assertThat(loadBankAccountsResponse.getBankAccounts()).isNotEmpty();
+
 
         String transactionAuthorisationLink = jsonPath.getString("_links" + ".transactionAuthorisation.href");
         //5. bookings challenge for hbci (Optional) hbci case
@@ -623,7 +708,7 @@ public class DirectAccessControllerTest {
 
     private ConsentTO createConsentTO() {
         // String iban = System.getProperty("iban", "DE60900000020000000001");
-        String iban = System.getProperty("iban", "DE16900010021234567890");
+        String iban = IBAN;
 
         ConsentTO consentTO = new ConsentTO();
         consentTO.setAccounts(Collections.singletonList(new AccountReferenceTO(iban, null)));

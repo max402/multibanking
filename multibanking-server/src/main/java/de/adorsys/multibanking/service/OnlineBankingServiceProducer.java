@@ -5,7 +5,7 @@ import de.adorsys.multibanking.domain.BankApi;
 import de.adorsys.multibanking.domain.BankEntity;
 import de.adorsys.multibanking.domain.spi.OnlineBankingService;
 import de.adorsys.multibanking.figo.FigoBanking;
-import de.adorsys.multibanking.finapi.FinapiBanking;
+//import de.adorsys.multibanking.finapi.FinapiBanking;
 import de.adorsys.multibanking.hbci.HbciBanking;
 import de.adorsys.multibanking.ing.IngAdapter;
 import de.adorsys.multibanking.pers.spi.repository.BankRepositoryIf;
@@ -22,7 +22,7 @@ public class OnlineBankingServiceProducer {
     private final HbciBanking hbci4JavaBanking;
     private final FigoBanking figoBanking;
     private final FigoBanking figoBankingAlternative;
-    private final FinapiBanking finapiBanking;
+//    private final FinapiBanking finapiBanking;
     private final BankRepositoryIf bankRepository;
     @Value("${defaultBankApi:HBCI}")
     private String defaultBankApi;
@@ -52,8 +52,8 @@ public class OnlineBankingServiceProducer {
                 return ingAdapter;
             case FIGO_ALTERNATIVE:
                 return figoBankingAlternative;
-            case FINAPI:
-                return finapiBanking;
+//            case FINAPI:
+//                return finapiBanking;
             case XS2A:
                 return bankingGatewayAdapter;
         }

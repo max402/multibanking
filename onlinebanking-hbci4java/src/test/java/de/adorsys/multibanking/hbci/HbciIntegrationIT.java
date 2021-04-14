@@ -73,12 +73,12 @@ public class HbciIntegrationIT {
 
     @Before
     public void prepareEnv() {
-        this.iban = System.getProperty("iban", Iban.random().toString());
-        this.scaMethodId = System.getProperty("scaMethodId", "901");
+        this.iban = "DE73500105175434073226";
+        this.scaMethodId = "900";
         this.scaTanMedia = System.getProperty("scaTanMedia");
-        this.psuId = System.getProperty("login", "psd2test2");
+        this.psuId = "5578896155";
         this.psuCorporateId = System.getProperty("login2", null);
-        this.pin = System.getProperty("pin", "pin");
+        this.pin = "tyghbn";
         this.psuIdMSCA = System.getProperty("loginMsca", null);
         this.psuCorporateIdMSCA = System.getProperty("login2Msca", null);
         this.pinMSCA = System.getProperty("pinMsca", null);
@@ -105,7 +105,8 @@ public class HbciIntegrationIT {
 
         LoadAccounts loadAccounts = new LoadAccounts();
         loadAccounts.setWithBalances(true);
-        TransactionRequest<LoadAccounts> loadAccountsRequest = TransactionRequestFactory.create(loadAccounts, null, bankAccess, bank, hbciConsent);
+        TransactionRequest<LoadAccounts> loadAccountsRequest =
+            TransactionRequestFactory.create(loadAccounts, null, bankAccess, bank, hbciConsent);
 
         AccountInformationResponse response = hbci4JavaBanking.loadBankAccounts(loadAccountsRequest);
 
@@ -170,7 +171,8 @@ public class HbciIntegrationIT {
 
         LoadTransactions loadTransactions = new LoadTransactions();
         loadTransactions.setPsuAccount(createBankAccount());
-        TransactionRequest<LoadTransactions> loadTransactionsRequest = TransactionRequestFactory.create(loadTransactions, null, bankAccess, bank, hbciConsent);
+        TransactionRequest<LoadTransactions> loadTransactionsRequest =
+            TransactionRequestFactory.create(loadTransactions, null, bankAccess, bank, hbciConsent);
 
         TransactionsResponse response = hbci4JavaBanking.loadTransactions(loadTransactionsRequest);
 
@@ -308,8 +310,7 @@ public class HbciIntegrationIT {
 
     @Test
     public void hbciDTAZV() throws Exception {
-        URL testDtazvUrl = Objects.requireNonNull(HbciIntegrationIT.class.getClassLoader().getResource("test-dtazv" +
-            ".txt")).toURI().toURL();
+        URL testDtazvUrl = Objects.requireNonNull(getClass().getClassLoader().getResource("test-dtazv.txt")).toURI().toURL();
 
         ForeignPayment payment = new ForeignPayment();
         payment.setDtazv(readFile(testDtazvUrl.getPath()));

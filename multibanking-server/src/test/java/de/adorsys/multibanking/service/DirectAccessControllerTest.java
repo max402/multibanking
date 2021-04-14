@@ -320,11 +320,9 @@ public class DirectAccessControllerTest {
             throws Throwable {
             Object result = methods.get(method.getName()).invoke(target, args);
             var mapper = new ObjectMapper().disable(SerializationFeature.FAIL_ON_EMPTY_BEANS).findAndRegisterModules().setSerializationInclusion(JsonInclude.Include.NON_NULL);
-            Map<String, Object> value = new HashMap<>();
-            value.put("method", method.getName());
-            value.put("return", result);
-            value.put("args", args);
-            log.info("OBS.SCA: {}", mapper.writeValueAsString(value));
+            if (!method.getName().equals("bankApi") && !method.getName().equals("getStrongCustomerAuthorisation")) {
+                log.info("OBS.SCA: {}", mapper.writeValueAsString(buildMap(method, args, result)));
+            }
             if (method.getName().equals("getStrongCustomerAuthorisation")) {
                 return Proxy.newProxyInstance(
                     LoggingAspect.class.getClassLoader(),
@@ -333,6 +331,15 @@ public class DirectAccessControllerTest {
                 );
             }
             return result;
+        }
+
+        private Map<String, Object> buildMap(Method method, Object[] args, Object result) {
+            // Guava and java11 maps don't allow null values.
+            Map<String, Object> value = new LinkedHashMap<>();
+            value.put("method", method.getName());
+            value.put("return", result);
+            value.put("args", args);
+            return value;
         }
     }
 
@@ -458,16 +465,16 @@ public class DirectAccessControllerTest {
             return jsonPath;
         }
 
-        //4. load accounts
-        DirectAccessControllerV2.LoadAccountsRequest loadAccountsRequest =
-            new DirectAccessControllerV2.LoadAccountsRequest();
-        loadAccountsRequest.setBankAccess(bankAccess);
-        DirectAccessControllerV2.LoadBankAccountsResponse loadBankAccountsResponse = request
-            .body(loadAccountsRequest)
-            .post(getRemoteMultibankingUrl() + "/api/v2/direct/accounts")
-            .then().assertThat().statusCode(HttpStatus.OK.value())
-            .extract().body().as(DirectAccessControllerV2.LoadBankAccountsResponse.class);
-        assertThat(loadBankAccountsResponse.getBankAccounts()).isNotEmpty();
+//        //4. load accounts
+//        DirectAccessControllerV2.LoadAccountsRequest loadAccountsRequest =
+//            new DirectAccessControllerV2.LoadAccountsRequest();
+//        loadAccountsRequest.setBankAccess(bankAccess);
+//        DirectAccessControllerV2.LoadBankAccountsResponse loadBankAccountsResponse = request
+//            .body(loadAccountsRequest)
+//            .post(getRemoteMultibankingUrl() + "/api/v2/direct/accounts")
+//            .then().assertThat().statusCode(HttpStatus.OK.value())
+//            .extract().body().as(DirectAccessControllerV2.LoadBankAccountsResponse.class);
+//        assertThat(loadBankAccountsResponse.getBankAccounts()).isNotEmpty();
 
 
         String transactionAuthorisationLink = jsonPath.getString("_links" + ".transactionAuthorisation.href");
